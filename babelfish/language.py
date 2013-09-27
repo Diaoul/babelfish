@@ -41,7 +41,9 @@ class Language(object):
         self.country = None
         if isinstance(country, Country):
             self.country = country
-        elif isinstance(country, (str, unicode)):
+        elif country is None:
+            self.country = None
+        else:
             self.country = Country(country)
 
     def __getattr__(self, name):
@@ -123,5 +125,5 @@ def clear_converters():
     in :data:`CONVERTERS`
 
     """
-    for name in CONVERTERS.keys():
+    for name in set(CONVERTERS.keys()):
         unregister_converter(name)
