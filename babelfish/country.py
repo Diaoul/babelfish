@@ -27,10 +27,13 @@ class Country(object):
     def __init__(self, country):
         if country not in COUNTRIES:
             raise ValueError('{} is not a valid country'.format(country))
+
+        #: ISO-3166 two-letters country code
         self.alpha2 = country
 
     @property
     def name(self):
+        """English name of the country"""
         return COUNTRIES[self.alpha2]
 
     def __hash__(self):

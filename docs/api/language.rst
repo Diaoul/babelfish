@@ -7,7 +7,6 @@ Language
     Set of ISO-639-3 three-letters code
 
 .. autoclass:: Language
-    :members:
 
 .. data:: CONVERTERS
 
