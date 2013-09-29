@@ -1,6 +1,13 @@
 BabelFish Changelog
 ===================
 
+0.1.3
+-----
+**release date:** 2013-09-29
+
+* Fix source distribution
+
+
 0.1.2
 -----
 **release date:** 2013-09-29
