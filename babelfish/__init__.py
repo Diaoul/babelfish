@@ -5,7 +5,7 @@
 # that can be found in the LICENSE file.
 #
 __title__ = 'babelfish'
-__version__ = '0.1.4'
+__version__ = '0.1.5'
 __author__ = 'Antoine Bertin'
 __license__ = 'BSD'
 __copyright__ = 'Copyright 2013 the BabelFish authors'

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.1.5
+-----
+**release date:** 2013-10-21
+
+* Add a fromcode method on Language class
+* Add a codes attribute on converters
+
+
 0.1.4
 -----
 **release date:** 2013-10-20
