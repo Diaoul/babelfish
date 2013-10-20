@@ -46,6 +46,10 @@ class Language(object):
         else:
             self.country = Country(country)
 
+    @classmethod
+    def fromcode(cls, code, converter):
+        return cls(*CONVERTERS[converter].reverse(code))
+
     def __getattr__(self, name):
         if name not in CONVERTERS:
             raise AttributeError
@@ -88,9 +92,7 @@ def register_converter(name, converter):
         raise ValueError('Converter {} already exists'.format(name))
     CONVERTERS[name] = converter()
     if isinstance(CONVERTERS[name], ReverseConverter):
-        def fromcode(cls, code, converter):
-            return cls(*CONVERTERS[converter].reverse(code))
-        setattr(Language, 'from' + name, classmethod(partial(fromcode, converter=name)))
+        setattr(Language, 'from' + name, partial(Language.fromcode, converter=name))
 
 
 def unregister_converter(name):
