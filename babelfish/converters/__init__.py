@@ -8,6 +8,10 @@ class Converter(object):
     """A :class:`Converter` supports converting an alpha3 language code with an
     alpha2 country code into a custom code
 
+    .. attribute:: codes
+
+        Set of possible custom codes
+
     """
     def convert(self, alpha3, country=None):
         """Convert an alpha3 language code with an alpha2 country code

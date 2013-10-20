@@ -7,8 +7,8 @@
 #
 from __future__ import unicode_literals
 import unittest
-from babelfish import (Language, Country, CONVERTERS, ReverseConverter,
-    load_converters, clear_converters, register_converter, unregister_converter, NoConversionError)
+from babelfish import (LANGUAGES, Language, Country, CONVERTERS, ReverseConverter, load_converters, clear_converters,
+    register_converter, unregister_converter, NoConversionError)
 
 
 class TestCountry(unittest.TestCase):
@@ -27,6 +27,9 @@ class TestCountry(unittest.TestCase):
 
 
 class TestLanguage(unittest.TestCase):
+    def test_languages(self):
+        self.assertTrue(len(LANGUAGES) == 7874)
+
     def test_wrong_language(self):
         with self.assertRaises(ValueError):
             Language('zzz')
@@ -38,6 +41,7 @@ class TestLanguage(unittest.TestCase):
             Language.fromalpha2('zz')
         with self.assertRaises(NoConversionError):
             Language('aaa').alpha2
+        self.assertTrue(len(CONVERTERS['alpha2'].codes) == 184)
 
     def test_converter_alpha3b(self):
         self.assertTrue(Language('fra').alpha3b == 'fre')
@@ -46,12 +50,14 @@ class TestLanguage(unittest.TestCase):
             Language.fromalpha3b('zzz')
         with self.assertRaises(NoConversionError):
             Language('aaa').alpha3b
+        self.assertTrue(len(CONVERTERS['alpha3b'].codes) == 418)
 
     def test_converter_name(self):
         self.assertTrue(Language('eng').name == 'English')
         self.assertTrue(Language.fromname('English') == Language('eng'))
         with self.assertRaises(NoConversionError):
             Language.fromname('Zzzzzzzzz')
+        self.assertTrue(len(CONVERTERS['name'].codes) == 7874)
 
     def test_converter_opensubtitles(self):
         self.assertTrue(Language('fra').opensubtitles == Language('fra').alpha3b)
@@ -62,6 +68,7 @@ class TestLanguage(unittest.TestCase):
             Language.fromopensubtitles('zzz')
         with self.assertRaises(NoConversionError):
             Language('aaa').opensubtitles
+        self.assertTrue(len(CONVERTERS['opensubtitles'].codes) == 419)
 
     def test_country(self):
         self.assertTrue(Language('por', 'BR').country == Country('BR'))

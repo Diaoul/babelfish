@@ -11,6 +11,7 @@ from .alpha3b import Alpha3BConverter
 class OpenSubtitlesConverter(Alpha3BConverter):
     def __init__(self):
         super(OpenSubtitlesConverter, self).__init__()
+        self.codes.add('pob')
         self.to_opensubtitles = {('por', 'BR'): 'pob'}
         self.from_opensubtitles = {'pob': ('por', 'BR')}
 

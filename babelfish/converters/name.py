@@ -12,12 +12,14 @@ from ..exceptions import NoConversionError
 
 class NameConverter(ReverseConverter):
     def __init__(self):
+        self.codes = set()
         self.to_name = {}
         self.from_name = {}
         with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
             f.readline()
             for l in f:
                 (alpha3, _, _, _, _, _, name, _) = l.decode('utf-8').split('\t')
+                self.codes.add(name)
                 self.to_name[alpha3] = name
                 self.from_name[name] = alpha3
 

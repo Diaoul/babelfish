@@ -12,6 +12,7 @@ from ..exceptions import NoConversionError
 
 class Alpha2Converter(ReverseConverter):
     def __init__(self):
+        self.codes = set()
         self.to_alpha2 = {}
         self.from_alpha2 = {}
         with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
@@ -19,6 +20,7 @@ class Alpha2Converter(ReverseConverter):
             for l in f:
                 (alpha3, _, _, alpha2, _, _, _, _) = l.decode('utf-8').split('\t')
                 if alpha2 != '':
+                    self.codes.add(alpha2)
                     self.to_alpha2[alpha3] = alpha2
                     self.from_alpha2[alpha2] = alpha3
 
