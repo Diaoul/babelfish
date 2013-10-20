@@ -18,8 +18,9 @@ class Alpha3BConverter(ReverseConverter):
             f.readline()
             for l in f:
                 (alpha3, alpha3b, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
-                self.to_alpha3b[alpha3] = alpha3b
-                self.from_alpha3b[alpha3b] = alpha3
+                if alpha3b != '':
+                    self.to_alpha3b[alpha3] = alpha3b
+                    self.from_alpha3b[alpha3b] = alpha3
 
     def convert(self, alpha3, country=None):
         if alpha3 not in self.to_alpha3b:

@@ -34,20 +34,34 @@ class TestLanguage(unittest.TestCase):
     def test_converter_alpha2(self):
         self.assertTrue(Language('eng').alpha2 == 'en')
         self.assertTrue(Language.fromalpha2('en') == Language('eng'))
+        with self.assertRaises(NoConversionError):
+            Language.fromalpha2('zz')
+        with self.assertRaises(NoConversionError):
+            Language('aaa').alpha2
 
     def test_converter_alpha3b(self):
         self.assertTrue(Language('fra').alpha3b == 'fre')
         self.assertTrue(Language.fromalpha3b('fre') == Language('fra'))
+        with self.assertRaises(NoConversionError):
+            Language.fromalpha3b('zzz')
+        with self.assertRaises(NoConversionError):
+            Language('aaa').alpha3b
 
     def test_converter_name(self):
         self.assertTrue(Language('eng').name == 'English')
         self.assertTrue(Language.fromname('English') == Language('eng'))
+        with self.assertRaises(NoConversionError):
+            Language.fromname('Zzzzzzzzz')
 
     def test_converter_opensubtitles(self):
         self.assertTrue(Language('fra').opensubtitles == Language('fra').alpha3b)
         self.assertTrue(Language('por', 'BR').opensubtitles == 'pob')
         self.assertTrue(Language.fromopensubtitles('fre') == Language('fra'))
         self.assertTrue(Language.fromopensubtitles('pob') == Language('por', 'BR'))
+        with self.assertRaises(NoConversionError):
+            Language.fromopensubtitles('zzz')
+        with self.assertRaises(NoConversionError):
+            Language('aaa').opensubtitles
 
     def test_country(self):
         self.assertTrue(Language('por', 'BR').country == Country('BR'))

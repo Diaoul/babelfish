@@ -2,7 +2,7 @@ Exceptions
 ==========
 .. module:: babelfish.exceptions
 
-.. autoclass:: BabelfishError
+.. autoclass:: Error
     :members:
 
 .. autoclass:: NoConversionError

@@ -6,12 +6,12 @@
 #
 
 
-class BabelfishError(Exception):
+class Error(Exception):
     """Base class for all exceptions in babelfish"""
     pass
 
 
-class NoConversionError(BabelfishError):
+class NoConversionError(Error):
     """Raised when no conversion could be done with the
     converter on the given code
 

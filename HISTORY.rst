@@ -1,5 +1,12 @@
-BabelFish Changelog
-===================
+Changelog
+=========
+
+0.1.4
+-----
+**release date:** 2013-10-20
+
+* Fix converters not raising NoConversionError
+
 
 0.1.3
 -----

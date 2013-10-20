@@ -62,13 +62,19 @@ Build your own converter::
                 raise babelfish.NoConversionError
             return (self.from_mycode[mycode], None)
 
-Use it::
+Use it directly::
 
     >>> babelfish.register_converter('mycode', MyCodeConverter)
     >>> babelfish.Language.frommycode('mycode2')
     <Language English>
     >>> babelfish.Language('fra').mycode
     'mycode1'
+
+Or make it available in your application by using the entry point::
+
+    setup([...],
+          entry_points={'babelfish.converters': ['mycode = mymodule.converter:MyCodeConverter']},
+          [...])
 
 
 API Documentation
