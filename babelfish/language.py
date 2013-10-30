@@ -66,13 +66,13 @@ class Language(object):
     def __ne__(self, other):
         return not self == other
 
-    def __unicode__(self):
-        return self.alpha3
-
     def __repr__(self):
+        return '<Language [%s]>' % self
+
+    def __str__(self):
         if self.country is not None:
-            return '<Language [%s-%s]>' % (self.alpha3, self.country.alpha2)
-        return '<Language [%s]>' % self.alpha3
+            return '%s-%s' % (self.alpha3, self.country)
+        return self.alpha3
 
 
 def register_converter(name, converter):

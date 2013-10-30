@@ -46,4 +46,7 @@ class Country(object):
         return not self == other
 
     def __repr__(self):
-        return '<Country [%s]>' % self.alpha2
+        return '<Country [%s]>' % self
+
+    def __str__(self):
+        return self.alpha2
