@@ -55,11 +55,11 @@ Build your own converter::
             self.from_mycode = {'mycode1': 'fra', 'mycode2': 'eng'}
         def convert(self, alpha3, country=None):
             if alpha3 not in self.to_mycode:
-                raise babelfish.NoConversionError
+                raise babelfish.ConvertError
             return self.to_mycode[alpha3]
         def reverse(self, mycode):
             if mycode not in self.from_mycode:
-                raise babelfish.NoConversionError
+                raise babelfish.ReverseError
             return (self.from_mycode[mycode], None)
 
 Use it directly::

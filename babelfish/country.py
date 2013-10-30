@@ -26,7 +26,7 @@ class Country(object):
     """
     def __init__(self, country):
         if country not in COUNTRIES:
-            raise ValueError('{} is not a valid country'.format(country))
+            raise ValueError('%r is not a valid country' % country)
 
         #: ISO-3166 two-letters country code
         self.alpha2 = country
@@ -46,4 +46,4 @@ class Country(object):
         return not self == other
 
     def __repr__(self):
-        return '<Country {}>'.format(self.name)
+        return '<Country [%s]>' % self.alpha2

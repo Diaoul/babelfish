@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.0
+-----
+**release date:** TBA
+
+* More explicit exceptions
+* Change repr format to use ascii only
+
 0.1.5
 -----
 **release date:** 2013-10-21

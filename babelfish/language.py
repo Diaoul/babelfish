@@ -36,7 +36,7 @@ class Language(object):
     """
     def __init__(self, language, country=None):
         if language not in LANGUAGES:
-            raise ValueError('{} is not a valid language'.format(language))
+            raise ValueError('%r is not a valid language' % language)
         self.alpha3 = language
         self.country = None
         if isinstance(country, Country):
@@ -71,8 +71,8 @@ class Language(object):
 
     def __repr__(self):
         if self.country is not None:
-            return '<Language {}, country={}>'.format(self.name, self.country.name)
-        return '<Language {}>'.format(self.name)
+            return '<Language [%s-%s]>' % (self.alpha3, self.country.alpha2)
+        return '<Language [%s]>' % self.alpha3
 
 
 def register_converter(name, converter):
@@ -89,7 +89,7 @@ def register_converter(name, converter):
 
     """
     if name in CONVERTERS:
-        raise ValueError('Converter {} already exists'.format(name))
+        raise ValueError('Converter %r already exists' % name)
     CONVERTERS[name] = converter()
     if isinstance(CONVERTERS[name], ReverseConverter):
         setattr(Language, 'from' + name, partial(Language.fromcode, converter=name))
@@ -103,7 +103,7 @@ def unregister_converter(name):
 
     """
     if name not in CONVERTERS:
-        raise ValueError('Converter {} does not exist'.format(name))
+        raise ValueError('Converter %r does not exist' % name)
     if isinstance(CONVERTERS[name], ReverseConverter):
         delattr(Language, 'from' + name)
     del CONVERTERS[name]

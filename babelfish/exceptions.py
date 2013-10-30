@@ -4,6 +4,7 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
+from __future__ import unicode_literals
 
 
 class Error(Exception):
@@ -11,9 +12,32 @@ class Error(Exception):
     pass
 
 
-class NoConversionError(Error):
-    """Raised when no conversion could be done with the
-    converter on the given code
+class ConvertError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.Converter.convert` fails
+
+    :param string alpha3: alpha3 code that failed conversion
+    :param country: country code that failed conversion, if any
+    :type country: string or None
 
     """
-    pass
+    def __init__(self, alpha3, country):
+        self.alpha3 = alpha3
+        self.country = country
+
+    def __str__(self):
+        if self.country is None:
+            return repr(self.alpha3)
+        return repr(self.alpha3 + '-' + self.country)
+
+
+class ReverseError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.ReverseConverter.reverse` fails
+
+    :param string code: code that failed reverse conversion
+
+    """
+    def __init__(self, code):
+        self.code = code
+
+    def __str__(self):
+        return repr(self.code)

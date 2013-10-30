@@ -7,7 +7,7 @@
 from __future__ import unicode_literals
 from pkg_resources import resource_stream  # @UnresolvedImport
 from . import ReverseConverter
-from ..exceptions import NoConversionError
+from ..exceptions import ConvertError, ReverseError
 
 
 class Alpha2Converter(ReverseConverter):
@@ -26,10 +26,10 @@ class Alpha2Converter(ReverseConverter):
 
     def convert(self, alpha3, country=None):
         if alpha3 not in self.to_alpha2:
-            raise NoConversionError
+            raise ConvertError(alpha3, country)
         return self.to_alpha2[alpha3]
 
     def reverse(self, alpha2):
         if alpha2 not in self.from_alpha2:
-            raise NoConversionError
+            raise ReverseError(alpha2)
         return (self.from_alpha2[alpha2], None)

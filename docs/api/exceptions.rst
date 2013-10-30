@@ -5,5 +5,8 @@ Exceptions
 .. autoclass:: Error
     :members:
 
-.. autoclass:: NoConversionError
+.. autoclass:: ConvertError
+    :members:
+
+.. autoclass:: ReverseError
     :members:

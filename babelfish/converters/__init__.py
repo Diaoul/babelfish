@@ -22,6 +22,7 @@ class Converter(object):
         :type country: string or None
         :return: the corresponding custom code
         :rtype: string
+        :raise: :class:`~babelfish.exceptions.ConvertError`
 
         """
         raise NotImplementedError
@@ -38,6 +39,7 @@ class ReverseConverter(Converter):
         :param string code: custom code to reverse
         :return: the corresponding alpha3 ISO-639-3 language code and alpha2 ISO-3166-1 country code
         :rtype: tuple
+        :raise: :class:`~babelfish.exceptions.ReverseError`
 
         """
         raise NotImplementedError
