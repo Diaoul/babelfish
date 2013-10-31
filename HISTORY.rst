@@ -3,10 +3,12 @@ Changelog
 
 0.2.0
 -----
-**release date:** TBA
+**release date:** 2013-10-31
 
+* Add str method
 * More explicit exceptions
 * Change repr format to use ascii only
+
 
 0.1.5
 -----
