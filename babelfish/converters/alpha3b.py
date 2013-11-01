@@ -15,14 +15,15 @@ class Alpha3BConverter(ReverseConverter):
         self.codes = set()
         self.to_alpha3b = {}
         self.from_alpha3b = {}
-        with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
-            f.readline()
-            for l in f:
-                (alpha3, alpha3b, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
-                if alpha3b != '':
-                    self.codes.add(alpha3b)
-                    self.to_alpha3b[alpha3] = alpha3b
-                    self.from_alpha3b[alpha3b] = alpha3
+        f = resource_stream('babelfish', 'data/iso-639-3.tab')
+        f.readline()
+        for l in f:
+            (alpha3, alpha3b, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
+            if alpha3b != '':
+                self.codes.add(alpha3b)
+                self.to_alpha3b[alpha3] = alpha3b
+                self.from_alpha3b[alpha3b] = alpha3
+        f.close()
 
     def convert(self, alpha3, country=None):
         if alpha3 not in self.to_alpha3b:

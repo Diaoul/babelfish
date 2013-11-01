@@ -13,11 +13,12 @@ from .country import Country
 
 CONVERTERS = {}
 LANGUAGES = set()
-with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
-    f.readline()
-    for l in f:
-        (alpha3, _, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
-        LANGUAGES.add(alpha3)
+f = resource_stream('babelfish', 'data/iso-639-3.tab')
+f.readline()
+for l in f:
+    (alpha3, _, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
+    LANGUAGES.add(alpha3)
+f.close()
 
 
 class Language(object):

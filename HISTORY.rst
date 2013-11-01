@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.2.1
+-----
+**release date:** TBA
+
+* Fix reading of data files
+
+
 0.2.0
 -----
 **release date:** 2013-10-31

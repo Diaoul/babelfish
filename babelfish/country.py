@@ -9,11 +9,12 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 
 
 COUNTRIES = {}
-with resource_stream('babelfish', 'data/iso-3166-1.txt') as f:
-    f.readline()
-    for l in f:
-        (name, alpha2) = l.decode('utf-8').strip().split(';')
-        COUNTRIES[alpha2] = name
+f = resource_stream('babelfish', 'data/iso-3166-1.txt')
+f.readline()
+for l in f:
+    (name, alpha2) = l.decode('utf-8').strip().split(';')
+    COUNTRIES[alpha2] = name
+f.close()
 
 
 class Country(object):
