@@ -3,7 +3,7 @@ Changelog
 
 0.2.1
 -----
-**release date:** TBA
+**release date:** 2013-11-03
 
 * Fix reading of data files
 
