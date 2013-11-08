@@ -7,8 +7,23 @@
 #
 from __future__ import unicode_literals
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
-from babelfish import (LANGUAGES, Language, Country, CONVERTERS, ReverseConverter, load_converters, clear_converters,
-    register_converter, unregister_converter, ConvertError, ReverseError)
+from babelfish import (LANGUAGES, Language, Country, Script, CONVERTERS, ReverseConverter, load_converters,
+    clear_converters, register_converter, unregister_converter, ConvertError, ReverseError)
+
+
+class TestScript(TestCase):
+    def test_wrong_script(self):
+        with self.assertRaises(ValueError):
+            Script('Azer')
+
+    def test_eq(self):
+        self.assertTrue(Script('Latn') == Script('Latn'))
+
+    def test_ne(self):
+        self.assertTrue(Script('Cyrl') != Script('Latn'))
+
+    def test_hash(self):
+        self.assertTrue(hash(Script('Hira')) == hash('Hira'))
 
 
 class TestCountry(TestCase):
@@ -74,24 +89,44 @@ class TestLanguage(TestCase):
             Language('aaa').opensubtitles
         self.assertTrue(len(CONVERTERS['opensubtitles'].codes) == 419)
 
-    def test_country(self):
-        self.assertTrue(Language('por', 'BR').country == Country('BR'))
-        self.assertTrue(Language('eng', Country('US')).country == Country('US'))
-
     def test_eq(self):
         self.assertTrue(Language('eng') == Language('eng'))
-
-    def test_eq_with_country(self):
-        self.assertTrue(Language('eng', 'US') == Language('eng', Country('US')))
 
     def test_ne(self):
         self.assertTrue(Language('fra') != Language('eng'))
 
+    def test_country(self):
+        self.assertTrue(Language('por', 'BR').country == Country('BR'))
+        self.assertTrue(Language('eng', Country('US')).country == Country('US'))
+
+    def test_eq_with_country(self):
+        self.assertTrue(Language('eng', 'US') == Language('eng', Country('US')))
+
     def test_ne_with_country(self):
         self.assertTrue(Language('eng', 'US') != Language('eng', Country('GB')))
 
+    def test_script(self):
+        self.assertTrue(Language('srp', script='Latn').script == Script('Latn'))
+        self.assertTrue(Language('srp', script=Script('Cyrl')).script == Script('Cyrl'))
+
+    def test_eq_with_script(self):
+        self.assertTrue(Language('srp', script='Latn') == Language('srp', script=Script('Latn')))
+
+    def test_ne_with_script(self):
+        self.assertTrue(Language('srp', script='Latn') != Language('srp', script=Script('Cyrl')))
+
+    def test_eq_with_country_and_script(self):
+        self.assertTrue(Language('srp', 'SR', 'Latn') == Language('srp', Country('SR'), Script('Latn')))
+
+    def test_ne_with_country_and_script(self):
+        self.assertTrue(Language('srp', 'SR', 'Latn') != Language('srp', Country('SR'), Script('Cyrl')))
+
     def test_hash(self):
-        self.assertTrue(hash(Language('fra')) == hash('fra'))
+        self.assertTrue(hash(Language('fra')) == hash('fr'))
+        self.assertTrue(hash(Language('ace')) == hash('ace'))
+        self.assertTrue(hash(Language('por', 'BR')) == hash('pt-BR'))
+        self.assertTrue(hash(Language('srp', script='Cyrl')) == hash('sr-Cyrl'))
+        self.assertTrue(hash(Language('eng', 'US', 'Latn')) == hash('en-US-Latn'))
 
     def test_register_converter(self):
         class TestConverter(ReverseConverter):
@@ -99,9 +134,9 @@ class TestLanguage(TestCase):
                 self.to_test = {'fra': 'test1', 'eng': 'test2'}
                 self.from_test = {'test1': 'fra', 'test2': 'eng'}
 
-            def convert(self, alpha3, country=None):
+            def convert(self, alpha3, country=None, script=None):
                 if alpha3 not in self.to_test:
-                    raise ConvertError(alpha3, country)
+                    raise ConvertError(alpha3, country, script)
                 return self.to_test[alpha3]
 
             def reverse(self, test):
@@ -126,6 +161,7 @@ class TestLanguage(TestCase):
 
 def suite():
     suite = TestSuite()
+    suite.addTest(TestLoader().loadTestsFromTestCase(TestScript))
     suite.addTest(TestLoader().loadTestsFromTestCase(TestCountry))
     suite.addTest(TestLoader().loadTestsFromTestCase(TestLanguage))
     return suite

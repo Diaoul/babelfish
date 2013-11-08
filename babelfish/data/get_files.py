@@ -25,3 +25,10 @@ with tempfile.TemporaryFile() as f:
     f.write(r.content)
     with zipfile.ZipFile(f) as z:
         z.extract('iso-639-3.tab', DATA_DIR)
+
+# iso-15924
+with tempfile.TemporaryFile() as f:
+    r = requests.get('http://www.unicode.org/iso15924/iso15924.txt.zip')
+    f.write(r.content)
+    with zipfile.ZipFile(f) as z:
+        z.extract('iso15924-utf8-20121016.txt', DATA_DIR)

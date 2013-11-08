@@ -15,7 +15,7 @@ class OpenSubtitlesConverter(Alpha3BConverter):
         self.to_opensubtitles = {('por', 'BR'): 'pob'}
         self.from_opensubtitles = {'pob': ('por', 'BR')}
 
-    def convert(self, alpha3, country=None):
+    def convert(self, alpha3, country=None, script=None):
         alpha3b = super(OpenSubtitlesConverter, self).convert(alpha3, country)
         if (alpha3b, country) in self.to_opensubtitles:
             return self.to_opensubtitles[(alpha3b, country)]

@@ -10,13 +10,22 @@ Release v\ |version|
 BabelFish is a Python library to work with countries and languages.
 
 
+Script
+------
+Simple script representation from 4-letter code (ISO-15924)::
+
+    >>> script = babelfish.Script('Hira')
+    >>> script
+    <Script [Hira]>
+
+
 Country
 -------
 Simple country representation from 2-letter code (ISO-3166)::
 
     >>> country = babelfish.Country('GB')
     >>> country
-    <Country UNITED KINGDOM>
+    <Country [GB]>
 
 
 Language
@@ -25,13 +34,20 @@ Simple language representation from 3-letter code (ISO-639-3)::
 
     >>> language = babelfish.Language('eng')
     >>> language
-    <Language English>
+    <Language [en]>
 
 Country specific language::
 
     >>> language = babelfish.Language('por', 'BR')
     >>> language
-    <Language Portuguese, country=BRAZIL>
+    <Language [pt-BR]>
+
+Language with specific script::
+
+    >>> language = babelfish.Language.fromalpha2('sr')
+    >>> language.script = babelfish.Script('Cyrl')
+    >>> language
+    <Language [sr-Cyrl]>
 
 Built-in converters (alpha2, alpha3b, name and opensubtitles)::
 
@@ -40,7 +56,7 @@ Built-in converters (alpha2, alpha3b, name and opensubtitles)::
     >>> language.opensubtitles
     'pob'
     >>> babelfish.Language.fromalpha3b('fre')
-    <Language French>
+    <Language [fr]>
 
 
 .. _custom_converters:
@@ -85,6 +101,7 @@ this part of the documentation is for you.
 .. toctree::
     :maxdepth: 2
     
+    api/script
     api/country
     api/language
     api/converter_bases

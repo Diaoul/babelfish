@@ -9,6 +9,8 @@ from functools import partial
 from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
 from .converters import ReverseConverter
 from .country import Country
+from .exceptions import ConvertError
+from .script import Script
 
 
 CONVERTERS = {}
@@ -33,9 +35,11 @@ class Language(object):
     :param string language: the language as a 3-letter ISO-639-3 code
     :param country: the country (if any) as a 2-letter ISO-3166 code or :class:`~babelfish.country.Country` instance
     :type country: string or :class:`~babelfish.country.Country` or None
+    :param script: the script (if any) as a 4-letter ISO-15924 code or :class:`~babelfish.script.Script` instance
+    :type script: string or :class:`~babelfish.script.Script` or None
 
     """
-    def __init__(self, language, country=None):
+    def __init__(self, language, country=None, script=None):
         if language not in LANGUAGES:
             raise ValueError('%r is not a valid language' % language)
         self.alpha3 = language
@@ -46,6 +50,13 @@ class Language(object):
             self.country = None
         else:
             self.country = Country(country)
+        self.script = None
+        if isinstance(script, Script):
+            self.script = script
+        elif script is None:
+            self.script = None
+        else:
+            self.script = Script(script)
 
     @classmethod
     def fromcode(cls, code, converter):
@@ -54,15 +65,14 @@ class Language(object):
     def __getattr__(self, name):
         if name not in CONVERTERS:
             raise AttributeError
-        return CONVERTERS[name].convert(self.alpha3, self.country.alpha2 if self.country is not None else None)
+        return CONVERTERS[name].convert(self.alpha3, self.country.alpha2 if self.country is not None else None,
+                                        self.script.code if self.script is not None else None)
 
     def __hash__(self):
-        if self.country is None:
-            return hash(self.alpha3)
-        return hash(self.alpha3 + '-' + self.country.alpha2)
+        return hash(str(self))
 
     def __eq__(self, other):
-        return self.alpha3 == other.alpha3 and self.country == other.country
+        return self.alpha3 == other.alpha3 and self.country == other.country and self.script == other.script
 
     def __ne__(self, other):
         return not self == other
@@ -71,9 +81,15 @@ class Language(object):
         return '<Language [%s]>' % self
 
     def __str__(self):
+        try:
+            s = self.alpha2
+        except ConvertError:
+            s = self.alpha3
         if self.country is not None:
-            return '%s-%s' % (self.alpha3, self.country)
-        return self.alpha3
+            s += '-' + str(self.country)
+        if self.script is not None:
+            s += '-' + str(self.script)
+        return s
 
 
 def register_converter(name, converter):

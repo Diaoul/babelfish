@@ -24,12 +24,12 @@ class NameConverter(ReverseConverter):
             self.from_name[name] = alpha3
         f.close()
 
-    def convert(self, alpha3, country=None):
+    def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_name:
-            raise ConvertError(alpha3, country)
+            raise ConvertError(alpha3, country, script)
         return self.to_name[alpha3]
 
     def reverse(self, name):
         if name not in self.from_name:
             raise ReverseError(name)
-        return (self.from_name[name], None)
+        return (self.from_name[name],)

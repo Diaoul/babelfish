@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='babelfish',
-    version='0.2.1',
+    version='0.3.0-dev',
     license='BSD',
     description='A module to work with countries and languages',
     long_description=open('README.rst').read() + '\n\n' + open('HISTORY.rst').read(),
@@ -18,7 +18,7 @@ setup(name='babelfish',
     author='Antoine Bertin',
     author_email='diaoulael@gmail.com',
     packages=find_packages(),
-    package_data={'babelfish': ['data/iso-639-3.tab', 'data/iso-3166-1.txt']},
+    package_data={'babelfish': ['data/iso-639-3.tab', 'data/iso-3166-1.txt', 'data/iso15924-utf8-20121016.txt']},
     classifiers=['Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',

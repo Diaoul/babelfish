@@ -25,12 +25,12 @@ class Alpha3BConverter(ReverseConverter):
                 self.from_alpha3b[alpha3b] = alpha3
         f.close()
 
-    def convert(self, alpha3, country=None):
+    def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_alpha3b:
-            raise ConvertError(alpha3, country)
+            raise ConvertError(alpha3, country, script)
         return self.to_alpha3b[alpha3]
 
     def reverse(self, alpha3b):
         if alpha3b not in self.from_alpha3b:
             raise ReverseError(alpha3b)
-        return (self.from_alpha3b[alpha3b], None)
+        return (self.from_alpha3b[alpha3b],)

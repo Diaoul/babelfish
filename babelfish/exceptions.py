@@ -18,16 +18,22 @@ class ConvertError(Error):
     :param string alpha3: alpha3 code that failed conversion
     :param country: country code that failed conversion, if any
     :type country: string or None
+    :param script: script code that failed conversion, if any
+    :type script: string or None
 
     """
-    def __init__(self, alpha3, country):
+    def __init__(self, alpha3, country=None, script=None):
         self.alpha3 = alpha3
         self.country = country
+        self.script = script
 
     def __str__(self):
-        if self.country is None:
-            return repr(self.alpha3)
-        return repr(self.alpha3 + '-' + self.country)
+        s = self.alpha3
+        if self.country is not None:
+            s += '-' + self.country
+        if self.script is not None:
+            s += '-' + self.script
+        return s
 
 
 class ReverseError(Error):
