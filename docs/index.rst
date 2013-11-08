@@ -12,7 +12,7 @@ BabelFish is a Python library to work with countries and languages.
 
 Country
 -------
-Simple country representation from two-letters code (ISO-3166)::
+Simple country representation from 2-letter code (ISO-3166)::
 
     >>> country = babelfish.Country('GB')
     >>> country
@@ -21,7 +21,7 @@ Simple country representation from two-letters code (ISO-3166)::
 
 Language
 --------
-Simple language representation from three-letters code (ISO-639-3)::
+Simple language representation from 3-letter code (ISO-639-3)::
 
     >>> language = babelfish.Language('eng')
     >>> language

@@ -20,16 +20,16 @@ f.close()
 class Country(object):
     """A country on Earth
 
-    A country is represented by a two-letters code from the ISO-3166 standard
+    A country is represented by a 2-letter code from the ISO-3166 standard
 
-    :param string country: two-letters ISO-3166 country code
+    :param string country: 2-letter ISO-3166 country code
 
     """
     def __init__(self, country):
         if country not in COUNTRIES:
             raise ValueError('%r is not a valid country' % country)
 
-        #: ISO-3166 two-letters country code
+        #: ISO-3166 2-letter country code
         self.alpha2 = country
 
     @property

@@ -4,7 +4,7 @@ Language
 
 .. data:: LANGUAGES
 
-    Set of ISO-639-3 three-letters code
+    Set of ISO-639-3 3-letter code
 
 .. autoclass:: Language
 

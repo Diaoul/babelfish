@@ -30,8 +30,8 @@ class Language(object):
 
     The :class:`Language` is extensible with custom converters (see :ref:`custom_converters`)
 
-    :param string language: the language as a three-letters ISO-639-3 code
-    :param country: the country (if any) as a two-letters ISO-3166 code or :class:`~babelfish.country.Country` instance
+    :param string language: the language as a 3-letter ISO-639-3 code
+    :param country: the country (if any) as a 2-letter ISO-3166 code or :class:`~babelfish.country.Country` instance
     :type country: string or :class:`~babelfish.country.Country` or None
 
     """
