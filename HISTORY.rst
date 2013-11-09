@@ -3,7 +3,7 @@ Changelog
 
 0.3.0
 -----
-**release date:** TBA
+**release date:** 2013-11-09
 
 * Add support for scripts
 * Improve built-in converters
