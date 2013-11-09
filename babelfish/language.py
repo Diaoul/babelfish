@@ -62,6 +62,26 @@ class Language(object):
     def fromcode(cls, code, converter):
         return cls(*CONVERTERS[converter].reverse(code))
 
+    @classmethod
+    def fromietf(cls, ietf):
+        subtags = ietf.split('-')
+        language_subtag = subtags.pop(0).lower()
+        if len(language_subtag) == 2:
+            language = cls.fromalpha2(language_subtag)
+        else:
+            language = cls(language_subtag)
+        while subtags:
+            subtag = subtags.pop(0)
+            if len(subtag) == 2:
+                language.country = Country(subtag.upper())
+            else:
+                language.script = Script(subtag.capitalize())
+            if language.script is not None:
+                if subtags:
+                    raise ValueError('Wrong IETF format. Unmatched subtags: %r' % subtags)
+                break
+        return language
+
     def __getattr__(self, name):
         if name not in CONVERTERS:
             raise AttributeError

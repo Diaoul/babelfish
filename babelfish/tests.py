@@ -89,6 +89,48 @@ class TestLanguage(TestCase):
             Language('aaa').opensubtitles
         self.assertTrue(len(CONVERTERS['opensubtitles'].codes) == 419)
 
+    def test_fromietf_country_script(self):
+        language = Language.fromietf('fra-FR-Latn')
+        self.assertTrue(language.alpha3 == 'fra')
+        self.assertTrue(language.country == Country('FR'))
+        self.assertTrue(language.script == Script('Latn'))
+
+    def test_fromietf_country_no_script(self):
+        language = Language.fromietf('fra-FR')
+        self.assertTrue(language.alpha3 == 'fra')
+        self.assertTrue(language.country == Country('FR'))
+        self.assertTrue(language.script is None)
+
+    def test_fromietf_no_country_no_script(self):
+        language = Language.fromietf('fra-FR')
+        self.assertTrue(language.alpha3 == 'fra')
+        self.assertTrue(language.country == Country('FR'))
+        self.assertTrue(language.script is None)
+
+    def test_fromietf_no_country_script(self):
+        language = Language.fromietf('fra-Latn')
+        self.assertTrue(language.alpha3 == 'fra')
+        self.assertTrue(language.country is None)
+        self.assertTrue(language.script == Script('Latn'))
+
+    def test_fromietf_alpha2_language(self):
+        language = Language.fromietf('fr-Latn')
+        self.assertTrue(language.alpha3 == 'fra')
+        self.assertTrue(language.country is None)
+        self.assertTrue(language.script == Script('Latn'))
+
+    def test_fromietf_wrong_language(self):
+        with self.assertRaises(ValueError):
+            Language.fromietf('xyz-FR')
+
+    def test_fromietf_wrong_country(self):
+        with self.assertRaises(ValueError):
+            Language.fromietf('fra-YZ')
+
+    def test_fromietf_wrong_script(self):
+        with self.assertRaises(ValueError):
+            Language.fromietf('fra-FR-Wxyz')
+
     def test_eq(self):
         self.assertTrue(Language('eng') == Language('eng'))
 
@@ -127,6 +169,11 @@ class TestLanguage(TestCase):
         self.assertTrue(hash(Language('por', 'BR')) == hash('pt-BR'))
         self.assertTrue(hash(Language('srp', script='Cyrl')) == hash('sr-Cyrl'))
         self.assertTrue(hash(Language('eng', 'US', 'Latn')) == hash('en-US-Latn'))
+
+    def test_str(self):
+        self.assertTrue(Language.fromietf(str(Language('eng', 'US', 'Latn'))) == Language('eng', 'US', 'Latn'))
+        self.assertTrue(Language.fromietf(str(Language('fra', 'FR'))) == Language('fra', 'FR'))
+        self.assertTrue(Language.fromietf(str(Language('bel'))) == Language('bel'))
 
     def test_register_converter(self):
         class TestConverter(ReverseConverter):
