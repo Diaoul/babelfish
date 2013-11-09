@@ -69,20 +69,20 @@ Build your own converter::
         def __init__(self):
             self.to_mycode = {'fra': 'mycode1', 'eng': 'mycode2'}
             self.from_mycode = {'mycode1': 'fra', 'mycode2': 'eng'}
-        def convert(self, alpha3, country=None):
+        def convert(self, alpha3, country=None, script=None):
             if alpha3 not in self.to_mycode:
-                raise babelfish.ConvertError
+                raise babelfish.ConvertError(alpha3, country, script)
             return self.to_mycode[alpha3]
         def reverse(self, mycode):
             if mycode not in self.from_mycode:
-                raise babelfish.ReverseError
-            return (self.from_mycode[mycode], None)
+                raise babelfish.ReverseError(mycode)
+            return (self.from_mycode[mycode],)
 
 Use it directly::
 
     >>> babelfish.register_converter('mycode', MyCodeConverter)
     >>> babelfish.Language.frommycode('mycode2')
-    <Language English>
+    <Language [en]>
     >>> babelfish.Language('fra').mycode
     'mycode1'
 
