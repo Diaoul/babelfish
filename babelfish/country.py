@@ -51,6 +51,8 @@ class Country(object):
         return hash(self.alpha2)
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.alpha2 == other.alpha2
 
     def __ne__(self, other):

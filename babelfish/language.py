@@ -100,6 +100,8 @@ class Language(object):
         return hash(str(self))
 
     def __eq__(self, other):
+        if other is None:
+            return False
         return self.alpha3 == other.alpha3 and self.country == other.country and self.script == other.script
 
     def __ne__(self, other):

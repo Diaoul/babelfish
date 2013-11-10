@@ -14,11 +14,11 @@ class NameConverter(LanguageReverseConverter):
     def __init__(self):
         self.codes = set()
         self.to_name = {}
-        self.from_name = {}
+        self.from_lower = {}
         for alpha3, alpha3b, alpha2, name in LANGUAGE_MATRIX:
             self.codes.add(name)
             self.to_name[alpha3] = name
-            self.from_name[name] = alpha3
+            self.from_lower[name.lower()] = alpha3
 
     def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_name:
@@ -26,6 +26,7 @@ class NameConverter(LanguageReverseConverter):
         return self.to_name[alpha3]
 
     def reverse(self, name):
-        if name not in self.from_name:
+        lname = name.lower()
+        if lname not in self.from_lower:
             raise LanguageReverseError(name)
-        return (self.from_name[name],)
+        return (self.from_lower[lname],)

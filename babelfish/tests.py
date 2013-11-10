@@ -38,6 +38,7 @@ class TestCountry(TestCase):
 
     def test_ne(self):
         self.assertTrue(Country('GB') != Country('US'))
+        self.assertNotEqual(Country('US'), None)
 
     def test_hash(self):
         self.assertTrue(hash(Country('US')) == hash('US'))
@@ -145,6 +146,7 @@ class TestLanguage(TestCase):
 
     def test_ne(self):
         self.assertTrue(Language('fra') != Language('eng'))
+        self.assertNotEqual(Language('fra'), None)
 
     def test_nonzero(self):
         self.assertTrue(bool(Language('und')) is False)
