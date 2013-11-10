@@ -107,8 +107,9 @@ class Language(object):
     def __ne__(self, other):
         return not self == other
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.alpha3 != 'und'
+    __nonzero__ = __bool__
 
     def __repr__(self):
         return '<Language [%s]>' % self
