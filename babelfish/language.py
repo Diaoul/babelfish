@@ -37,9 +37,14 @@ class Language(object):
     :type country: string or :class:`~babelfish.country.Country` or None
     :param script: the script (if any) as a 4-letter ISO-15924 code or :class:`~babelfish.script.Script` instance
     :type script: string or :class:`~babelfish.script.Script` or None
-
+    :param string unknown: the language as a three-letters ISO-639-3 code
+    to be used if the given language could not be recognized as a valid
+    language. If None (default) and a language can not be recognized,
+    this will raise a ``ValueError`` exception.
     """
-    def __init__(self, language, country=None, script=None):
+    def __init__(self, language, country=None, script=None, unknown=None):
+        if unknown is not None and language not in LANGUAGES:
+            language = unknown
         if language not in LANGUAGES:
             raise ValueError('%r is not a valid language' % language)
         self.alpha3 = language
