@@ -15,11 +15,14 @@ from .script import Script
 
 CONVERTERS = {}
 LANGUAGES = set()
+LANGUAGE_MATRIX = []
+
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
-    (alpha3, _, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
+    (alpha3, alpha3b, _, alpha2, _, _, name, _) = l.decode('utf-8').split('\t')
     LANGUAGES.add(alpha3)
+    LANGUAGE_MATRIX.append((alpha3, alpha3b, alpha2, name))
 f.close()
 
 

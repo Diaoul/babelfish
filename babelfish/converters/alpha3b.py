@@ -5,9 +5,9 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from pkg_resources import resource_stream  # @UnresolvedImport
 from . import ReverseConverter
 from ..exceptions import ConvertError, ReverseError
+from ..language import LANGUAGE_MATRIX
 
 
 class Alpha3BConverter(ReverseConverter):
@@ -15,15 +15,11 @@ class Alpha3BConverter(ReverseConverter):
         self.codes = set()
         self.to_alpha3b = {}
         self.from_alpha3b = {}
-        f = resource_stream('babelfish', 'data/iso-639-3.tab')
-        f.readline()
-        for l in f:
-            (alpha3, alpha3b, _, _, _, _, _, _) = l.decode('utf-8').split('\t')
+        for alpha3, alpha3b, alpha2, name in LANGUAGE_MATRIX:
             if alpha3b != '':
                 self.codes.add(alpha3b)
                 self.to_alpha3b[alpha3] = alpha3b
                 self.from_alpha3b[alpha3b] = alpha3
-        f.close()
 
     def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_alpha3b:
