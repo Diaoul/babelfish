@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4.0
+-----
+**release date:** unreleased
+
+* Added converter support for Country
+* Language/country reverse name detection is now case-insensitive
+
+
 0.3.0
 -----
 **release date:** 2013-11-09
