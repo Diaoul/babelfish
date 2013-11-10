@@ -7,8 +7,10 @@
 #
 from __future__ import unicode_literals
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
-from babelfish import (LANGUAGES, Language, Country, Script, CONVERTERS, ReverseConverter, load_converters,
-    clear_converters, register_converter, unregister_converter, ConvertError, ReverseError)
+from babelfish import (LANGUAGES, Language, Country, Script, LANGUAGE_CONVERTERS, LanguageReverseConverter,
+                       load_language_converters, clear_language_converters,
+                       register_language_converter, unregister_language_converter,
+                       LanguageConvertError, LanguageReverseError)
 
 
 class TestScript(TestCase):
@@ -40,6 +42,10 @@ class TestCountry(TestCase):
     def test_hash(self):
         self.assertTrue(hash(Country('US')) == hash('US'))
 
+    def test_name(self):
+        self.assertEqual(Country('US').name, 'UNITED STATES')
+        self.assertEqual(Country('FR').name, 'FRANCE')
+
 
 class TestLanguage(TestCase):
     def test_languages(self):
@@ -49,33 +55,36 @@ class TestLanguage(TestCase):
         with self.assertRaises(ValueError):
             Language('zzz')
 
+    def test_unknown_language(self):
+        self.assertEqual(Language('zzzz', unknown='und'), Language('und'))
+
     def test_converter_alpha2(self):
         self.assertTrue(Language('eng').alpha2 == 'en')
         self.assertTrue(Language.fromalpha2('en') == Language('eng'))
         self.assertTrue(Language.fromcode('en', 'alpha2') == Language('eng'))
-        with self.assertRaises(ReverseError):
+        with self.assertRaises(LanguageReverseError):
             Language.fromalpha2('zz')
-        with self.assertRaises(ConvertError):
+        with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha2
-        self.assertTrue(len(CONVERTERS['alpha2'].codes) == 184)
+        self.assertTrue(len(LANGUAGE_CONVERTERS['alpha2'].codes) == 184)
 
     def test_converter_alpha3b(self):
         self.assertTrue(Language('fra').alpha3b == 'fre')
         self.assertTrue(Language.fromalpha3b('fre') == Language('fra'))
         self.assertTrue(Language.fromcode('fre', 'alpha3b') == Language('fra'))
-        with self.assertRaises(ReverseError):
+        with self.assertRaises(LanguageReverseError):
             Language.fromalpha3b('zzz')
-        with self.assertRaises(ConvertError):
+        with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha3b
-        self.assertTrue(len(CONVERTERS['alpha3b'].codes) == 418)
+        self.assertTrue(len(LANGUAGE_CONVERTERS['alpha3b'].codes) == 418)
 
     def test_converter_name(self):
         self.assertTrue(Language('eng').name == 'English')
         self.assertTrue(Language.fromname('English') == Language('eng'))
         self.assertTrue(Language.fromcode('English', 'name') == Language('eng'))
-        with self.assertRaises(ReverseError):
+        with self.assertRaises(LanguageReverseError):
             Language.fromname('Zzzzzzzzz')
-        self.assertTrue(len(CONVERTERS['name'].codes) == 7874)
+        self.assertTrue(len(LANGUAGE_CONVERTERS['name'].codes) == 7874)
 
     def test_converter_opensubtitles(self):
         self.assertTrue(Language('fra').opensubtitles == Language('fra').alpha3b)
@@ -83,11 +92,11 @@ class TestLanguage(TestCase):
         self.assertTrue(Language.fromopensubtitles('fre') == Language('fra'))
         self.assertTrue(Language.fromopensubtitles('pob') == Language('por', 'BR'))
         self.assertTrue(Language.fromcode('pob', 'opensubtitles') == Language('por', 'BR'))
-        with self.assertRaises(ReverseError):
+        with self.assertRaises(LanguageReverseError):
             Language.fromopensubtitles('zzz')
-        with self.assertRaises(ConvertError):
+        with self.assertRaises(LanguageConvertError):
             Language('aaa').opensubtitles
-        self.assertTrue(len(CONVERTERS['opensubtitles'].codes) == 419)
+        self.assertTrue(len(LANGUAGE_CONVERTERS['opensubtitles'].codes) == 419)
 
     def test_fromietf_country_script(self):
         language = Language.fromietf('fra-FR-Latn')
@@ -180,34 +189,34 @@ class TestLanguage(TestCase):
         self.assertTrue(Language.fromietf(str(Language('bel'))) == Language('bel'))
 
     def test_register_converter(self):
-        class TestConverter(ReverseConverter):
+        class TestConverter(LanguageReverseConverter):
             def __init__(self):
                 self.to_test = {'fra': 'test1', 'eng': 'test2'}
                 self.from_test = {'test1': 'fra', 'test2': 'eng'}
 
             def convert(self, alpha3, country=None, script=None):
                 if alpha3 not in self.to_test:
-                    raise ConvertError(alpha3, country, script)
+                    raise LanguageConvertError(alpha3, country, script)
                 return self.to_test[alpha3]
 
             def reverse(self, test):
                 if test not in self.from_test:
-                    raise ReverseError(test)
+                    raise LanguageReverseError(test)
                 return (self.from_test[test], None)
         language = Language('fra')
         self.assertTrue(not hasattr(language, 'test'))
-        register_converter('test', TestConverter)
+        register_language_converter('test', TestConverter)
         self.assertTrue(hasattr(language, 'test'))
-        self.assertTrue('test' in CONVERTERS)
+        self.assertTrue('test' in LANGUAGE_CONVERTERS)
         self.assertTrue(Language('fra').test == 'test1')
         self.assertTrue(Language.fromtest('test2').alpha3 == 'eng')
-        unregister_converter('test')
-        self.assertTrue('test' not in CONVERTERS)
+        unregister_language_converter('test')
+        self.assertTrue('test' not in LANGUAGE_CONVERTERS)
         self.assertTrue(not hasattr(Language, 'fromtest'))
         with self.assertRaises(AttributeError):
             Language('fra').test
-        clear_converters()
-        load_converters()
+        clear_language_converters()
+        load_language_converters()
 
 
 def suite():

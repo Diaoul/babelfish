@@ -2,8 +2,14 @@ Converter Bases
 ===============
 .. module:: babelfish.converters
 
-.. autoclass:: Converter
+.. autoclass:: LanguageConverter
     :members:
 
-.. autoclass:: ReverseConverter
+.. autoclass:: LanguageReverseConverter
+    :members:
+
+.. autoclass:: CountryConverter
+    :members:
+
+.. autoclass:: CountryReverseConverter
     :members:

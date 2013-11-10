@@ -63,24 +63,24 @@ Built-in converters (alpha2, alpha3b, name and opensubtitles)::
 
 Custom Converters
 -----------------
-Build your own converter::
+Build your own Language/Country converter::
 
-    class MyCodeConverter(babelfish.ReverseConverter):
+    class MyCodeConverter(babelfish.LanguageReverseConverter):
         def __init__(self):
             self.to_mycode = {'fra': 'mycode1', 'eng': 'mycode2'}
             self.from_mycode = {'mycode1': 'fra', 'mycode2': 'eng'}
         def convert(self, alpha3, country=None, script=None):
             if alpha3 not in self.to_mycode:
-                raise babelfish.ConvertError(alpha3, country, script)
+                raise babelfish.LanguageConvertError(alpha3, country, script)
             return self.to_mycode[alpha3]
         def reverse(self, mycode):
             if mycode not in self.from_mycode:
-                raise babelfish.ReverseError(mycode)
+                raise babelfish.LanguageReverseError(mycode)
             return (self.from_mycode[mycode],)
 
 Use it directly::
 
-    >>> babelfish.register_converter('mycode', MyCodeConverter)
+    >>> babelfish.register_language_converter('mycode', MyCodeConverter)
     >>> babelfish.Language.frommycode('mycode2')
     <Language [en]>
     >>> babelfish.Language('fra').mycode
@@ -89,7 +89,7 @@ Use it directly::
 Or make it available in your application by using the entry point::
 
     setup([...],
-          entry_points={'babelfish.converters': ['mycode = mymodule.converter:MyCodeConverter']},
+          entry_points={'babelfish.language_converters': ['mycode = mymodule.converter:MyCodeConverter']},
           [...])
 
 
@@ -100,7 +100,7 @@ this part of the documentation is for you.
 
 .. toctree::
     :maxdepth: 2
-    
+
     api/script
     api/country
     api/language

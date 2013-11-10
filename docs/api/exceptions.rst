@@ -5,8 +5,14 @@ Exceptions
 .. autoclass:: Error
     :members:
 
-.. autoclass:: ConvertError
+.. autoclass:: LanguageConvertError
     :members:
 
-.. autoclass:: ReverseError
+.. autoclass:: LanguageReverseError
+    :members:
+
+.. autoclass:: CountryConvertError
+    :members:
+
+.. autoclass:: CountryReverseError
     :members:

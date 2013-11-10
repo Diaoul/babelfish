@@ -12,8 +12,8 @@ class Error(Exception):
     pass
 
 
-class ConvertError(Error):
-    """Exception raised by converters when :meth:`~babelfish.converters.Converter.convert` fails
+class LanguageConvertError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.LanguageConverter.convert` fails
 
     :param string alpha3: alpha3 code that failed conversion
     :param country: country code that failed conversion, if any
@@ -36,8 +36,34 @@ class ConvertError(Error):
         return s
 
 
-class ReverseError(Error):
-    """Exception raised by converters when :meth:`~babelfish.converters.ReverseConverter.reverse` fails
+class LanguageReverseError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.LanguageReverseConverter.reverse` fails
+
+    :param string code: code that failed reverse conversion
+
+    """
+    def __init__(self, code):
+        self.code = code
+
+    def __str__(self):
+        return repr(self.code)
+
+
+class CountryConvertError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.CountryConverter.convert` fails
+
+    :param string alpha2: alpha2 code that failed conversion
+
+    """
+    def __init__(self, alpha2):
+        self.alpha2 = alpha2
+
+    def __str__(self):
+        return self.alpha2
+
+
+class CountryReverseError(Error):
+    """Exception raised by converters when :meth:`~babelfish.converters.CountryReverseConverter.reverse` fails
 
     :param string code: code that failed reverse conversion
 

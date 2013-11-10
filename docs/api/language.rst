@@ -8,11 +8,15 @@ Language
 
 .. autoclass:: Language
 
-.. data:: CONVERTERS
+.. data:: LANGUAGE_CONVERTERS
 
     Registered converters
 
-.. autofunction:: register_converter
-.. autofunction:: unregister_converter
-.. autofunction:: load_converters
-.. autofunction:: clear_converters
+.. data:: LANGUAGE_MATRIX
+
+    Matrix of tuple (alpha3, alpha3b, alpha2, name) as specified by ISO standard
+
+.. autofunction:: register_language_converter
+.. autofunction:: unregister_language_converter
+.. autofunction:: load_language_converters
+.. autofunction:: clear_language_converters

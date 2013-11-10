@@ -5,12 +5,12 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from . import ReverseConverter
-from ..exceptions import ConvertError, ReverseError
+from . import LanguageReverseConverter
+from ..exceptions import LanguageConvertError, LanguageReverseError
 from ..language import LANGUAGE_MATRIX
 
 
-class Alpha3BConverter(ReverseConverter):
+class Alpha3BConverter(LanguageReverseConverter):
     def __init__(self):
         self.codes = set()
         self.to_alpha3b = {}
@@ -23,10 +23,10 @@ class Alpha3BConverter(ReverseConverter):
 
     def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_alpha3b:
-            raise ConvertError(alpha3, country, script)
+            raise LanguageConvertError(alpha3, country, script)
         return self.to_alpha3b[alpha3]
 
     def reverse(self, alpha3b):
         if alpha3b not in self.from_alpha3b:
-            raise ReverseError(alpha3b)
+            raise LanguageReverseError(alpha3b)
         return (self.from_alpha3b[alpha3b],)

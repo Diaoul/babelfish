@@ -5,12 +5,12 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from . import ReverseConverter
-from ..exceptions import ConvertError, ReverseError
+from . import LanguageReverseConverter
+from ..exceptions import LanguageConvertError, LanguageReverseError
 from ..language import LANGUAGE_MATRIX
 
 
-class NameConverter(ReverseConverter):
+class NameConverter(LanguageReverseConverter):
     def __init__(self):
         self.codes = set()
         self.to_name = {}
@@ -22,10 +22,10 @@ class NameConverter(ReverseConverter):
 
     def convert(self, alpha3, country=None, script=None):
         if alpha3 not in self.to_name:
-            raise ConvertError(alpha3, country, script)
+            raise LanguageConvertError(alpha3, country, script)
         return self.to_name[alpha3]
 
     def reverse(self, name):
         if name not in self.from_name:
-            raise ReverseError(name)
+            raise LanguageReverseError(name)
         return (self.from_name[name],)
