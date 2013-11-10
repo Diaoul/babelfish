@@ -137,6 +137,10 @@ class TestLanguage(TestCase):
     def test_ne(self):
         self.assertTrue(Language('fra') != Language('eng'))
 
+    def test_nonzero(self):
+        self.assertTrue(bool(Language('und')) is False)
+        self.assertTrue(bool(Language('eng')) is True)
+
     def test_country(self):
         self.assertTrue(Language('por', 'BR').country == Country('BR'))
         self.assertTrue(Language('eng', Country('US')).country == Country('US'))
