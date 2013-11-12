@@ -20,9 +20,13 @@ LANGUAGE_MATRIX = []
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
-    (alpha3, alpha3b, _, alpha2, _, _, name, _) = l.decode('utf-8').split('\t')
+    # format can be seen here: http://www-01.sil.org/iso639-3/download.asp
+    (alpha3, alpha3b, alpha3t, alpha2,
+     scope, ltype, name, comment) = l.decode('utf-8').split('\t')
+
     LANGUAGES.add(alpha3)
-    LANGUAGE_MATRIX.append((alpha3, alpha3b, alpha2, name))
+    LANGUAGE_MATRIX.append((alpha3, alpha3b, alpha3t, alpha2,
+                            scope, ltype, name, comment))
 f.close()
 
 

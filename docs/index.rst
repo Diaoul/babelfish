@@ -78,6 +78,13 @@ Build your own Language/Country converter::
                 raise babelfish.LanguageReverseError(mycode)
             return (self.from_mycode[mycode],)
 
+You can also use the :class:`LanguageEquivalenceConverter`
+utility class if your mapping is a simple one-to-one mapping::
+
+    class MyCodeConverter(LanguageEquivalenceConverter):
+        SYMBOLS = { 'fra': 'mycode1',
+                    'eng': 'mycode2' }
+
 Use it directly::
 
     >>> babelfish.register_language_converter('mycode', MyCodeConverter)

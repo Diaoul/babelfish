@@ -5,27 +5,11 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from . import LanguageReverseConverter
-from ..exceptions import LanguageConvertError, LanguageReverseError
+from . import LanguageEquivalenceConverter
 from ..language import LANGUAGE_MATRIX
 
-class Alpha2Converter(LanguageReverseConverter):
-    def __init__(self):
-        self.codes = set()
-        self.to_alpha2 = {}
-        self.from_alpha2 = {}
-        for alpha3, alpha3b, alpha2, name in LANGUAGE_MATRIX:
-            if alpha2 != '':
-                self.codes.add(alpha2)
-                self.to_alpha2[alpha3] = alpha2
-                self.from_alpha2[alpha2] = alpha3
-
-    def convert(self, alpha3, country=None, script=None):
-        if alpha3 not in self.to_alpha2:
-            raise LanguageConvertError(alpha3, country, script)
-        return self.to_alpha2[alpha3]
-
-    def reverse(self, alpha2):
-        if alpha2 not in self.from_alpha2:
-            raise LanguageReverseError(alpha2)
-        return (self.from_alpha2[alpha2],)
+class Alpha2Converter(LanguageEquivalenceConverter):
+    CASE_SENSITIVE = True
+    SYMBOLS = { alpha3: alpha2
+                for (alpha3, _, _, alpha2, _, _, _, _) in LANGUAGE_MATRIX
+                if alpha2 }

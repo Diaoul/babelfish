@@ -87,6 +87,17 @@ class TestLanguage(TestCase):
             Language.fromname('Zzzzzzzzz')
         self.assertTrue(len(LANGUAGE_CONVERTERS['name'].codes) == 7874)
 
+    def test_converter_scope(self):
+        self.assertEqual(LANGUAGE_CONVERTERS['scope'].codes, {'I', 'S', 'M'})
+        self.assertEqual(Language('eng').scope, 'individual')
+        self.assertEqual(Language('und').scope, 'special')
+
+    def test_converter_language_type(self):
+        self.assertEqual(LANGUAGE_CONVERTERS['type'].codes, {'A', 'C', 'E',
+                                                              'H', 'L', 'S'})
+        self.assertEqual(Language('eng').type, 'living')
+        self.assertEqual(Language('und').type, 'special')
+
     def test_converter_opensubtitles(self):
         self.assertTrue(Language('fra').opensubtitles == Language('fra').alpha3b)
         self.assertTrue(Language('por', 'BR').opensubtitles == 'pob')
