@@ -22,13 +22,9 @@ class CaseInsensitiveDict(collections.MutableMapping):
     testing is case insensitive:
 
         cid = CaseInsensitiveDict()
-        cid['Accept'] = 'application/json'
-        cid['aCCEPT'] == 'application/json'  # True
-        list(cid) == ['Accept']  # True
-
-    For example, ``headers['content-encoding']`` will return the
-    value of a ``'Content-Encoding'`` response header, regardless
-    of how the header name was originally stored.
+        cid['English'] = 'eng'
+        cid['ENGLISH'] == 'eng'  # True
+        list(cid) == ['English']  # True
 
     If the constructor, ``.update``, or equality comparison
     operations are given keys that have equal ``.lower()``s, the
@@ -82,7 +78,6 @@ class CaseInsensitiveDict(collections.MutableMapping):
         return '%s(%r)' % (self.__class__.__name__, dict(self.items()))
 
 
-
 class LanguageConverter(object):
     """A :class:`LanguageConverter` supports converting an alpha3 language code with an
     alpha2 country code and a script code into a custom code
@@ -125,6 +120,7 @@ class LanguageReverseConverter(LanguageConverter):
         """
         raise NotImplementedError
 
+
 class LanguageEquivalenceConverter(LanguageReverseConverter):
     """A :class:`LanguageEquivalenceConverter` is a utility class that allows you
     to easily define a LanguageReverseConverter by only specifying the dict
@@ -133,7 +129,7 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
     You should specify the dict of equivalence as a class variable named SYMBOLS.
 
     if you also define the class variable CASE_SENSITIVE = True then the reverse
-    conversion function will be case-sensitive (False by default).
+    conversion function will be case-sensitive (it is case-insensitive by default).
 
     example:
 
