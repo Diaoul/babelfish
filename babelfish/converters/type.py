@@ -5,9 +5,9 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+from ..language import LANGUAGE_MATRIX
 from ..exceptions import LanguageConvertError
 from . import LanguageConverter
-from ..language import LANGUAGE_MATRIX
 
 class LanguageTypeConverter(LanguageConverter):
     FULLNAME = { 'A': 'ancient',
@@ -17,8 +17,8 @@ class LanguageTypeConverter(LanguageConverter):
                  'L': 'living',
                  'S': 'special'
     }
-    SYMBOLS = { alpha3: ltype
-                for (alpha3, _, _, _, _, ltype, _, _) in LANGUAGE_MATRIX }
+    SYMBOLS = { lang.alpha3: lang.ltype
+                for lang in LANGUAGE_MATRIX }
     codes = set(SYMBOLS.values())
 
     def convert(self, alpha3, country=None, script=None):

@@ -15,10 +15,10 @@ class CountryNameConverter(CountryReverseConverter):
         self.codes = set()
         self.to_name = {}
         self.from_lower = {}
-        for alpha2, name in COUNTRY_MATRIX:
-            self.codes.add(name)
-            self.to_name[alpha2] = name
-            self.from_lower[name.lower()] = alpha2
+        for country in COUNTRY_MATRIX:
+            self.codes.add(country.name)
+            self.to_name[country.alpha2] = country.name
+            self.from_lower[country.name.lower()] = country.alpha2
 
     def convert(self, alpha2):
         if alpha2 not in self.to_name:

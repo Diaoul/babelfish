@@ -6,6 +6,7 @@
 #
 from __future__ import unicode_literals
 from functools import partial
+from collections import namedtuple
 from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
 from .converters import LanguageReverseConverter
 from .country import Country
@@ -17,16 +18,17 @@ LANGUAGE_CONVERTERS = {}
 LANGUAGES = set()
 LANGUAGE_MATRIX = []
 
+# format can be seen here: http://www-01.sil.org/iso639-3/download.asp
+IsoLanguage = namedtuple('IsoLanguage',
+                         ['alpha3', 'alpha3b', 'alpha3t', 'alpha2',
+                          'scope', 'ltype', 'name', 'comment'])
+
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
-    # format can be seen here: http://www-01.sil.org/iso639-3/download.asp
-    (alpha3, alpha3b, alpha3t, alpha2,
-     scope, ltype, name, comment) = l.decode('utf-8').split('\t')
-
-    LANGUAGES.add(alpha3)
-    LANGUAGE_MATRIX.append((alpha3, alpha3b, alpha3t, alpha2,
-                            scope, ltype, name, comment))
+    isolang = IsoLanguage._make(l.decode('utf-8').split('\t'))
+    LANGUAGES.add(isolang.alpha3)
+    LANGUAGE_MATRIX.append(isolang)
 f.close()
 
 

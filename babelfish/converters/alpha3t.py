@@ -10,6 +10,6 @@ from ..language import LANGUAGE_MATRIX
 
 class Alpha3TConverter(LanguageEquivalenceConverter):
     CASE_SENSITIVE = True
-    SYMBOLS = { alpha3: alpha3t
-                for (alpha3, _, alpha3t, _, _, _, _, _) in LANGUAGE_MATRIX
-                if alpha3t }
+    SYMBOLS = { lang.alpha3: lang.alpha3t
+                for lang in LANGUAGE_MATRIX
+                if lang.alpha3t }

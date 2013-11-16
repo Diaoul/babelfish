@@ -10,5 +10,5 @@ from ..language import LANGUAGE_MATRIX
 
 class NameConverter(LanguageEquivalenceConverter):
     CASE_SENSITIVE = False
-    SYMBOLS = { alpha3: name
-                for (alpha3, _, _, _, _, _, name, _) in LANGUAGE_MATRIX }
+    SYMBOLS = { lang.alpha3: lang.name
+                for lang in LANGUAGE_MATRIX }

@@ -5,16 +5,16 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+from ..language import LANGUAGE_MATRIX
 from ..exceptions import LanguageConvertError
 from . import LanguageConverter
-from ..language import LANGUAGE_MATRIX
 
 class ScopeConverter(LanguageConverter):
     FULLNAME = { 'I': 'individual',
                  'M': 'macrolanguage',
                  'S': 'special' }
-    SYMBOLS = { alpha3: scope
-                for (alpha3, _, _, _, scope, _, _, _) in LANGUAGE_MATRIX }
+    SYMBOLS = { lang.alpha3: lang.scope
+                for lang in LANGUAGE_MATRIX }
     codes = set(SYMBOLS.values())
 
     def convert(self, alpha3, country=None, script=None):

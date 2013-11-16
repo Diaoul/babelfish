@@ -6,6 +6,7 @@
 #
 from __future__ import unicode_literals
 from functools import partial
+from collections import namedtuple
 from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
 from .converters import CountryReverseConverter
 
@@ -14,12 +15,14 @@ COUNTRY_CONVERTERS = {}
 COUNTRIES = {}
 COUNTRY_MATRIX = []
 
+IsoCountry = namedtuple('IsoCountry', ['alpha2', 'name'])
+
 f = resource_stream('babelfish', 'data/iso-3166-1.txt')
 f.readline()
 for l in f:
     (name, alpha2) = l.decode('utf-8').strip().split(';')
     COUNTRIES[alpha2] = name
-    COUNTRY_MATRIX.append((alpha2, name))
+    COUNTRY_MATRIX.append(IsoCountry(alpha2, name))
 f.close()
 
 
