@@ -6,17 +6,23 @@
 #
 from __future__ import unicode_literals
 from pkg_resources import resource_stream  # @UnresolvedImport
-
+from collections import namedtuple
 
 SCRIPTS = {}
-f = resource_stream('babelfish', 'data/iso15924-utf8-20121016.txt')
+SCRIPT_MATRIX = []
+
+IsoScript = namedtuple('IsoScript', ['code', 'number', 'name',
+                                     'french_name', 'pva', 'date'])
+
+f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
 f.readline()
 for l in f:
     l = l.decode('utf-8').strip()
     if not l or l.startswith('#'):
         continue
-    (code, _, name, _, _, _) = l.split(';')
-    SCRIPTS[code] = name
+    script = IsoScript._make(l.split(';'))
+    SCRIPT_MATRIX.append(script)
+    SCRIPTS[script.code] = script.name
 f.close()
 
 
