@@ -6,6 +6,7 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+from pkg_resources import resource_stream
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from babelfish import (LANGUAGES, Language, Country, Script, LANGUAGE_CONVERTERS, LanguageReverseConverter,
                        load_language_converters, clear_language_converters,
@@ -103,12 +104,32 @@ class TestLanguage(TestCase):
         self.assertTrue(Language('por', 'BR').opensubtitles == 'pob')
         self.assertTrue(Language.fromopensubtitles('fre') == Language('fra'))
         self.assertTrue(Language.fromopensubtitles('pob') == Language('por', 'BR'))
+        self.assertTrue(Language.fromopensubtitles('pb') == Language('por', 'BR'))
+        # Montenegrin is not recognized as an ISO language (yet?) but for now it is
+        # unofficially accepted as Serbian from Montenegro
+        self.assertTrue(Language.fromopensubtitles('mne') == Language('srp', 'ME'))
         self.assertTrue(Language.fromcode('pob', 'opensubtitles') == Language('por', 'BR'))
         with self.assertRaises(LanguageReverseError):
             Language.fromopensubtitles('zzz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').opensubtitles
-        self.assertTrue(len(LANGUAGE_CONVERTERS['opensubtitles'].codes) == 419)
+        self.assertEqual(len(LANGUAGE_CONVERTERS['opensubtitles'].codes), 422)
+
+        # test with all the languages from the opensubtitles api
+        # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
+        f = resource_stream('babelfish', 'data/opensubtitles_languages.txt')
+        f.readline()
+        for l in f:
+            l = l.decode('utf-8').strip()
+            idlang, alpha2, name, upload_enabled, web_enabled = l.split('\t')
+            if not int(upload_enabled) and not int(web_enabled):
+                # do not test languages that are too esoteric / not widely available
+                continue
+            self.assertEqual(Language.fromopensubtitles(idlang).opensubtitles, idlang)
+            if alpha2:
+                self.assertEqual(Language.fromopensubtitles(idlang),
+                                 Language.fromopensubtitles(alpha2))
+        f.close()
 
     def test_fromietf_country_script(self):
         language = Language.fromietf('fra-FR-Latn')
