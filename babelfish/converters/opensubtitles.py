@@ -5,20 +5,26 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+from . import LanguageReverseConverter
 from .alpha3b import Alpha3BConverter
 from .alpha2 import Alpha2Converter
 from ..exceptions import LanguageReverseError
 
 
-class OpenSubtitlesConverter(Alpha3BConverter):
+class OpenSubtitlesConverter(LanguageReverseConverter):
     def __init__(self):
-        super(OpenSubtitlesConverter, self).__init__()
-        self.codes |= { 'pob', 'pb', 'scc', 'mne' } # should we also add all the alpha2 codes?
-        self.alpha2 = Alpha2Converter()
+        self.alpha3b_converter = Alpha3BConverter()
+        self.alpha2_converter = Alpha2Converter()
+
+        self.codes = (self.alpha2_converter.codes |
+                      self.alpha3b_converter.codes |
+                      { 'pob', 'pb', 'scc', 'mne' })
+
         self.to_opensubtitles = {('por', 'BR'): 'pob',
                                  ('gre', None): 'ell',
                                  ('srp', None): 'scc',
                                  ('srp', 'ME'): 'mne'}
+
         self.from_opensubtitles = {'pob': ('por', 'BR'),
                                    'pb': ('por', 'BR'),
                                    'ell': ('ell', None),
@@ -26,17 +32,23 @@ class OpenSubtitlesConverter(Alpha3BConverter):
                                    'mne': ('srp', 'ME')}
 
     def convert(self, alpha3, country=None, script=None):
-        alpha3b = super(OpenSubtitlesConverter, self).convert(alpha3, country)
+        alpha3b = self.alpha3b_converter.convert(alpha3, country, script)
         if (alpha3b, country) in self.to_opensubtitles:
             return self.to_opensubtitles[(alpha3b, country)]
         return alpha3b
 
     def reverse(self, opensubtitles):
-        if opensubtitles in self.from_opensubtitles:
-            return self.from_opensubtitles[opensubtitles]
+        opensubtitles = opensubtitles.lower()
+
         try:
-            return self.alpha2.reverse(opensubtitles)
-        except LanguageReverseError:
+            return self.from_opensubtitles[opensubtitles]
+        except KeyError:
             pass
 
-        return super(OpenSubtitlesConverter, self).reverse(opensubtitles)
+        for conv in [self.alpha3b_converter, self.alpha2_converter]:
+            try:
+                return conv.reverse(opensubtitles)
+            except LanguageReverseError:
+                pass
+
+        raise LanguageReverseError(opensubtitles)

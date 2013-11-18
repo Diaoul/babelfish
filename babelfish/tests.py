@@ -113,7 +113,7 @@ class TestLanguage(TestCase):
             Language.fromopensubtitles('zzz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').opensubtitles
-        self.assertEqual(len(LANGUAGE_CONVERTERS['opensubtitles'].codes), 422)
+        self.assertEqual(len(LANGUAGE_CONVERTERS['opensubtitles'].codes), 606)
 
         # test with all the languages from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
