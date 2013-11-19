@@ -8,6 +8,9 @@ Converter Bases
 .. autoclass:: LanguageReverseConverter
     :members:
 
+.. autoclass:: LanguageEquivalenceConverter
+    :members:
+
 .. autoclass:: CountryConverter
     :members:
 

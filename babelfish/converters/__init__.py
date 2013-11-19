@@ -121,21 +121,19 @@ class LanguageReverseConverter(LanguageConverter):
 
 
 class LanguageEquivalenceConverter(LanguageReverseConverter):
-    """A :class:`LanguageEquivalenceConverter` is a utility class that allows you
-    to easily define a LanguageReverseConverter by only specifying the dict
-    from alpha3 to their corresponding symbols.
+    """A :class:`LanguageEquivalenceConverter` is a utility class that allows you to easily define a
+    :class:`LanguageReverseConverter` by only specifying the dict from alpha3 to their corresponding symbols.
 
-    You should specify the dict of equivalence as a class variable named SYMBOLS.
+    You must specify the dict of equivalence as a class variable named SYMBOLS.
 
-    if you also define the class variable CASE_SENSITIVE = True then the reverse
-    conversion function will be case-sensitive (it is case-insensitive by default).
+    If you also set the class variable CASE_SENSITIVE to ``True`` then the reverse conversion function will be
+    case-sensitive (it is case-insensitive by default).
 
-    example:
+    Example::
 
-    class MyCodeConverter(LanguageEquivalenceConverter):
-        CASE_SENSITIVE = True
-        SYMBOLS = { 'fra': 'mycode1',
-                    'eng': 'mycode2' }
+        class MyCodeConverter(babelfish.LanguageEquivalenceConverter):
+            CASE_SENSITIVE = True
+            SYMBOLS = {'fra': 'mycode1', 'eng': 'mycode2'}
 
     """
     CASE_SENSITIVE = False

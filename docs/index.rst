@@ -27,6 +27,10 @@ Simple country representation from 2-letter code (ISO-3166)::
     >>> country
     <Country [GB]>
 
+Built-in country converters (name)::
+
+    >>> country.name
+    'UNITED KINGDOM'
 
 Language
 --------
@@ -49,10 +53,15 @@ Language with specific script::
     >>> language
     <Language [sr-Cyrl]>
 
-Built-in converters (alpha2, alpha3b, name and opensubtitles)::
+Built-in language converters (alpha2, alpha3b, alpha3t, name, scope, type and opensubtitles)::
 
+    >>> language = babelfish.Language('por', 'BR')
     >>> language.alpha2
     'pt'
+    >>> language.scope
+    'individual'
+    >>> language.type
+    'living'
     >>> language.opensubtitles
     'pob'
     >>> babelfish.Language.fromalpha3b('fre')
@@ -81,9 +90,8 @@ Build your own Language/Country converter::
 You can also use the :class:`LanguageEquivalenceConverter`
 utility class if your mapping is a simple one-to-one mapping::
 
-    class MyCodeConverter(LanguageEquivalenceConverter):
-        SYMBOLS = { 'fra': 'mycode1',
-                    'eng': 'mycode2' }
+    class MyCodeConverter(babelfish.LanguageEquivalenceConverter):
+        SYMBOLS = {'fra': 'mycode1', 'eng': 'mycode2'}
 
 Use it directly::
 
