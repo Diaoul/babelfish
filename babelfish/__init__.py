@@ -10,7 +10,8 @@ __author__ = 'Antoine Bertin'
 __license__ = 'BSD'
 __copyright__ = 'Copyright 2013 the BabelFish authors'
 
-from .converters import LanguageConverter, LanguageReverseConverter, CountryConverter, CountryReverseConverter
+from .converters import (LanguageConverter, LanguageReverseConverter, LanguageEquivalenceConverter, CountryConverter,
+    CountryReverseConverter)
 from .country import (COUNTRY_CONVERTERS, COUNTRIES, COUNTRY_MATRIX, Country, get_country_converter,
     register_country_converter, unregister_country_converter, load_country_converters, clear_country_converters)
 from .exceptions import Error, LanguageConvertError, LanguageReverseError, CountryConvertError, CountryReverseError
