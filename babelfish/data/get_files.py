@@ -34,8 +34,7 @@ with tempfile.TemporaryFile() as f:
     r = requests.get('http://www.unicode.org/iso15924/iso15924.txt.zip')
     f.write(r.content)
     with zipfile.ZipFile(f) as z:
-        isofile = [filename for filename in z.namelist() if filename.startswith('iso15924-utf8')][0]
-        z.extract(isofile, DATA_DIR)
+        z.extract('iso15924-utf8-20131012.txt', DATA_DIR)
 
 # opensubtitles supported languages
 print('Downloading OpenSubtitles supported languages...')
