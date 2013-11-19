@@ -39,5 +39,5 @@ setup(name='babelfish',
                                                     'scope = babelfish.converters.scope:ScopeConverter',
                                                     'type = babelfish.converters.type:LanguageTypeConverter',
                                                     'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter'],
-                  'babelfish.country_converters':  ['name = babelfish.converters.countryname:CountryNameConverter']
+                  'babelfish.country_converters': ['name = babelfish.converters.countryname:CountryNameConverter']
     })
