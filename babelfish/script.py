@@ -5,14 +5,18 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from pkg_resources import resource_stream  # @UnresolvedImport
 from collections import namedtuple
+from pkg_resources import resource_stream  # @UnresolvedImport
 
+
+#: Script code to script name mapping
 SCRIPTS = {}
+
+#: List of countries in the ISO-15924 as namedtuple of code, number, name, french_name, pva and date
 SCRIPT_MATRIX = []
 
-IsoScript = namedtuple('IsoScript', ['code', 'number', 'name',
-                                     'french_name', 'pva', 'date'])
+#: The namedtuple used in the :data:`SCRIPT_MATRIX`
+IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
 
 f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
 f.readline()

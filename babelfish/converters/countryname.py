@@ -5,20 +5,20 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from . import CountryReverseConverter
-from ..exceptions import CountryConvertError, CountryReverseError
+from . import CountryReverseConverter, CaseInsensitiveDict
 from ..country import COUNTRY_MATRIX
+from ..exceptions import CountryConvertError, CountryReverseError
 
 
 class CountryNameConverter(CountryReverseConverter):
     def __init__(self):
         self.codes = set()
         self.to_name = {}
-        self.from_lower = {}
+        self.from_name = CaseInsensitiveDict()
         for country in COUNTRY_MATRIX:
             self.codes.add(country.name)
             self.to_name[country.alpha2] = country.name
-            self.from_lower[country.name.lower()] = country.alpha2
+            self.from_name[country.name] = country.alpha2
 
     def convert(self, alpha2):
         if alpha2 not in self.to_name:
@@ -26,7 +26,6 @@ class CountryNameConverter(CountryReverseConverter):
         return self.to_name[alpha2]
 
     def reverse(self, name):
-        lname = name.lower()
-        if lname not in self.from_lower:
+        if name not in self.from_name:
             raise CountryReverseError(name)
-        return self.from_lower[lname]
+        return self.from_name[name]

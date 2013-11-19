@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from . import LanguageEquivalenceConverter
 from ..language import LANGUAGE_MATRIX
 
+
 class NameConverter(LanguageEquivalenceConverter):
     CASE_SENSITIVE = False
-    SYMBOLS = { lang.alpha3: lang.name
-                for lang in LANGUAGE_MATRIX }
+    SYMBOLS = {iso_language.alpha3: iso_language.name for iso_language in LANGUAGE_MATRIX}

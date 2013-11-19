@@ -5,8 +5,8 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from functools import partial
 from collections import namedtuple
+from functools import partial
 from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
 from .converters import LanguageReverseConverter
 from .country import Country
@@ -14,22 +14,26 @@ from .exceptions import LanguageConvertError
 from .script import Script
 
 
-LANGUAGE_CONVERTERS = {}
+#: Available language codes
 LANGUAGES = set()
+
+#: List of languages in the ISO-639-3 as namedtuple of alpha3, alpha3b, alpha3t, alpha2, scope, type, name and comment
 LANGUAGE_MATRIX = []
 
-# format can be seen here: http://www-01.sil.org/iso639-3/download.asp
-IsoLanguage = namedtuple('IsoLanguage',
-                         ['alpha3', 'alpha3b', 'alpha3t', 'alpha2',
-                          'scope', 'ltype', 'name', 'comment'])
+#: The namedtuple used in the :data:`LANGUAGE_MATRIX`
+IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
 
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
-    isolang = IsoLanguage._make(l.decode('utf-8').split('\t'))
-    LANGUAGES.add(isolang.alpha3)
-    LANGUAGE_MATRIX.append(isolang)
+    iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
+    LANGUAGES.add(iso_language.alpha3)
+    LANGUAGE_MATRIX.append(iso_language)
 f.close()
+
+
+#: Loaded language converters
+LANGUAGE_CONVERTERS = {}
 
 
 class Language(object):
@@ -50,6 +54,7 @@ class Language(object):
     to be used if the given language could not be recognized as a valid
     language. If None (default) and a language can not be recognized,
     this will raise a ``ValueError`` exception.
+
     """
     def __init__(self, language, country=None, script=None, unknown=None):
         if unknown is not None and language not in LANGUAGES:
@@ -74,7 +79,7 @@ class Language(object):
 
     @classmethod
     def fromcode(cls, code, converter):
-        return cls(*LANGUAGE_CONVERTERS[converter].reverse(code))
+        return cls(*get_language_converter(converter).reverse(code))
 
     @classmethod
     def fromietf(cls, ietf):
@@ -97,10 +102,13 @@ class Language(object):
         return language
 
     def __getattr__(self, name):
-        if name not in LANGUAGE_CONVERTERS:
+        alpha3 = self.alpha3
+        country = self.country.alpha2 if self.country is not None else None
+        script = self.script.code if self.script is not None else None
+        try:
+            return get_language_converter(name).convert(alpha3, country, script)
+        except KeyError:
             raise AttributeError(name)
-        return LANGUAGE_CONVERTERS[name].convert(self.alpha3, self.country.alpha2 if self.country is not None else None,
-                                                 self.script.code if self.script is not None else None)
 
     def __hash__(self):
         return hash(str(self))
@@ -130,6 +138,28 @@ class Language(object):
         if self.script is not None:
             s += '-' + str(self.script)
         return s
+
+
+def get_language_converter(name):
+    """Get a language converter
+
+    If the converter was already loaded, it is returned from :data:`LANGUAGE_CONVERTERS` otherwise the
+    entry point is searched for a matching converter.
+    If a matching converter is found, it is registered and then returned.
+    If no matching converter could be found, a ``KeyError`` is raised.
+
+    :param string name: name of the language converter to get
+    :return: the language converter
+    :raise: KeyError if no matching converter could be found
+
+    """
+    if name in LANGUAGE_CONVERTERS:
+        return LANGUAGE_CONVERTERS[name]
+    for ep in iter_entry_points('babelfish.language_converters'):
+        if ep.name == name:
+            register_language_converter(name, ep.load())
+            return LANGUAGE_CONVERTERS[name]
+    raise KeyError(name)
 
 
 def register_language_converter(name, converter):

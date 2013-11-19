@@ -5,25 +5,32 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from functools import partial
 from collections import namedtuple
+from functools import partial
 from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
 from .converters import CountryReverseConverter
 
 
-COUNTRY_CONVERTERS = {}
+#: Country code to country name mapping
 COUNTRIES = {}
+
+#: List of countries in the ISO-3166-1 as namedtuple of alpha2 and name
 COUNTRY_MATRIX = []
 
-IsoCountry = namedtuple('IsoCountry', ['alpha2', 'name'])
+#: The namedtuple used in the :data:`COUNTRY_MATRIX`
+IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
 
 f = resource_stream('babelfish', 'data/iso-3166-1.txt')
 f.readline()
 for l in f:
-    (name, alpha2) = l.decode('utf-8').strip().split(';')
-    COUNTRIES[alpha2] = name
-    COUNTRY_MATRIX.append(IsoCountry(alpha2, name))
+    iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
+    COUNTRIES[iso_country.alpha2] = iso_country.name
+    COUNTRY_MATRIX.append(iso_country)
 f.close()
+
+
+#: Loaded country converters
+COUNTRY_CONVERTERS = {}
 
 
 class Country(object):
@@ -43,12 +50,10 @@ class Country(object):
 
     @classmethod
     def fromcode(cls, code, converter):
-        return cls(COUNTRY_CONVERTERS[converter].reverse(code))
+        return cls(get_country_converter(converter).reverse(code))
 
     def __getattr__(self, name):
-        if name not in COUNTRY_CONVERTERS:
-            raise AttributeError(name)
-        return COUNTRY_CONVERTERS[name].convert(self.alpha2)
+        return get_country_converter(name).convert(self.alpha2)
 
     def __hash__(self):
         return hash(self.alpha2)
@@ -66,6 +71,28 @@ class Country(object):
 
     def __str__(self):
         return self.alpha2
+
+
+def get_country_converter(name):
+    """Get a country converter
+
+    If the converter was already loaded, it is returned from :data:`COUNTRY_CONVERTERS` otherwise the
+    entry point is searched for a matching converter.
+    If a matching converter is found, it is registered and then returned.
+    If no matching converter could be found, a ``KeyError`` is raised.
+
+    :param string name: name of the country converter to get
+    :return: the country converter
+    :raise: KeyError if no matching converter could be found
+
+    """
+    if name in COUNTRY_CONVERTERS:
+        return COUNTRY_CONVERTERS[name]
+    for ep in iter_entry_points('babelfish.country_converters'):
+        if ep.name == name:
+            register_country_converter(name, ep.load())
+            return COUNTRY_CONVERTERS[name]
+    raise KeyError(name)
 
 
 def register_country_converter(name, converter):

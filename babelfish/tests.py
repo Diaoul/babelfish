@@ -6,12 +6,11 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from pkg_resources import resource_stream
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
-from babelfish import (LANGUAGES, Language, Country, Script, LANGUAGE_CONVERTERS, LanguageReverseConverter,
-                       load_language_converters, clear_language_converters,
-                       register_language_converter, unregister_language_converter,
-                       LanguageConvertError, LanguageReverseError)
+from babelfish import (LANGUAGES, Language, Country, Script, get_language_converter, LANGUAGE_CONVERTERS,
+    LanguageReverseConverter, load_language_converters, clear_language_converters, register_language_converter,
+    unregister_language_converter, LanguageConvertError, LanguageReverseError)
+from pkg_resources import resource_stream  # @UnresolvedImport
 
 
 class TestScript(TestCase):
@@ -68,7 +67,7 @@ class TestLanguage(TestCase):
             Language.fromalpha2('zz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha2
-        self.assertTrue(len(LANGUAGE_CONVERTERS['alpha2'].codes) == 184)
+        self.assertTrue(len(get_language_converter('alpha2').codes) == 184)
 
     def test_converter_alpha3b(self):
         self.assertTrue(Language('fra').alpha3b == 'fre')
@@ -78,7 +77,7 @@ class TestLanguage(TestCase):
             Language.fromalpha3b('zzz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha3b
-        self.assertTrue(len(LANGUAGE_CONVERTERS['alpha3b'].codes) == 418)
+        self.assertTrue(len(get_language_converter('alpha3b').codes) == 418)
 
     def test_converter_name(self):
         self.assertTrue(Language('eng').name == 'English')
@@ -86,16 +85,15 @@ class TestLanguage(TestCase):
         self.assertTrue(Language.fromcode('English', 'name') == Language('eng'))
         with self.assertRaises(LanguageReverseError):
             Language.fromname('Zzzzzzzzz')
-        self.assertTrue(len(LANGUAGE_CONVERTERS['name'].codes) == 7874)
+        self.assertTrue(len(get_language_converter('name').codes) == 7874)
 
     def test_converter_scope(self):
-        self.assertEqual(LANGUAGE_CONVERTERS['scope'].codes, {'I', 'S', 'M'})
+        self.assertEqual(get_language_converter('scope').codes, {'I', 'S', 'M'})
         self.assertEqual(Language('eng').scope, 'individual')
         self.assertEqual(Language('und').scope, 'special')
 
     def test_converter_language_type(self):
-        self.assertEqual(LANGUAGE_CONVERTERS['type'].codes, {'A', 'C', 'E',
-                                                              'H', 'L', 'S'})
+        self.assertEqual(get_language_converter('type').codes, {'A', 'C', 'E', 'H', 'L', 'S'})
         self.assertEqual(Language('eng').type, 'living')
         self.assertEqual(Language('und').type, 'special')
 
@@ -113,22 +111,20 @@ class TestLanguage(TestCase):
             Language.fromopensubtitles('zzz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').opensubtitles
-        self.assertEqual(len(LANGUAGE_CONVERTERS['opensubtitles'].codes), 606)
+        self.assertEqual(len(get_language_converter('opensubtitles').codes), 606)
 
         # test with all the languages from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
         f = resource_stream('babelfish', 'data/opensubtitles_languages.txt')
         f.readline()
         for l in f:
-            l = l.decode('utf-8').strip()
-            idlang, alpha2, name, upload_enabled, web_enabled = l.split('\t')
+            idlang, alpha2, _, upload_enabled, web_enabled = l.decode('utf-8').strip().split('\t')
             if not int(upload_enabled) and not int(web_enabled):
                 # do not test languages that are too esoteric / not widely available
                 continue
             self.assertEqual(Language.fromopensubtitles(idlang).opensubtitles, idlang)
             if alpha2:
-                self.assertEqual(Language.fromopensubtitles(idlang),
-                                 Language.fromopensubtitles(alpha2))
+                self.assertEqual(Language.fromopensubtitles(idlang), Language.fromopensubtitles(alpha2))
         f.close()
 
     def test_fromietf_country_script(self):

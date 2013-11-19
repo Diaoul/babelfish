@@ -2,14 +2,13 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-
-from ..exceptions import LanguageConvertError, LanguageReverseError
 import collections
+from ..exceptions import LanguageConvertError, LanguageReverseError
+
 
 # from https://github.com/kennethreitz/requests/blob/master/requests/structures.py
 class CaseInsensitiveDict(collections.MutableMapping):
-    """
-    A case-insensitive ``dict``-like object.
+    """A case-insensitive ``dict``-like object.
 
     Implements all methods and operations of
     ``collections.MutableMapping`` as well as dict's ``copy``. Also
@@ -165,7 +164,6 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
             return self.from_symbol[code]
         except KeyError:
             raise LanguageReverseError(code)
-
 
 
 class CountryConverter(object):

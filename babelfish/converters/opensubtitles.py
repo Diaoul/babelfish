@@ -5,31 +5,19 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from . import LanguageReverseConverter
-from .alpha3b import Alpha3BConverter
-from .alpha2 import Alpha2Converter
+from . import LanguageReverseConverter, CaseInsensitiveDict
 from ..exceptions import LanguageReverseError
+from ..language import get_language_converter
 
 
 class OpenSubtitlesConverter(LanguageReverseConverter):
     def __init__(self):
-        self.alpha3b_converter = Alpha3BConverter()
-        self.alpha2_converter = Alpha2Converter()
-
-        self.codes = (self.alpha2_converter.codes |
-                      self.alpha3b_converter.codes |
-                      { 'pob', 'pb', 'scc', 'mne' })
-
-        self.to_opensubtitles = {('por', 'BR'): 'pob',
-                                 ('gre', None): 'ell',
-                                 ('srp', None): 'scc',
-                                 ('srp', 'ME'): 'mne'}
-
-        self.from_opensubtitles = {'pob': ('por', 'BR'),
-                                   'pb': ('por', 'BR'),
-                                   'ell': ('ell', None),
-                                   'scc': ('srp', None),
-                                   'mne': ('srp', 'ME')}
+        self.alpha3b_converter = get_language_converter('alpha3b')
+        self.alpha2_converter = get_language_converter('alpha2')
+        self.to_opensubtitles = {('por', 'BR'): 'pob', ('gre', None): 'ell', ('srp', None): 'scc', ('srp', 'ME'): 'mne'}
+        self.from_opensubtitles = CaseInsensitiveDict({'pob': ('por', 'BR'), 'pb': ('por', 'BR'), 'ell': ('ell', None),
+                                                       'scc': ('srp', None), 'mne': ('srp', 'ME')})
+        self.codes = (self.alpha2_converter.codes | self.alpha3b_converter.codes | {'pob', 'pb', 'scc', 'mne'})
 
     def convert(self, alpha3, country=None, script=None):
         alpha3b = self.alpha3b_converter.convert(alpha3, country, script)
@@ -38,17 +26,11 @@ class OpenSubtitlesConverter(LanguageReverseConverter):
         return alpha3b
 
     def reverse(self, opensubtitles):
-        opensubtitles = opensubtitles.lower()
-
-        try:
+        if opensubtitles in self.from_opensubtitles:
             return self.from_opensubtitles[opensubtitles]
-        except KeyError:
-            pass
-
         for conv in [self.alpha3b_converter, self.alpha2_converter]:
             try:
                 return conv.reverse(opensubtitles)
             except LanguageReverseError:
                 pass
-
         raise LanguageReverseError(opensubtitles)
