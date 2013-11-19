@@ -137,7 +137,8 @@ def load_country_converters():
 
     """
     for ep in iter_entry_points('babelfish.country_converters'):
-        register_country_converter(ep.name, ep.load())
+        if ep.name not in COUNTRY_CONVERTERS:
+            register_country_converter(ep.name, ep.load())
 
 
 def clear_country_converters():

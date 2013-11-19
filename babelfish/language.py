@@ -204,7 +204,8 @@ def load_language_converters():
 
     """
     for ep in iter_entry_points('babelfish.language_converters'):
-        register_language_converter(ep.name, ep.load())
+        if ep.name not in LANGUAGE_CONVERTERS:
+            register_language_converter(ep.name, ep.load())
 
 
 def clear_language_converters():
