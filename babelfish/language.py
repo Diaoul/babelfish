@@ -14,11 +14,9 @@ from .exceptions import LanguageConvertError
 from .script import Script
 
 
-#: Available language codes
 LANGUAGES = set()
-
-#: List of languages in the ISO-639-3 as namedtuple of alpha3, alpha3b, alpha3t, alpha2, scope, type, name and comment
 LANGUAGE_MATRIX = []
+LANGUAGE_CONVERTERS = {}
 
 #: The namedtuple used in the :data:`LANGUAGE_MATRIX`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
@@ -32,8 +30,16 @@ for l in f:
 f.close()
 
 
-#: Loaded language converters
-LANGUAGE_CONVERTERS = {}
+class LanguageMeta(type):
+    """The :class:`Language` metaclass
+
+    Dynamically redirect :meth:`Language.frommycode` to :meth:`Language.fromcode` with the ``mycode`` `converter`
+
+    """
+    def __getattr__(cls, name):
+        if name.startswith('from'):
+            return partial(cls.fromcode, converter=name[4:])
+        return getattr(cls, name)
 
 
 class Language(object):
@@ -50,12 +56,13 @@ class Language(object):
     :type country: string or :class:`~babelfish.country.Country` or None
     :param script: the script (if any) as a 4-letter ISO-15924 code or :class:`~babelfish.script.Script` instance
     :type script: string or :class:`~babelfish.script.Script` or None
-    :param string unknown: the language as a three-letters ISO-639-3 code
-    to be used if the given language could not be recognized as a valid
-    language. If None (default) and a language can not be recognized,
-    this will raise a ``ValueError`` exception.
+    :param unknown: the unknown language as a three-letters ISO-639-3 code to use as fallback
+    :type unknown: string or None
+    :raise: ValueError if the language could not be recognized and `unknown` is ``None``
 
     """
+    __metaclass__ = LanguageMeta
+
     def __init__(self, language, country=None, script=None, unknown=None):
         if unknown is not None and language not in LANGUAGES:
             language = unknown
@@ -79,10 +86,26 @@ class Language(object):
 
     @classmethod
     def fromcode(cls, code, converter):
+        """Create a :class:`Language` by its `code` using `converter` to
+        :meth:`~babelfish.converters.LanguageReverseConverter.reverse` it
+
+        :param string code: the code to reverse
+        :param string converter: name of the :class:`~babelfish.converters.LanguageReverseConverter` to use
+        :return: the corresponding :class:`Language` instance
+        :rtype: :class:`Language`
+
+        """
         return cls(*get_language_converter(converter).reverse(code))
 
     @classmethod
     def fromietf(cls, ietf):
+        """Create a :class:`Language` by from an IETF language code
+
+        :param string ietf: the ietf code
+        :return: the corresponding :class:`Language` instance
+        :rtype: :class:`Language`
+
+        """
         subtags = ietf.split('-')
         language_subtag = subtags.pop(0).lower()
         if len(language_subtag) == 2:
@@ -141,7 +164,7 @@ class Language(object):
 
 
 def get_language_converter(name):
-    """Get a language converter
+    """Get a registered :class:`~babelfish.converters.LanguageConverter` by `name`
 
     If the converter was already loaded, it is returned from :data:`LANGUAGE_CONVERTERS` otherwise the
     entry point is searched for a matching converter.
@@ -150,6 +173,7 @@ def get_language_converter(name):
 
     :param string name: name of the language converter to get
     :return: the language converter
+    :rtype: :class:`~babelfish.converters.LanguageConverter`
     :raise: KeyError if no matching converter could be found
 
     """

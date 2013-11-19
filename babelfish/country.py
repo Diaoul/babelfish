@@ -11,11 +11,9 @@ from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImpor
 from .converters import CountryReverseConverter
 
 
-#: Country code to country name mapping
 COUNTRIES = {}
-
-#: List of countries in the ISO-3166-1 as namedtuple of alpha2 and name
 COUNTRY_MATRIX = []
+COUNTRY_CONVERTERS = {}
 
 #: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
@@ -29,8 +27,16 @@ for l in f:
 f.close()
 
 
-#: Loaded country converters
-COUNTRY_CONVERTERS = {}
+class CountryMeta(type):
+    """The :class:`Country` metaclass
+
+    Dynamically redirect :meth:`Country.frommycode` to :meth:`Country.fromcode` with the ``mycode`` `converter`
+
+    """
+    def __getattr__(cls, name):
+        if name.startswith('from'):
+            return partial(cls.fromcode, converter=name[4:])
+        return getattr(cls, name)
 
 
 class Country(object):
@@ -50,7 +56,16 @@ class Country(object):
 
     @classmethod
     def fromcode(cls, code, converter):
-        return cls(get_country_converter(converter).reverse(code))
+        """Create a :class:`Country` by its `code` using `converter` to
+        :meth:`~babelfish.converters.CountryReverseConverter.reverse` it
+
+        :param string code: the code to reverse
+        :param string converter: name of the :class:`~babelfish.converters.CountryReverseConverter` to use
+        :return: the corresponding :class:`Country` instance
+        :rtype: :class:`Country`
+
+        """
+        return cls(*get_country_converter(converter).reverse(code))
 
     def __getattr__(self, name):
         return get_country_converter(name).convert(self.alpha2)
@@ -74,7 +89,7 @@ class Country(object):
 
 
 def get_country_converter(name):
-    """Get a country converter
+    """Get a registered :class:`~babelfish.converters.CountryConverter` by `name`
 
     If the converter was already loaded, it is returned from :data:`COUNTRY_CONVERTERS` otherwise the
     entry point is searched for a matching converter.
@@ -83,6 +98,7 @@ def get_country_converter(name):
 
     :param string name: name of the country converter to get
     :return: the country converter
+    :rtype: :class:`~babelfish.converters.CountryConverter`
     :raise: KeyError if no matching converter could be found
 
     """

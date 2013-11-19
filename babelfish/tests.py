@@ -242,7 +242,8 @@ class TestLanguage(TestCase):
         self.assertTrue(Language.fromtest('test2').alpha3 == 'eng')
         unregister_language_converter('test')
         self.assertTrue('test' not in LANGUAGE_CONVERTERS)
-        self.assertTrue(not hasattr(Language, 'fromtest'))
+        with self.assertRaises(KeyError):
+            self.assertTrue(Language.fromtest('test1'))
         with self.assertRaises(AttributeError):
             Language('fra').test
         clear_language_converters()
