@@ -18,7 +18,7 @@ setup(name='babelfish',
     author='Antoine Bertin',
     author_email='diaoulael@gmail.com',
     packages=find_packages(),
-    package_data={'babelfish': ['data/iso-639-3.tab', 'data/iso-3166-1.txt', 'data/iso15924-utf8-20131012.txt'
+    package_data={'babelfish': ['data/iso-639-3.tab', 'data/iso-3166-1.txt', 'data/iso15924-utf8-20131012.txt',
                                 'data/opensubtitles_languages.txt']},
     classifiers=['Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
