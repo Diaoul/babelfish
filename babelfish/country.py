@@ -65,7 +65,7 @@ class Country(object):
         :rtype: :class:`Country`
 
         """
-        return cls(*get_country_converter(converter).reverse(code))
+        return cls(get_country_converter(converter).reverse(code))
 
     def __getattr__(self, name):
         return get_country_converter(name).convert(self.alpha2)
