@@ -3,10 +3,14 @@ Changelog
 
 0.4.0
 -----
-**release date:** unreleased
+**release date:** 2013-11-21
 
-* Added converter support for Country
+**WARNING:** Backward incompatible changes
+
+* Add converter support for Country
 * Language/country reverse name detection is now case-insensitive
+* Add alpha3t, scope and type converters
+* Use lazy loading of converters
 
 
 0.3.0
