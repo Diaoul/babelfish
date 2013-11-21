@@ -39,7 +39,7 @@ class TestCountry(TestCase):
 
     def test_ne(self):
         self.assertNotEqual(Country('GB'), Country('US'))
-        self.assertNotEqual(Country('US'), None)
+        self.assertIsNone(Country('US'))
 
     def test_hash(self):
         self.assertEqual(hash(Country('US')), hash('US'))
@@ -152,24 +152,24 @@ class TestLanguage(TestCase):
         language = Language.fromietf('fra-FR')
         self.assertEqual(language.alpha3, 'fra')
         self.assertEqual(language.country, Country('FR'))
-        self.assertIs(language.script, None)
+        self.assertIsNone(language.script)
 
     def test_fromietf_no_country_no_script(self):
         language = Language.fromietf('fra-FR')
         self.assertEqual(language.alpha3, 'fra')
         self.assertEqual(language.country, Country('FR'))
-        self.assertIs(language.script, None)
+        self.assertIsNone(language.script)
 
     def test_fromietf_no_country_script(self):
         language = Language.fromietf('fra-Latn')
         self.assertEqual(language.alpha3, 'fra')
-        self.assertIs(language.country, None)
+        self.assertIsNone(language.country)
         self.assertEqual(language.script, Script('Latn'))
 
     def test_fromietf_alpha2_language(self):
         language = Language.fromietf('fr-Latn')
         self.assertEqual(language.alpha3, 'fra')
-        self.assertIs(language.country, None)
+        self.assertIsNone(language.country)
         self.assertEqual(language.script, Script('Latn'))
 
     def test_fromietf_wrong_language(self):
@@ -189,11 +189,11 @@ class TestLanguage(TestCase):
 
     def test_ne(self):
         self.assertNotEqual(Language('fra'), Language('eng'))
-        self.assertIsNot(Language('fra'), None)
+        self.assertIsNotNone(Language('fra'))
 
     def test_nonzero(self):
-        self.assertIs(bool(Language('und')), False)
-        self.assertIs(bool(Language('eng')), True)
+        self.assertFalse(bool(Language('und')))
+        self.assertTrue(bool(Language('eng')))
 
     def test_country(self):
         self.assertEqual(Language('por', 'BR').country, Country('BR'))
