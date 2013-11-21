@@ -102,7 +102,7 @@ class TestLanguage(TestCase):
         self.assertEqual(Language('eng').scope, 'individual')
         self.assertEqual(Language('und').scope, 'special')
 
-    def test_converter_language_type(self):
+    def test_converter_type(self):
         self.assertEqual(get_language_converter('type').codes, {'A', 'C', 'E', 'H', 'L', 'S'})
         self.assertEqual(Language('eng').type, 'living')
         self.assertEqual(Language('und').type, 'special')
