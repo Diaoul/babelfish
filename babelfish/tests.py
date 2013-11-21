@@ -7,10 +7,11 @@
 #
 from __future__ import unicode_literals
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
-from babelfish import (LANGUAGES, Language, Country, Script, get_language_converter, LANGUAGE_CONVERTERS,
-    LanguageReverseConverter, load_language_converters, clear_language_converters, register_language_converter,
-    unregister_language_converter, LanguageConvertError, LanguageReverseError)
 from pkg_resources import resource_stream  # @UnresolvedImport
+from babelfish import (LANGUAGES, Language, Country, Script, get_language_converter, get_country_converter,
+    LANGUAGE_CONVERTERS, LanguageReverseConverter, load_language_converters, clear_language_converters,
+    register_language_converter, unregister_language_converter, LanguageConvertError, LanguageReverseError,
+    CountryReverseError)
 
 
 class TestScript(TestCase):
@@ -43,9 +44,13 @@ class TestCountry(TestCase):
     def test_hash(self):
         self.assertEqual(hash(Country('US')), hash('US'))
 
-    def test_name(self):
+    def test_converter_name(self):
         self.assertEqual(Country('US').name, 'UNITED STATES')
-        self.assertEqual(Country('FR').name, 'FRANCE')
+        self.assertEqual(Country.fromname('UNITED STATES'), Country('US'))
+        self.assertEqual(Country.fromcode('UNITED STATES', 'name'), Country('US'))
+        with self.assertRaises(CountryReverseError):
+            Country.fromname('ZZZZZ')
+        self.assertEqual(len(get_country_converter('name').codes), 249)
 
 
 class TestLanguage(TestCase):
