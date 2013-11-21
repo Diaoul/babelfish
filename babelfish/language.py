@@ -42,7 +42,7 @@ class LanguageMeta(type):
         return getattr(cls, name)
 
 
-class Language(object):
+class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     """A human language
 
     A human language is composed of a language part following the ISO-639
@@ -61,8 +61,6 @@ class Language(object):
     :raise: ValueError if the language could not be recognized and `unknown` is ``None``
 
     """
-    __metaclass__ = LanguageMeta
-
     def __init__(self, language, country=None, script=None, unknown=None):
         if unknown is not None and language not in LANGUAGES:
             language = unknown
@@ -202,8 +200,6 @@ def register_language_converter(name, converter):
     if name in LANGUAGE_CONVERTERS:
         raise ValueError('Converter %r already exists' % name)
     LANGUAGE_CONVERTERS[name] = converter()
-    if isinstance(LANGUAGE_CONVERTERS[name], LanguageReverseConverter):
-        setattr(Language, 'from' + name, partial(Language.fromcode, converter=name))
 
 
 def unregister_language_converter(name):
@@ -215,8 +211,6 @@ def unregister_language_converter(name):
     """
     if name not in LANGUAGE_CONVERTERS:
         raise ValueError('Converter %r does not exist' % name)
-    if isinstance(LANGUAGE_CONVERTERS[name], LanguageReverseConverter):
-        delattr(Language, 'from' + name)
     del LANGUAGE_CONVERTERS[name]
 
 

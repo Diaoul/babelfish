@@ -39,7 +39,7 @@ class CountryMeta(type):
         return getattr(cls, name)
 
 
-class Country(object):
+class Country(CountryMeta(str('CountryBase'), (object,), {})):
     """A country on Earth
 
     A country is represented by a 2-letter code from the ISO-3166 standard
@@ -127,8 +127,6 @@ def register_country_converter(name, converter):
     if name in COUNTRY_CONVERTERS:
         raise ValueError('Converter %r already exists' % name)
     COUNTRY_CONVERTERS[name] = converter()
-    if isinstance(COUNTRY_CONVERTERS[name], CountryReverseConverter):
-        setattr(Country, 'from' + name, partial(Country.fromcode, converter=name))
 
 
 def unregister_country_converter(name):
@@ -140,8 +138,6 @@ def unregister_country_converter(name):
     """
     if name not in COUNTRY_CONVERTERS:
         raise ValueError('Converter %r does not exist' % name)
-    if isinstance(COUNTRY_CONVERTERS[name], CountryReverseConverter):
-        delattr(Country, 'from' + name)
     del COUNTRY_CONVERTERS[name]
 
 
