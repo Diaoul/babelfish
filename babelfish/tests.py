@@ -39,7 +39,7 @@ class TestCountry(TestCase):
 
     def test_ne(self):
         self.assertNotEqual(Country('GB'), Country('US'))
-        self.assertIsNone(Country('US'))
+        self.assertIsNotNone(Country('US'))
 
     def test_hash(self):
         self.assertEqual(hash(Country('US')), hash('US'))
