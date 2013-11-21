@@ -19,13 +19,13 @@ class TestScript(TestCase):
             Script('Azer')
 
     def test_eq(self):
-        self.assertTrue(Script('Latn') == Script('Latn'))
+        self.assertEqual(Script('Latn'), Script('Latn'))
 
     def test_ne(self):
-        self.assertTrue(Script('Cyrl') != Script('Latn'))
+        self.assertNotEqual(Script('Cyrl'), Script('Latn'))
 
     def test_hash(self):
-        self.assertTrue(hash(Script('Hira')) == hash('Hira'))
+        self.assertEqual(hash(Script('Hira')), hash('Hira'))
 
 
 class TestCountry(TestCase):
@@ -34,14 +34,14 @@ class TestCountry(TestCase):
             Country('ZZ')
 
     def test_eq(self):
-        self.assertTrue(Country('US') == Country('US'))
+        self.assertEqual(Country('US'), Country('US'))
 
     def test_ne(self):
-        self.assertTrue(Country('GB') != Country('US'))
+        self.assertNotEqual(Country('GB'), Country('US'))
         self.assertNotEqual(Country('US'), None)
 
     def test_hash(self):
-        self.assertTrue(hash(Country('US')) == hash('US'))
+        self.assertEqual(hash(Country('US')), hash('US'))
 
     def test_name(self):
         self.assertEqual(Country('US').name, 'UNITED STATES')
@@ -50,7 +50,7 @@ class TestCountry(TestCase):
 
 class TestLanguage(TestCase):
     def test_languages(self):
-        self.assertTrue(len(LANGUAGES) == 7874)
+        self.assertEqual(len(LANGUAGES), 7874)
 
     def test_wrong_language(self):
         with self.assertRaises(ValueError):
@@ -60,32 +60,32 @@ class TestLanguage(TestCase):
         self.assertEqual(Language('zzzz', unknown='und'), Language('und'))
 
     def test_converter_alpha2(self):
-        self.assertTrue(Language('eng').alpha2 == 'en')
-        self.assertTrue(Language.fromalpha2('en') == Language('eng'))
-        self.assertTrue(Language.fromcode('en', 'alpha2') == Language('eng'))
+        self.assertEqual(Language('eng').alpha2, 'en')
+        self.assertEqual(Language.fromalpha2('en'), Language('eng'))
+        self.assertEqual(Language.fromcode('en', 'alpha2'), Language('eng'))
         with self.assertRaises(LanguageReverseError):
             Language.fromalpha2('zz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha2
-        self.assertTrue(len(get_language_converter('alpha2').codes) == 184)
+        self.assertEqual(len(get_language_converter('alpha2').codes), 184)
 
     def test_converter_alpha3b(self):
-        self.assertTrue(Language('fra').alpha3b == 'fre')
-        self.assertTrue(Language.fromalpha3b('fre') == Language('fra'))
-        self.assertTrue(Language.fromcode('fre', 'alpha3b') == Language('fra'))
+        self.assertEqual(Language('fra').alpha3b, 'fre')
+        self.assertEqual(Language.fromalpha3b('fre'), Language('fra'))
+        self.assertEqual(Language.fromcode('fre', 'alpha3b'), Language('fra'))
         with self.assertRaises(LanguageReverseError):
             Language.fromalpha3b('zzz')
         with self.assertRaises(LanguageConvertError):
             Language('aaa').alpha3b
-        self.assertTrue(len(get_language_converter('alpha3b').codes) == 418)
+        self.assertEqual(len(get_language_converter('alpha3b').codes), 418)
 
     def test_converter_name(self):
-        self.assertTrue(Language('eng').name == 'English')
-        self.assertTrue(Language.fromname('English') == Language('eng'))
-        self.assertTrue(Language.fromcode('English', 'name') == Language('eng'))
+        self.assertEqual(Language('eng').name, 'English')
+        self.assertEqual(Language.fromname('English'), Language('eng'))
+        self.assertEqual(Language.fromcode('English', 'name'), Language('eng'))
         with self.assertRaises(LanguageReverseError):
             Language.fromname('Zzzzzzzzz')
-        self.assertTrue(len(get_language_converter('name').codes) == 7874)
+        self.assertEqual(len(get_language_converter('name').codes), 7874)
 
     def test_converter_scope(self):
         self.assertEqual(get_language_converter('scope').codes, {'I', 'S', 'M'})
@@ -98,15 +98,15 @@ class TestLanguage(TestCase):
         self.assertEqual(Language('und').type, 'special')
 
     def test_converter_opensubtitles(self):
-        self.assertTrue(Language('fra').opensubtitles == Language('fra').alpha3b)
-        self.assertTrue(Language('por', 'BR').opensubtitles == 'pob')
-        self.assertTrue(Language.fromopensubtitles('fre') == Language('fra'))
-        self.assertTrue(Language.fromopensubtitles('pob') == Language('por', 'BR'))
-        self.assertTrue(Language.fromopensubtitles('pb') == Language('por', 'BR'))
+        self.assertEqual(Language('fra').opensubtitles, Language('fra').alpha3b)
+        self.assertEqual(Language('por', 'BR').opensubtitles, 'pob')
+        self.assertEqual(Language.fromopensubtitles('fre'), Language('fra'))
+        self.assertEqual(Language.fromopensubtitles('pob'), Language('por', 'BR'))
+        self.assertEqual(Language.fromopensubtitles('pb'), Language('por', 'BR'))
         # Montenegrin is not recognized as an ISO language (yet?) but for now it is
         # unofficially accepted as Serbian from Montenegro
-        self.assertTrue(Language.fromopensubtitles('mne') == Language('srp', 'ME'))
-        self.assertTrue(Language.fromcode('pob', 'opensubtitles') == Language('por', 'BR'))
+        self.assertEqual(Language.fromopensubtitles('mne'), Language('srp', 'ME'))
+        self.assertEqual(Language.fromcode('pob', 'opensubtitles'), Language('por', 'BR'))
         with self.assertRaises(LanguageReverseError):
             Language.fromopensubtitles('zzz')
         with self.assertRaises(LanguageConvertError):
@@ -129,33 +129,33 @@ class TestLanguage(TestCase):
 
     def test_fromietf_country_script(self):
         language = Language.fromietf('fra-FR-Latn')
-        self.assertTrue(language.alpha3 == 'fra')
-        self.assertTrue(language.country == Country('FR'))
-        self.assertTrue(language.script == Script('Latn'))
+        self.assertEqual(language.alpha3, 'fra')
+        self.assertEqual(language.country, Country('FR'))
+        self.assertEqual(language.script, Script('Latn'))
 
     def test_fromietf_country_no_script(self):
         language = Language.fromietf('fra-FR')
-        self.assertTrue(language.alpha3 == 'fra')
-        self.assertTrue(language.country == Country('FR'))
-        self.assertTrue(language.script is None)
+        self.assertEqual(language.alpha3, 'fra')
+        self.assertEqual(language.country, Country('FR'))
+        self.assertIs(language.script, None)
 
     def test_fromietf_no_country_no_script(self):
         language = Language.fromietf('fra-FR')
-        self.assertTrue(language.alpha3 == 'fra')
-        self.assertTrue(language.country == Country('FR'))
-        self.assertTrue(language.script is None)
+        self.assertEqual(language.alpha3, 'fra')
+        self.assertEqual(language.country, Country('FR'))
+        self.assertIs(language.script, None)
 
     def test_fromietf_no_country_script(self):
         language = Language.fromietf('fra-Latn')
-        self.assertTrue(language.alpha3 == 'fra')
-        self.assertTrue(language.country is None)
-        self.assertTrue(language.script == Script('Latn'))
+        self.assertEqual(language.alpha3, 'fra')
+        self.assertIs(language.country, None)
+        self.assertEqual(language.script, Script('Latn'))
 
     def test_fromietf_alpha2_language(self):
         language = Language.fromietf('fr-Latn')
-        self.assertTrue(language.alpha3 == 'fra')
-        self.assertTrue(language.country is None)
-        self.assertTrue(language.script == Script('Latn'))
+        self.assertEqual(language.alpha3, 'fra')
+        self.assertIs(language.country, None)
+        self.assertEqual(language.script, Script('Latn'))
 
     def test_fromietf_wrong_language(self):
         with self.assertRaises(ValueError):
@@ -170,53 +170,53 @@ class TestLanguage(TestCase):
             Language.fromietf('fra-FR-Wxyz')
 
     def test_eq(self):
-        self.assertTrue(Language('eng') == Language('eng'))
+        self.assertEqual(Language('eng'), Language('eng'))
 
     def test_ne(self):
-        self.assertTrue(Language('fra') != Language('eng'))
-        self.assertNotEqual(Language('fra'), None)
+        self.assertNotEqual(Language('fra'), Language('eng'))
+        self.assertIsNot(Language('fra'), None)
 
     def test_nonzero(self):
-        self.assertTrue(bool(Language('und')) is False)
-        self.assertTrue(bool(Language('eng')) is True)
+        self.assertIs(bool(Language('und')), False)
+        self.assertIs(bool(Language('eng')), True)
 
     def test_country(self):
-        self.assertTrue(Language('por', 'BR').country == Country('BR'))
-        self.assertTrue(Language('eng', Country('US')).country == Country('US'))
+        self.assertEqual(Language('por', 'BR').country, Country('BR'))
+        self.assertEqual(Language('eng', Country('US')).country, Country('US'))
 
     def test_eq_with_country(self):
-        self.assertTrue(Language('eng', 'US') == Language('eng', Country('US')))
+        self.assertEqual(Language('eng', 'US'), Language('eng', Country('US')))
 
     def test_ne_with_country(self):
-        self.assertTrue(Language('eng', 'US') != Language('eng', Country('GB')))
+        self.assertNotEqual(Language('eng', 'US'), Language('eng', Country('GB')))
 
     def test_script(self):
-        self.assertTrue(Language('srp', script='Latn').script == Script('Latn'))
-        self.assertTrue(Language('srp', script=Script('Cyrl')).script == Script('Cyrl'))
+        self.assertEqual(Language('srp', script='Latn').script, Script('Latn'))
+        self.assertEqual(Language('srp', script=Script('Cyrl')).script, Script('Cyrl'))
 
     def test_eq_with_script(self):
-        self.assertTrue(Language('srp', script='Latn') == Language('srp', script=Script('Latn')))
+        self.assertEqual(Language('srp', script='Latn'), Language('srp', script=Script('Latn')))
 
     def test_ne_with_script(self):
-        self.assertTrue(Language('srp', script='Latn') != Language('srp', script=Script('Cyrl')))
+        self.assertNotEqual(Language('srp', script='Latn'), Language('srp', script=Script('Cyrl')))
 
     def test_eq_with_country_and_script(self):
-        self.assertTrue(Language('srp', 'SR', 'Latn') == Language('srp', Country('SR'), Script('Latn')))
+        self.assertEqual(Language('srp', 'SR', 'Latn'), Language('srp', Country('SR'), Script('Latn')))
 
     def test_ne_with_country_and_script(self):
-        self.assertTrue(Language('srp', 'SR', 'Latn') != Language('srp', Country('SR'), Script('Cyrl')))
+        self.assertNotEqual(Language('srp', 'SR', 'Latn'), Language('srp', Country('SR'), Script('Cyrl')))
 
     def test_hash(self):
-        self.assertTrue(hash(Language('fra')) == hash('fr'))
-        self.assertTrue(hash(Language('ace')) == hash('ace'))
-        self.assertTrue(hash(Language('por', 'BR')) == hash('pt-BR'))
-        self.assertTrue(hash(Language('srp', script='Cyrl')) == hash('sr-Cyrl'))
-        self.assertTrue(hash(Language('eng', 'US', 'Latn')) == hash('en-US-Latn'))
+        self.assertEqual(hash(Language('fra')), hash('fr'))
+        self.assertEqual(hash(Language('ace')), hash('ace'))
+        self.assertEqual(hash(Language('por', 'BR')), hash('pt-BR'))
+        self.assertEqual(hash(Language('srp', script='Cyrl')), hash('sr-Cyrl'))
+        self.assertEqual(hash(Language('eng', 'US', 'Latn')), hash('en-US-Latn'))
 
     def test_str(self):
-        self.assertTrue(Language.fromietf(str(Language('eng', 'US', 'Latn'))) == Language('eng', 'US', 'Latn'))
-        self.assertTrue(Language.fromietf(str(Language('fra', 'FR'))) == Language('fra', 'FR'))
-        self.assertTrue(Language.fromietf(str(Language('bel'))) == Language('bel'))
+        self.assertEqual(Language.fromietf(str(Language('eng', 'US', 'Latn'))), Language('eng', 'US', 'Latn'))
+        self.assertEqual(Language.fromietf(str(Language('fra', 'FR'))), Language('fra', 'FR'))
+        self.assertEqual(Language.fromietf(str(Language('bel'))), Language('bel'))
 
     def test_register_converter(self):
         class TestConverter(LanguageReverseConverter):
@@ -234,16 +234,16 @@ class TestLanguage(TestCase):
                     raise LanguageReverseError(test)
                 return (self.from_test[test], None)
         language = Language('fra')
-        self.assertTrue(not hasattr(language, 'test'))
+        self.assertFalse(hasattr(language, 'test'))
         register_language_converter('test', TestConverter)
         self.assertTrue(hasattr(language, 'test'))
-        self.assertTrue('test' in LANGUAGE_CONVERTERS)
-        self.assertTrue(Language('fra').test == 'test1')
-        self.assertTrue(Language.fromtest('test2').alpha3 == 'eng')
+        self.assertIn('test', LANGUAGE_CONVERTERS)
+        self.assertEqual(Language('fra').test, 'test1')
+        self.assertEqual(Language.fromtest('test2').alpha3, 'eng')
         unregister_language_converter('test')
-        self.assertTrue('test' not in LANGUAGE_CONVERTERS)
+        self.assertNotIn('test', LANGUAGE_CONVERTERS)
         with self.assertRaises(KeyError):
-            self.assertTrue(Language.fromtest('test1'))
+            Language.fromtest('test1')
         with self.assertRaises(AttributeError):
             Language('fra').test
         clear_language_converters()
