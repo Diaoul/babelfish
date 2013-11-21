@@ -79,6 +79,16 @@ class TestLanguage(TestCase):
             Language('aaa').alpha3b
         self.assertEqual(len(get_language_converter('alpha3b').codes), 418)
 
+    def test_converter_alpha3t(self):
+        self.assertEqual(Language('fra').alpha3t, 'fra')
+        self.assertEqual(Language.fromalpha3t('fra'), Language('fra'))
+        self.assertEqual(Language.fromcode('fra', 'alpha3t'), Language('fra'))
+        with self.assertRaises(LanguageReverseError):
+            Language.fromalpha3t('zzz')
+        with self.assertRaises(LanguageConvertError):
+            Language('aaa').alpha3t
+        self.assertEqual(len(get_language_converter('alpha3t').codes), 418)
+
     def test_converter_name(self):
         self.assertEqual(Language('eng').name, 'English')
         self.assertEqual(Language.fromname('English'), Language('eng'))
