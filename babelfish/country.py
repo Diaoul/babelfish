@@ -67,6 +67,12 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         """
         return cls(get_country_converter(converter).reverse(code))
 
+    def __getstate__(self):
+        return self.alpha2
+
+    def __setstate__(self, state):
+        self.alpha2 = state
+
     def __getattr__(self, name):
         return get_country_converter(name).convert(self.alpha2)
 
