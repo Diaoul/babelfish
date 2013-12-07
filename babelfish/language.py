@@ -123,10 +123,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         return language
 
     def __getstate__(self):
-        alpha3 = self.alpha3
-        country = self.country.alpha2 if self.country is not None else None
-        script = self.script.code if self.script is not None else None
-        return alpha3, country, script
+        return self.alpha3, self.country, self.script
 
     def __setstate__(self, state):
         self.alpha3, self.country, self.script = state
