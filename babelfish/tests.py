@@ -195,6 +195,11 @@ class TestLanguage(TestCase):
         self.assertFalse(bool(Language('und')))
         self.assertTrue(bool(Language('eng')))
 
+    def test_language_hasattr(self):
+        self.assertTrue(hasattr(Language('fra'), 'alpha3'))
+        self.assertTrue(hasattr(Language('fra'), 'alpha2'))
+        self.assertFalse(hasattr(Language('bej'), 'alpha2'))
+
     def test_country(self):
         self.assertEqual(Language('por', 'BR').country, Country('BR'))
         self.assertEqual(Language('eng', Country('US')).country, Country('US'))
