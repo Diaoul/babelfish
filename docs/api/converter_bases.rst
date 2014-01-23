@@ -16,3 +16,6 @@ Converter Bases
 
 .. autoclass:: CountryReverseConverter
     :members:
+
+.. autoclass:: ConverterManager
+    :members:

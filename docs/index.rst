@@ -95,7 +95,7 @@ utility class if your mapping is a simple one-to-one mapping::
 
 Use it directly::
 
-    >>> babelfish.register_language_converter('mycode', MyCodeConverter)
+    >>> babelfish.LANGUAGE_CONVERTERS['mycode'] = MyCodeConverter()
     >>> babelfish.Language.frommycode('mycode2')
     <Language [en]>
     >>> babelfish.Language('fra').mycode

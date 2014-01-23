@@ -33,13 +33,4 @@ setup(name='babelfish',
         'Programming Language :: Python :: 3.3',
         'Topic :: Multimedia :: Video',
         'Topic :: Software Development :: Libraries :: Python Modules'],
-    test_suite='babelfish.tests.suite',
-    entry_points={'babelfish.language_converters': ['alpha2 = babelfish.converters.alpha2:Alpha2Converter',
-                                                    'alpha3b = babelfish.converters.alpha3b:Alpha3BConverter',
-                                                    'alpha3t = babelfish.converters.alpha3t:Alpha3TConverter',
-                                                    'name = babelfish.converters.name:NameConverter',
-                                                    'scope = babelfish.converters.scope:ScopeConverter',
-                                                    'type = babelfish.converters.type:LanguageTypeConverter',
-                                                    'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter'],
-                  'babelfish.country_converters': ['name = babelfish.converters.countryname:CountryNameConverter']
-    })
+    test_suite='babelfish.tests.suite')
