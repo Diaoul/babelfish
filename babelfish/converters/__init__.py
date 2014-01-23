@@ -4,6 +4,7 @@
 #
 import collections
 from ..exceptions import LanguageConvertError, LanguageReverseError
+from abc import ABCMeta, abstractmethod
 
 
 # from https://github.com/kennethreitz/requests/blob/master/requests/structures.py
@@ -78,6 +79,8 @@ class CaseInsensitiveDict(collections.MutableMapping):
 
 
 class LanguageConverter(object):
+    __metaclass__ = ABCMeta
+
     """A :class:`LanguageConverter` supports converting an alpha3 language code with an
     alpha2 country code and a script code into a custom code
 
@@ -86,6 +89,7 @@ class LanguageConverter(object):
         Set of possible custom codes
 
     """
+    @abstractmethod
     def convert(self, alpha3, country=None, script=None):
         """Convert an alpha3 language code with an alpha2 country code and a script code
         into a custom code
@@ -100,7 +104,7 @@ class LanguageConverter(object):
         :raise: :class:`~babelfish.exceptions.LanguageConvertError`
 
         """
-        raise NotImplementedError
+        pass
 
 
 class LanguageReverseConverter(LanguageConverter):
@@ -108,6 +112,7 @@ class LanguageReverseConverter(LanguageConverter):
     ISO-639-3 language code, alpha2 ISO-3166-1 country code and ISO-15924 script code
 
     """
+    @abstractmethod
     def reverse(self, code):
         """Reverse a custom code into alpha3, country and script code
 
@@ -117,7 +122,7 @@ class LanguageReverseConverter(LanguageConverter):
         :raise: :class:`~babelfish.exceptions.LanguageReverseError`
 
         """
-        raise NotImplementedError
+        pass
 
 
 class LanguageEquivalenceConverter(LanguageReverseConverter):
@@ -173,6 +178,9 @@ class CountryConverter(object):
         Set of possible custom codes
 
     """
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
     def convert(self, alpha2):
         """Convert an alpha2 country code into a custom code
 
@@ -182,7 +190,7 @@ class CountryConverter(object):
         :raise: :class:`~babelfish.exceptions.CountryConvertError`
 
         """
-        raise NotImplementedError
+        pass
 
 
 class CountryReverseConverter(CountryConverter):
@@ -190,6 +198,7 @@ class CountryReverseConverter(CountryConverter):
     ISO-3166-1 country code
 
     """
+    @abstractmethod
     def reverse(self, code):
         """Reverse a custom code into alpha2 code
 
@@ -199,4 +208,4 @@ class CountryReverseConverter(CountryConverter):
         :raise: :class:`~babelfish.exceptions.CountryReverseError`
 
         """
-        raise NotImplementedError
+        pass
