@@ -1,4 +1,4 @@
-from pkg_resources import resource_stream, EntryPoint  # @UnresolvedImport
+from pkg_resources import EntryPoint  # @UnresolvedImport
 from stevedore import ExtensionManager
 from stevedore.extension import Extension
 
@@ -39,10 +39,11 @@ class ConvertersManager(ExtensionManager):
         del self.extensions[:]
         self._extensions_by_name = None
 
-    def __setitem__(self, name, converter):
-        if name in self:
-            del self[name]
-        self.extensions.append(Extension(name, None, None, converter))
+    def load_from_obj(self, name, obj):
+        extension = Extension(name, None, None, obj)
+        if extension.name in self:
+            del self[extension.name]
+        self.extensions.append(extension)
         self._extensions_by_name = None
 
     def __contains__(self, name):

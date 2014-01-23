@@ -207,7 +207,7 @@ def register_language_converter(name, converter):
     """
     if name in LANGUAGE_CONVERTERS:
         raise ValueError('Converter %r already exists' % name)
-    LANGUAGE_CONVERTERS[name] = converter()
+    LANGUAGE_CONVERTERS.load_from_obj(name, converter())
 
 
 def unregister_language_converter(name):

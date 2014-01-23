@@ -129,7 +129,7 @@ def register_country_converter(name, converter):
     """
     if name in COUNTRY_CONVERTERS:
         raise ValueError('Converter %r already exists' % name)
-    COUNTRY_CONVERTERS[name] = converter()
+    COUNTRY_CONVERTERS.load_from_obj(name, converter())
 
 
 def unregister_country_converter(name):
