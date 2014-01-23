@@ -7,16 +7,14 @@
 from __future__ import unicode_literals
 from collections import namedtuple
 from functools import partial
-from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
-from .converters import LanguageReverseConverter
+from pkg_resources import resource_stream  # @UnresolvedImport
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
-
+from .extensions import ConvertersManager
 
 LANGUAGES = set()
 LANGUAGE_MATRIX = []
-LANGUAGE_CONVERTERS = {}
 
 #: The namedtuple used in the :data:`LANGUAGE_MATRIX`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
@@ -161,6 +159,22 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         return s
 
 
+class LanguageConvertersManager(ConvertersManager):
+    def __init__(self, namespace='babelfish.language_converters'):
+        super(LanguageConvertersManager, self).__init__(namespace)
+
+    def _internal_entry_points(self):
+        return ['alpha2 = babelfish.converters.alpha2:Alpha2Converter',
+                                                    'alpha3b = babelfish.converters.alpha3b:Alpha3BConverter',
+                                                    'alpha3t = babelfish.converters.alpha3t:Alpha3TConverter',
+                                                    'name = babelfish.converters.name:NameConverter',
+                                                    'scope = babelfish.converters.scope:ScopeConverter',
+                                                    'type = babelfish.converters.type:LanguageTypeConverter',
+                                                    'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter']
+
+LANGUAGE_CONVERTERS = LanguageConvertersManager()
+
+
 def get_language_converter(name):
     """Get a registered :class:`~babelfish.converters.LanguageConverter` by `name`
 
@@ -175,13 +189,7 @@ def get_language_converter(name):
     :raise: KeyError if no matching converter could be found
 
     """
-    if name in LANGUAGE_CONVERTERS:
-        return LANGUAGE_CONVERTERS[name]
-    for ep in iter_entry_points('babelfish.language_converters'):
-        if ep.name == name:
-            register_language_converter(name, ep.load())
-            return LANGUAGE_CONVERTERS[name]
-    raise KeyError(name)
+    return LANGUAGE_CONVERTERS[name].obj
 
 
 def register_language_converter(name, converter):
@@ -221,9 +229,7 @@ def load_language_converters():
     'babelfish.language_converters' entry point
 
     """
-    for ep in iter_entry_points('babelfish.language_converters'):
-        if ep.name not in LANGUAGE_CONVERTERS:
-            register_language_converter(ep.name, ep.load())
+    LANGUAGE_CONVERTERS.load_from_entry_points()
 
 
 def clear_language_converters():
@@ -233,5 +239,4 @@ def clear_language_converters():
     in :data:`LANGUAGE_CONVERTERS`
 
     """
-    for name in set(LANGUAGE_CONVERTERS.keys()):
-        unregister_language_converter(name)
+    LANGUAGE_CONVERTERS.clear()

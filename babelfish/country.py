@@ -5,15 +5,14 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+
 from collections import namedtuple
 from functools import partial
-from pkg_resources import resource_stream, iter_entry_points  # @UnresolvedImport
-from .converters import CountryReverseConverter
-
+from pkg_resources import resource_stream  # @UnresolvedImport
+from .extensions import ConvertersManager
 
 COUNTRIES = {}
 COUNTRY_MATRIX = []
-COUNTRY_CONVERTERS = {}
 
 #: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
@@ -88,6 +87,16 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         return self.alpha2
 
 
+class CountryConvertersManager(ConvertersManager):
+    def __init__(self, namespace='babelfish.country_converters'):
+        super(CountryConvertersManager, self).__init__(namespace)
+
+    def _internal_entry_points(self):
+        return ['name = babelfish.converters.countryname:CountryNameConverter']
+
+COUNTRY_CONVERTERS = CountryConvertersManager()
+
+
 def get_country_converter(name):
     """Get a registered :class:`~babelfish.converters.CountryConverter` by `name`
 
@@ -102,13 +111,7 @@ def get_country_converter(name):
     :raise: KeyError if no matching converter could be found
 
     """
-    if name in COUNTRY_CONVERTERS:
-        return COUNTRY_CONVERTERS[name]
-    for ep in iter_entry_points('babelfish.country_converters'):
-        if ep.name == name:
-            register_country_converter(name, ep.load())
-            return COUNTRY_CONVERTERS[name]
-    raise KeyError(name)
+    return COUNTRY_CONVERTERS[name].obj
 
 
 def register_country_converter(name, converter):
@@ -148,9 +151,7 @@ def load_country_converters():
     'babelfish.country_converters' entry point
 
     """
-    for ep in iter_entry_points('babelfish.country_converters'):
-        if ep.name not in COUNTRY_CONVERTERS:
-            register_country_converter(ep.name, ep.load())
+    COUNTRY_CONVERTERS.load_from_entry_points()
 
 
 def clear_country_converters():
@@ -160,5 +161,4 @@ def clear_country_converters():
     in :data:`COUNTRY_CONVERTERS`
 
     """
-    for name in set(COUNTRY_CONVERTERS.keys()):
-        unregister_country_converter(name)
+    COUNTRY_CONVERTERS.clear()
