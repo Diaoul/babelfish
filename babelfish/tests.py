@@ -330,7 +330,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
                 return (self.from_test[test], None)
         language = Language('fra')
         self.assertFalse(hasattr(language, 'test'))
-        LANGUAGE_CONVERTERS['test'] = TestConverter
+        LANGUAGE_CONVERTERS['test'] = TestConverter()
         self.assertTrue(hasattr(language, 'test'))
         self.assertIn('test', LANGUAGE_CONVERTERS)
         self.assertEqual(Language('fra').test, 'test1')
