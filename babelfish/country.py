@@ -11,18 +11,18 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 
 
-countries = {}
-country_matrix = []
+COUNTRIES = {}
+COUNTRY_MATRIX = []
 
-#: The namedtuple used in the :data:`country_matrix`
+#: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
 
 f = resource_stream('babelfish', 'data/iso-3166-1.txt')
 f.readline()
 for l in f:
     iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
-    countries[iso_country.alpha2] = iso_country.name
-    country_matrix.append(iso_country)
+    COUNTRIES[iso_country.alpha2] = iso_country.name
+    COUNTRY_MATRIX.append(iso_country)
 f.close()
 
 
@@ -55,7 +55,7 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
 
     """
     def __init__(self, country):
-        if country not in countries:
+        if country not in COUNTRIES:
             raise ValueError('%r is not a valid country' % country)
 
         #: ISO-3166 2-letter country code

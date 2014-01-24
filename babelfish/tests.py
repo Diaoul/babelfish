@@ -10,7 +10,7 @@ import re
 import sys
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
-from babelfish import (languages, Language, Country, Script, language_converters, country_converters,
+from babelfish import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
 
 
@@ -143,7 +143,7 @@ class TestCountry(TestCase, _Py26FixTestCase):
 
 class TestLanguage(TestCase, _Py26FixTestCase):
     def test_languages(self):
-        self.assertEqual(len(languages), 7874)
+        self.assertEqual(len(LANGUAGES), 7874)
 
     def test_wrong_language(self):
         self.assertRaises(ValueError, lambda: Language('zzz'))
@@ -206,14 +206,14 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').opensubtitles)
         self.assertEqual(len(language_converters['opensubtitles'].codes), 606)
 
-        # test with all the languages from the opensubtitles api
+        # test with all the LANGUAGES from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
         f = resource_stream('babelfish', 'data/opensubtitles_languages.txt')
         f.readline()
         for l in f:
             idlang, alpha2, _, upload_enabled, web_enabled = l.decode('utf-8').strip().split('\t')
             if not int(upload_enabled) and not int(web_enabled):
-                # do not test languages that are too esoteric / not widely available
+                # do not test LANGUAGES that are too esoteric / not widely available
                 continue
             self.assertEqual(Language.fromopensubtitles(idlang).opensubtitles, idlang)
             if alpha2:

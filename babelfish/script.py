@@ -10,12 +10,12 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 
 
 #: Script code to script name mapping
-scripts = {}
+SCRIPTS = {}
 
 #: List of countries in the ISO-15924 as namedtuple of code, number, name, french_name, pva and date
-script_matrix = []
+SCRIPT_MATRIX = []
 
-#: The namedtuple used in the :data:`script_matrix`
+#: The namedtuple used in the :data:`SCRIPT_MATRIX`
 IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
 
 f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
@@ -25,8 +25,8 @@ for l in f:
     if not l or l.startswith('#'):
         continue
     script = IsoScript._make(l.split(';'))
-    script_matrix.append(script)
-    scripts[script.code] = script.name
+    SCRIPT_MATRIX.append(script)
+    SCRIPTS[script.code] = script.name
 f.close()
 
 
@@ -39,7 +39,7 @@ class Script(object):
 
     """
     def __init__(self, script):
-        if script not in scripts:
+        if script not in SCRIPTS:
             raise ValueError('%r is not a valid script' % script)
 
         #: ISO-15924 4-letter script code
@@ -48,7 +48,7 @@ class Script(object):
     @property
     def name(self):
         """English name of the script"""
-        return scripts[self.code]
+        return SCRIPTS[self.code]
 
     def __hash__(self):
         return hash(self.code)

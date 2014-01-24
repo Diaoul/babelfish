@@ -14,18 +14,18 @@ from .exceptions import LanguageConvertError
 from .script import Script
 
 
-languages = set()
-language_matrix = []
+LANGUAGES = set()
+LANGUAGE_MATRIX = []
 
-#: The namedtuple used in the :data:`language_matrix`
+#: The namedtuple used in the :data:`LANGUAGE_MATRIX`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
 
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
     iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-    languages.add(iso_language.alpha3)
-    language_matrix.append(iso_language)
+    LANGUAGES.add(iso_language.alpha3)
+    LANGUAGE_MATRIX.append(iso_language)
 f.close()
 
 
@@ -75,9 +75,9 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
 
     """
     def __init__(self, language, country=None, script=None, unknown=None):
-        if unknown is not None and language not in languages:
+        if unknown is not None and language not in LANGUAGES:
             language = unknown
-        if language not in languages:
+        if language not in LANGUAGES:
             raise ValueError('%r is not a valid language' % language)
         self.alpha3 = language
         self.country = None
