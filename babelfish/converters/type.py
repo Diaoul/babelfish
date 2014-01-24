@@ -7,13 +7,13 @@
 from __future__ import unicode_literals
 from . import LanguageConverter
 from ..exceptions import LanguageConvertError
-from ..language import LANGUAGE_MATRIX
+from ..language import language_matrix
 
 
 class LanguageTypeConverter(LanguageConverter):
     FULLNAME = {'A': 'ancient', 'C': 'constructed', 'E': 'extinct', 'H': 'historical', 'L': 'living', 'S': 'special'}
     SYMBOLS = {}
-    for iso_language in LANGUAGE_MATRIX:
+    for iso_language in language_matrix:
         SYMBOLS[iso_language.alpha3] = iso_language.type
     codes = set(SYMBOLS.values())
 

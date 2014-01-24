@@ -11,18 +11,18 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 
 
-COUNTRIES = {}
-COUNTRY_MATRIX = []
+countries = {}
+country_matrix = []
 
-#: The namedtuple used in the :data:`COUNTRY_MATRIX`
+#: The namedtuple used in the :data:`country_matrix`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
 
 f = resource_stream('babelfish', 'data/iso-3166-1.txt')
 f.readline()
 for l in f:
     iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
-    COUNTRIES[iso_country.alpha2] = iso_country.name
-    COUNTRY_MATRIX.append(iso_country)
+    countries[iso_country.alpha2] = iso_country.name
+    country_matrix.append(iso_country)
 f.close()
 
 
@@ -31,7 +31,7 @@ class CountryConverterManager(ConverterManager):
     entry_point = 'babelfish.country_converters'
     internal_converters = ['name = babelfish.converters.countryname:CountryNameConverter']
 
-COUNTRY_CONVERTERS = CountryConverterManager()
+country_converters = CountryConverterManager()
 
 
 class CountryMeta(type):
@@ -55,7 +55,7 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
 
     """
     def __init__(self, country):
-        if country not in COUNTRIES:
+        if country not in countries:
             raise ValueError('%r is not a valid country' % country)
 
         #: ISO-3166 2-letter country code
@@ -72,10 +72,10 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         :rtype: :class:`Country`
 
         """
-        return cls(COUNTRY_CONVERTERS[converter].reverse(code))
+        return cls(country_converters[converter].reverse(code))
 
     def __getattr__(self, name):
-        return COUNTRY_CONVERTERS[name].convert(self.alpha2)
+        return country_converters[name].convert(self.alpha2)
 
     def __hash__(self):
         return hash(self.alpha2)

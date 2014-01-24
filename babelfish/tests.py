@@ -10,7 +10,7 @@ import re
 import sys
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
-from babelfish import (LANGUAGES, Language, Country, Script, LANGUAGE_CONVERTERS, COUNTRY_CONVERTERS,
+from babelfish import (languages, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
 
 
@@ -138,12 +138,12 @@ class TestCountry(TestCase, _Py26FixTestCase):
         self.assertEqual(Country.fromname('UNITED STATES'), Country('US'))
         self.assertEqual(Country.fromcode('UNITED STATES', 'name'), Country('US'))
         self.assertRaises(CountryReverseError, lambda: Country.fromname('ZZZZZ'))
-        self.assertEqual(len(COUNTRY_CONVERTERS['name'].codes), 249)
+        self.assertEqual(len(country_converters['name'].codes), 249)
 
 
 class TestLanguage(TestCase, _Py26FixTestCase):
     def test_languages(self):
-        self.assertEqual(len(LANGUAGES), 7874)
+        self.assertEqual(len(languages), 7874)
 
     def test_wrong_language(self):
         self.assertRaises(ValueError, lambda: Language('zzz'))
@@ -157,7 +157,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('en', 'alpha2'), Language('eng'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromalpha2('zz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').alpha2)
-        self.assertEqual(len(LANGUAGE_CONVERTERS['alpha2'].codes), 184)
+        self.assertEqual(len(language_converters['alpha2'].codes), 184)
 
     def test_converter_alpha3b(self):
         self.assertEqual(Language('fra').alpha3b, 'fre')
@@ -165,7 +165,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('fre', 'alpha3b'), Language('fra'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromalpha3b('zzz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').alpha3b)
-        self.assertEqual(len(LANGUAGE_CONVERTERS['alpha3b'].codes), 418)
+        self.assertEqual(len(language_converters['alpha3b'].codes), 418)
 
     def test_converter_alpha3t(self):
         self.assertEqual(Language('fra').alpha3t, 'fra')
@@ -173,22 +173,22 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('fra', 'alpha3t'), Language('fra'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromalpha3t('zzz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').alpha3t)
-        self.assertEqual(len(LANGUAGE_CONVERTERS['alpha3t'].codes), 418)
+        self.assertEqual(len(language_converters['alpha3t'].codes), 418)
 
     def test_converter_name(self):
         self.assertEqual(Language('eng').name, 'English')
         self.assertEqual(Language.fromname('English'), Language('eng'))
         self.assertEqual(Language.fromcode('English', 'name'), Language('eng'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromname('Zzzzzzzzz'))
-        self.assertEqual(len(LANGUAGE_CONVERTERS['name'].codes), 7874)
+        self.assertEqual(len(language_converters['name'].codes), 7874)
 
     def test_converter_scope(self):
-        self.assertEqual(LANGUAGE_CONVERTERS['scope'].codes, set(['I', 'S', 'M']))
+        self.assertEqual(language_converters['scope'].codes, set(['I', 'S', 'M']))
         self.assertEqual(Language('eng').scope, 'individual')
         self.assertEqual(Language('und').scope, 'special')
 
     def test_converter_type(self):
-        self.assertEqual(LANGUAGE_CONVERTERS['type'].codes, set(['A', 'C', 'E', 'H', 'L', 'S']))
+        self.assertEqual(language_converters['type'].codes, set(['A', 'C', 'E', 'H', 'L', 'S']))
         self.assertEqual(Language('eng').type, 'living')
         self.assertEqual(Language('und').type, 'special')
 
@@ -204,7 +204,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('pob', 'opensubtitles'), Language('por', 'BR'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromopensubtitles('zzz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').opensubtitles)
-        self.assertEqual(len(LANGUAGE_CONVERTERS['opensubtitles'].codes), 606)
+        self.assertEqual(len(language_converters['opensubtitles'].codes), 606)
 
         # test with all the languages from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
@@ -330,13 +330,13 @@ class TestLanguage(TestCase, _Py26FixTestCase):
                 return (self.from_test[test], None)
         language = Language('fra')
         self.assertFalse(hasattr(language, 'test'))
-        LANGUAGE_CONVERTERS['test'] = TestConverter()
+        language_converters['test'] = TestConverter()
         self.assertTrue(hasattr(language, 'test'))
-        self.assertIn('test', LANGUAGE_CONVERTERS)
+        self.assertIn('test', language_converters)
         self.assertEqual(Language('fra').test, 'test1')
         self.assertEqual(Language.fromtest('test2').alpha3, 'eng')
-        del LANGUAGE_CONVERTERS['test']
-        self.assertNotIn('test', LANGUAGE_CONVERTERS)
+        del language_converters['test']
+        self.assertNotIn('test', language_converters)
         self.assertRaises(KeyError, lambda: Language.fromtest('test1'))
         self.assertRaises(AttributeError, lambda: Language('fra').test)
 

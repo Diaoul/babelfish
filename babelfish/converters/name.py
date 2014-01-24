@@ -6,12 +6,12 @@
 #
 from __future__ import unicode_literals
 from . import LanguageEquivalenceConverter
-from ..language import LANGUAGE_MATRIX
+from ..language import language_matrix
 
 
 class NameConverter(LanguageEquivalenceConverter):
     CASE_SENSITIVE = False
     SYMBOLS = {}
-    for iso_language in LANGUAGE_MATRIX:
+    for iso_language in language_matrix:
         if iso_language.name:
             SYMBOLS[iso_language.alpha3] = iso_language.name

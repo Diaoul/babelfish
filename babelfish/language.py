@@ -14,18 +14,18 @@ from .exceptions import LanguageConvertError
 from .script import Script
 
 
-LANGUAGES = set()
-LANGUAGE_MATRIX = []
+languages = set()
+language_matrix = []
 
-#: The namedtuple used in the :data:`LANGUAGE_MATRIX`
+#: The namedtuple used in the :data:`language_matrix`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
 
 f = resource_stream('babelfish', 'data/iso-639-3.tab')
 f.readline()
 for l in f:
     iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-    LANGUAGES.add(iso_language.alpha3)
-    LANGUAGE_MATRIX.append(iso_language)
+    languages.add(iso_language.alpha3)
+    language_matrix.append(iso_language)
 f.close()
 
 
@@ -40,7 +40,7 @@ class LanguageConverterManager(ConverterManager):
                            'type = babelfish.converters.type:LanguageTypeConverter',
                            'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter']
 
-LANGUAGE_CONVERTERS = LanguageConverterManager()
+language_converters = LanguageConverterManager()
 
 
 class LanguageMeta(type):
@@ -75,9 +75,9 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
 
     """
     def __init__(self, language, country=None, script=None, unknown=None):
-        if unknown is not None and language not in LANGUAGES:
+        if unknown is not None and language not in languages:
             language = unknown
-        if language not in LANGUAGES:
+        if language not in languages:
             raise ValueError('%r is not a valid language' % language)
         self.alpha3 = language
         self.country = None
@@ -106,7 +106,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         :rtype: :class:`Language`
 
         """
-        return cls(*LANGUAGE_CONVERTERS[converter].reverse(code))
+        return cls(*language_converters[converter].reverse(code))
 
     @classmethod
     def fromietf(cls, ietf):
@@ -140,7 +140,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         country = self.country.alpha2 if self.country is not None else None
         script = self.script.code if self.script is not None else None
         try:
-            return LANGUAGE_CONVERTERS[name].convert(alpha3, country, script)
+            return language_converters[name].convert(alpha3, country, script)
         except KeyError:
             raise AttributeError(name)
 

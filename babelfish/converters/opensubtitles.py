@@ -7,13 +7,13 @@
 from __future__ import unicode_literals
 from . import LanguageReverseConverter, CaseInsensitiveDict
 from ..exceptions import LanguageReverseError
-from ..language import LANGUAGE_CONVERTERS
+from ..language import language_converters
 
 
 class OpenSubtitlesConverter(LanguageReverseConverter):
     def __init__(self):
-        self.alpha3b_converter = LANGUAGE_CONVERTERS['alpha3b']
-        self.alpha2_converter = LANGUAGE_CONVERTERS['alpha2']
+        self.alpha3b_converter = language_converters['alpha3b']
+        self.alpha2_converter = language_converters['alpha2']
         self.to_opensubtitles = {('por', 'BR'): 'pob', ('gre', None): 'ell', ('srp', None): 'scc', ('srp', 'ME'): 'mne'}
         self.from_opensubtitles = CaseInsensitiveDict({'pob': ('por', 'BR'), 'pb': ('por', 'BR'), 'ell': ('ell', None),
                                                        'scc': ('srp', None), 'mne': ('srp', 'ME')})
