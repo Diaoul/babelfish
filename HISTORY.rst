@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.5.0
+-----
+**release date:** 2014-01-25
+
+**WARNING:** Backward incompatible changes
+
+* Simplify converter management with ConverterManager class
+* Make babelfish usable in place
+* Add Python 2.6 / 3.2 compatibility
+
+
 0.4.0
 -----
 **release date:** 2013-11-21
