@@ -87,13 +87,13 @@ Build your own Language/Country converter::
                 raise babelfish.LanguageReverseError(mycode)
             return (self.from_mycode[mycode],)
 
-You can also use the :class:`LanguageEquivalenceConverter`
+You can also use the :class:`~babelfish.converters.LanguageEquivalenceConverter`
 utility class if your mapping is a simple one-to-one mapping::
 
     class MyCodeConverter(babelfish.LanguageEquivalenceConverter):
         SYMBOLS = {'fra': 'mycode1', 'eng': 'mycode2'}
 
-Use it directly::
+Use it directly (no lazy loading)::
 
     >>> babelfish.LANGUAGE_CONVERTERS['mycode'] = MyCodeConverter()
     >>> babelfish.Language.frommycode('mycode2')
@@ -101,11 +101,15 @@ Use it directly::
     >>> babelfish.Language('fra').mycode
     'mycode1'
 
-Or make it available in your application by using the entry point::
+Or make it available in your application by using the entry point (lazy loading)::
 
     setup([...],
           entry_points={'babelfish.language_converters': ['mycode = mymodule.converter:MyCodeConverter']},
           [...])
+
+Or if you don't want to use the entry point (lazy loading)::
+
+    >>> babelfish.language_converters.register('mycode = mymodule.converter:MyCodeConverter')
 
 
 API Documentation

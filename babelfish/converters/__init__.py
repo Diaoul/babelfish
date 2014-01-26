@@ -206,6 +206,12 @@ class CountryReverseConverter(CountryConverter):
 class ConverterManager(object):
     """Manager for babelfish converters behaving like a dict with lazy loading
 
+    Loading is done in this order:
+
+    * Entry point converters
+    * Registered converters
+    * Internal converters
+
     .. attribute:: entry_point
 
         The entry point where to look for converters
@@ -219,6 +225,9 @@ class ConverterManager(object):
     internal_converters = []
 
     def __init__(self):
+        #: Registered converters with entry point syntax
+        self.registered_converters = []
+
         #: Loaded converters
         self.converters = {}
 
@@ -230,7 +239,7 @@ class ConverterManager(object):
             if ep.name == name:
                 self.converters[ep.name] = ep.load()()
                 return self.converters[ep.name]
-        for ep in (EntryPoint.parse(internal_converter) for internal_converter in self.internal_converters):
+        for ep in (EntryPoint.parse(c) for c in self.registered_converters + self.internal_converters):
             if ep.name == name:
                 self.converters[ep.name] = ep.load(require=False)()
                 return self.converters[ep.name]
@@ -247,6 +256,25 @@ class ConverterManager(object):
     def __iter__(self):
         """Iterator over loaded converters"""
         return iter(self.converters)
+
+    def register(self, entry_point):
+        """Register a converter
+
+        :param string entry_point: converter to register (entry point syntax)
+        :raise: ValueError if already registered
+
+        """
+        if entry_point in self.registered_converters:
+            raise ValueError('Already registered')
+        self.registered_converters.insert(0, entry_point)
+
+    def unregister(self, entry_point):
+        """Unregister a converter
+
+        :param string entry_point: converter to unregister (entry point syntax)
+
+        """
+        self.registered_converters.remove(entry_point)
 
     def __contains__(self, name):
         return name in self.converters
