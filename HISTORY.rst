@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.5.1
+-----
+**release date:** 2014-01-26
+
+* Add a register method to ConverterManager to register without loading
+
+
 0.5.0
 -----
 **release date:** 2014-01-25
