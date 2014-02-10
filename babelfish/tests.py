@@ -12,6 +12,7 @@ from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
 from babelfish import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
+from utils import DataTable
 
 
 if sys.version_info[:2] <= (2, 6):
@@ -341,11 +342,38 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertRaises(AttributeError, lambda: Language('fra').test)
 
 
+class TestUtils(TestCase, _Py26FixTestCase):
+    def test_data_table(self):
+        f = resource_stream('babelfish', 'data/iso-639-3.tab')
+        f.readline()
+        table = DataTable(f)
+        f.close()
+
+        self.assertEqual(len(table), 7874)
+
+        self.assertEqual(table.get(1947, 0), 'fra')
+        self.assertEqual(table.get(1947, 1), 'fre')
+        self.assertEqual(table.get(1947, 2), 'fra')
+        self.assertEqual(table.get(1947, 3), 'fr')
+        self.assertEqual(table.get(1947, 4), 'I')
+        self.assertEqual(table.get(1947, 5), 'L')
+        self.assertEqual(table.get(1947, 6), 'French')
+
+        self.assertEqual(table.get(3132, 0), 'kmv')
+        self.assertEqual(table.get(3132, 1), '')
+        self.assertEqual(table.get(3132, 2), '')
+        self.assertEqual(table.get(3132, 3), '')
+        self.assertEqual(table.get(3132, 4), 'I')
+        self.assertEqual(table.get(3132, 5), 'L')
+        self.assertEqual(table.get(3132, 6), 'Karipúna Creole French')
+
+
 def suite():
     suite = TestSuite()
     suite.addTest(TestLoader().loadTestsFromTestCase(TestScript))
     suite.addTest(TestLoader().loadTestsFromTestCase(TestCountry))
     suite.addTest(TestLoader().loadTestsFromTestCase(TestLanguage))
+    suite.addTest(TestLoader().loadTestsFromTestCase(TestUtils))
     return suite
 
 
