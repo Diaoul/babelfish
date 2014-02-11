@@ -12,7 +12,8 @@ from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
 from babelfish import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
-from utils import DataTable
+from utils import ArrayDataTable, MmapDataTable
+import mmap
 
 
 if sys.version_info[:2] <= (2, 6):
@@ -343,13 +344,29 @@ class TestLanguage(TestCase, _Py26FixTestCase):
 
 
 class TestUtils(TestCase, _Py26FixTestCase):
-    def test_data_table(self):
+    def test_array_data_table(self):
         f = resource_stream('babelfish', 'data/iso-639-3.tab')
         f.readline()
-        table = DataTable(f)
+        table = ArrayDataTable(f)
         f.close()
 
         self.assertEqual(len(table), 7874)
+
+        self.assertEqual(table.get(0, 0), 'aaa')
+        self.assertEqual(table.get(0, 1), '')
+        self.assertEqual(table.get(0, 2), '')
+        self.assertEqual(table.get(0, 3), '')
+        self.assertEqual(table.get(0, 4), 'I')
+        self.assertEqual(table.get(0, 5), 'L')
+        self.assertEqual(table.get(0, 6), 'Ghotuo')
+
+        self.assertEqual(table.get(1, 0), 'aab')
+        self.assertEqual(table.get(1, 1), '')
+        self.assertEqual(table.get(1, 2), '')
+        self.assertEqual(table.get(1, 3), '')
+        self.assertEqual(table.get(1, 4), 'I')
+        self.assertEqual(table.get(1, 5), 'L')
+        self.assertEqual(table.get(1, 6), 'Alumu-Tesu')
 
         self.assertEqual(table.get(1947, 0), 'fra')
         self.assertEqual(table.get(1947, 1), 'fre')
@@ -367,6 +384,50 @@ class TestUtils(TestCase, _Py26FixTestCase):
         self.assertEqual(table.get(3132, 5), 'L')
         self.assertEqual(table.get(3132, 6), 'Karipúna Creole French')
 
+    def test_mmap_data_table(self):
+        f = resource_stream('babelfish', 'data/iso-639-3.tab')
+        mmap_object = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
+        try:
+            mmap_object.readline()
+
+            table = MmapDataTable(mmap_object)
+
+            self.assertEqual(len(table), 7874)
+
+            self.assertEqual(table.get(0, 0), 'aaa')
+            self.assertEqual(table.get(0, 1), '')
+            self.assertEqual(table.get(0, 2), '')
+            self.assertEqual(table.get(0, 3), '')
+            self.assertEqual(table.get(0, 4), 'I')
+            self.assertEqual(table.get(0, 5), 'L')
+            self.assertEqual(table.get(0, 6), 'Ghotuo')
+
+            self.assertEqual(table.get(1, 0), 'aab')
+            self.assertEqual(table.get(1, 1), '')
+            self.assertEqual(table.get(1, 2), '')
+            self.assertEqual(table.get(1, 3), '')
+            self.assertEqual(table.get(1, 4), 'I')
+            self.assertEqual(table.get(1, 5), 'L')
+            self.assertEqual(table.get(1, 6), 'Alumu-Tesu')
+
+            self.assertEqual(table.get(1947, 0), 'fra')
+            self.assertEqual(table.get(1947, 1), 'fre')
+            self.assertEqual(table.get(1947, 2), 'fra')
+            self.assertEqual(table.get(1947, 3), 'fr')
+            self.assertEqual(table.get(1947, 4), 'I')
+            self.assertEqual(table.get(1947, 5), 'L')
+            self.assertEqual(table.get(1947, 6), 'French')
+
+            self.assertEqual(table.get(3132, 0), 'kmv')
+            self.assertEqual(table.get(3132, 1), '')
+            self.assertEqual(table.get(3132, 2), '')
+            self.assertEqual(table.get(3132, 3), '')
+            self.assertEqual(table.get(3132, 4), 'I')
+            self.assertEqual(table.get(3132, 5), 'L')
+            self.assertEqual(table.get(3132, 6), 'Karipúna Creole French')
+        finally:
+            mmap_object.close()
+
 
 def suite():
     suite = TestSuite()
@@ -375,7 +436,6 @@ def suite():
     suite.addTest(TestLoader().loadTestsFromTestCase(TestLanguage))
     suite.addTest(TestLoader().loadTestsFromTestCase(TestUtils))
     return suite
-
 
 if __name__ == '__main__':
     TextTestRunner().run(suite())
