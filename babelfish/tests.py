@@ -384,6 +384,17 @@ class TestUtils(TestCase, _Py26FixTestCase):
         self.assertEqual(table.get(3132, 5), 'L')
         self.assertEqual(table.get(3132, 6), 'Karipúna Creole French')
 
+        f = resource_stream('babelfish', 'data/iso-639-3.tab')
+        f.readline()
+        table = ArrayDataTable(f, skip_columns=set((1, 2, 3, 4, 5)))
+        f.close()
+
+        self.assertEqual(table.get(1947, 0), 'fra')
+        self.assertEqual(table.get(1947, 1), 'French')
+
+        self.assertEqual(table.get(3132, 0), 'kmv')
+        self.assertEqual(table.get(3132, 1), 'Karipúna Creole French')
+
     def test_mmap_data_table(self):
         f = resource_stream('babelfish', 'data/iso-639-3.tab')
         mmap_object = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
@@ -425,6 +436,17 @@ class TestUtils(TestCase, _Py26FixTestCase):
             self.assertEqual(table.get(3132, 4), 'I')
             self.assertEqual(table.get(3132, 5), 'L')
             self.assertEqual(table.get(3132, 6), 'Karipúna Creole French')
+
+            mmap_object.seek(0)
+            mmap_object.readline()
+            table = MmapDataTable(mmap_object, skip_columns=set((1, 2, 3, 4, 5)))
+
+            self.assertEqual(table.get(1947, 0), 'fra')
+            self.assertEqual(table.get(1947, 1), 'French')
+
+            self.assertEqual(table.get(3132, 0), 'kmv')
+            self.assertEqual(table.get(3132, 1), 'Karipúna Creole French')
+
         finally:
             mmap_object.close()
 

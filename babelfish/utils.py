@@ -12,11 +12,12 @@ from array import array
 
 class ArrayDataTable(object):
     """A full-memory strings data structure, loaded from a delimited text file."""
-    def __init__(self, rows_iterable, encoding='utf-8', delimiter='\t'):
+    def __init__(self, rows_iterable, encoding='utf-8', delimiter='\t', skip_columns=None):
         self.rows = 0
         self.columns = 0
         self.encoding = encoding
         self.delimiter = delimiter
+        self.skip_columns = skip_columns
         self._data_array = array(b'b')
         self._pos_array = array(b'i')
         for row in rows_iterable:
@@ -25,11 +26,15 @@ class ArrayDataTable(object):
 
     def _init_row(self, row):
         row_data = row.decode(self.encoding).split(self.delimiter)
-        self.columns = len(row_data)
+        self.columns = 0
+        i = 0
         for u in row_data:
-            b = len(self._data_array)
-            self._data_array.fromstring(u.encode(self.encoding))
-            self._pos_array.append(b)
+            if not self.skip_columns or i not in self.skip_columns:
+                b = len(self._data_array)
+                self._data_array.fromstring(u.encode(self.encoding))
+                self._pos_array.append(b)
+                self.columns += 1
+            i += 1
 
     def get(self, row, column):
         start = self._pos_array[row * self.columns + column]
@@ -47,12 +52,13 @@ class ArrayDataTable(object):
 
 class MmapDataTable(object):
     """A mmap-based strings data structure, loaded from a delimited text file."""
-    def __init__(self, mmap_object, encoding='utf-8', delimiter='\t'):
+    def __init__(self, mmap_object, encoding='utf-8', delimiter='\t', skip_columns=None):
         self._data_mmap = mmap_object
         self.encoding = encoding
         self.delimiter = delimiter
         self.rows = 0
         self.columns = 0
+        self.skip_columns = skip_columns
         self._pos_array = array(b'i')
         self._offset = self._data_mmap.tell()
         for row in iter(self._data_mmap.readline, b''):
@@ -62,18 +68,26 @@ class MmapDataTable(object):
 
     def _init_row(self, row):
         row_data = row.decode(self.encoding).split(self.delimiter)
-        self.columns = len(row_data)
+        self.columns = 0
         pos = self._offset
+        i = 0
         for u in row_data:
-            self._pos_array.append(pos)
+            if not self.skip_columns or i not in self.skip_columns:
+                self._pos_array.append(pos)
+                self.columns += 1
             pos = pos + len(u.encode(self.encoding)) + len(self.delimiter)
+            i += 1
 
     def get(self, row, column):
         start = self._pos_array[row * self.columns + column]
         end = self._pos_array[row * self.columns + column + 1]
 
         data = self._data_mmap[start:end - 1]
-        return data.decode(self.encoding)
+        decoded_data = data.decode(self.encoding)
+        if not self.skip_columns:
+            return decoded_data
+        else:
+            return decoded_data.split(self.delimiter)[0]
 
     def __len__(self):
         return self.rows
