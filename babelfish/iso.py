@@ -15,45 +15,28 @@ IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2
 IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
 
 
-def get_countries_data(matrix=False):
+def get_countries_data():
     """Load countries ISO 3166-1 data"""
-    data = [] if matrix else set()
-
     f = resource_stream('babelfish', 'data/iso-3166-1.txt')
     f.readline()
     for l in f:
         iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
-        if matrix:
-            data.append(iso_country)
-        else:
-            data.add(iso_country.alpha2)
+        yield iso_country
     f.close()
 
-    return data
 
-
-def get_languages_data(matrix=False):
+def get_languages_data():
     """Load languages ISO 639-3 data"""
-    data = [] if matrix else set()
-
     f = resource_stream('babelfish', 'data/iso-639-3.tab')
     f.readline()
     for l in f:
         iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-        if matrix:
-            data.append(iso_language)
-        else:
-            data.add(iso_language.alpha3)
-
+        yield iso_language
     f.close()
 
-    return data
 
-
-def get_scripts_data(matrix=False):
+def get_scripts_data():
     """Load scripts ISO 15924 data"""
-    data = [] if matrix else set()
-
     f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
     f.readline()
     for l in f:
@@ -61,10 +44,5 @@ def get_scripts_data(matrix=False):
         if not l or l.startswith('#'):
             continue
         script = IsoScript._make(l.split(';'))
-        if matrix:
-            data.append(script)
-        else:
-            data.add(script.code)
+        yield script
     f.close()
-
-    return data

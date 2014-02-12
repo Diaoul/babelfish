@@ -14,7 +14,7 @@ from .exceptions import LanguageConvertError
 from .script import Script
 from .iso import get_languages_data
 
-LANGUAGES = frozenset(get_languages_data())
+LANGUAGES = frozenset(lang.alpha3 for lang in get_languages_data())
 
 
 class LanguageConverterManager(ConverterManager):

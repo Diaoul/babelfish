@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 from .iso import get_scripts_data
 
-SCRIPTS = frozenset(get_scripts_data())
+SCRIPTS = frozenset(script.code for script in get_scripts_data())
 
 
 class Script(object):

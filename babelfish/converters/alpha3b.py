@@ -12,6 +12,6 @@ from ..iso import get_languages_data
 class Alpha3BConverter(LanguageEquivalenceConverter):
     CASE_SENSITIVE = True
     SYMBOLS = {}
-    for iso_language in get_languages_data(matrix=True):
+    for iso_language in get_languages_data():
         if iso_language.alpha3b:
             SYMBOLS[iso_language.alpha3] = iso_language.alpha3b

@@ -13,7 +13,7 @@ from ..iso import get_languages_data
 class ScopeConverter(LanguageConverter):
     FULLNAME = {'I': 'individual', 'M': 'macrolanguage', 'S': 'special'}
     SYMBOLS = {}
-    for iso_language in get_languages_data(matrix=True):
+    for iso_language in get_languages_data():
         SYMBOLS[iso_language.alpha3] = iso_language.scope
 
     @property

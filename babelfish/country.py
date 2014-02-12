@@ -10,7 +10,7 @@ from functools import partial
 from .converters import ConverterManager
 from .iso import get_countries_data
 
-COUNTRIES = frozenset(get_countries_data())
+COUNTRIES = frozenset(country.alpha2 for country in get_countries_data())
 
 
 class CountryConverterManager(ConverterManager):

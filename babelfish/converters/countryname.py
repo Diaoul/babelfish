@@ -14,7 +14,7 @@ class CountryNameConverter(CountryReverseConverter):
     def __init__(self):
         self.to_name = {}
         self.from_name = CaseInsensitiveDict()
-        for country in get_countries_data(matrix=True):
+        for country in get_countries_data():
             self.to_name[country.alpha2] = country.name
             self.from_name[country.name] = country.alpha2
 
