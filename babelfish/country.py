@@ -5,25 +5,12 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from collections import namedtuple
+
 from functools import partial
-from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
+from .iso import get_countries_data
 
-
-COUNTRIES = {}
-COUNTRY_MATRIX = []
-
-#: The namedtuple used in the :data:`COUNTRY_MATRIX`
-IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
-
-f = resource_stream('babelfish', 'data/iso-3166-1.txt')
-f.readline()
-for l in f:
-    iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
-    COUNTRIES[iso_country.alpha2] = iso_country.name
-    COUNTRY_MATRIX.append(iso_country)
-f.close()
+COUNTRIES = frozenset(get_countries_data().keys())
 
 
 class CountryConverterManager(ConverterManager):

@@ -12,21 +12,9 @@ from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
+from .iso import get_languages_data
 
-
-LANGUAGES = set()
-LANGUAGE_MATRIX = []
-
-#: The namedtuple used in the :data:`LANGUAGE_MATRIX`
-IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
-
-f = resource_stream('babelfish', 'data/iso-639-3.tab')
-f.readline()
-for l in f:
-    iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-    LANGUAGES.add(iso_language.alpha3)
-    LANGUAGE_MATRIX.append(iso_language)
-f.close()
+LANGUAGES = frozenset(get_languages_data().keys())
 
 
 class LanguageConverterManager(ConverterManager):

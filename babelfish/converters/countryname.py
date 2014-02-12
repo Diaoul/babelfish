@@ -6,7 +6,7 @@
 #
 from __future__ import unicode_literals
 from . import CountryReverseConverter, CaseInsensitiveDict
-from ..country import COUNTRY_MATRIX
+from ..iso import get_countries_data
 from ..exceptions import CountryConvertError, CountryReverseError
 
 
@@ -14,7 +14,7 @@ class CountryNameConverter(CountryReverseConverter):
     def __init__(self):
         self.to_name = {}
         self.from_name = CaseInsensitiveDict()
-        for country in COUNTRY_MATRIX:
+        for country in get_countries_data(matrix=True):
             self.to_name[country.alpha2] = country.name
             self.from_name[country.name] = country.alpha2
 

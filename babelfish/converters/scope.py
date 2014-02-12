@@ -7,13 +7,13 @@
 from __future__ import unicode_literals
 from . import LanguageConverter
 from ..exceptions import LanguageConvertError
-from ..language import LANGUAGE_MATRIX
+from ..iso import get_languages_data
 
 
 class ScopeConverter(LanguageConverter):
     FULLNAME = {'I': 'individual', 'M': 'macrolanguage', 'S': 'special'}
     SYMBOLS = {}
-    for iso_language in LANGUAGE_MATRIX:
+    for iso_language in get_languages_data(matrix=True):
         SYMBOLS[iso_language.alpha3] = iso_language.scope
 
     @property

@@ -12,7 +12,7 @@ __copyright__ = 'Copyright 2013 the BabelFish authors'
 
 from .converters import (LanguageConverter, LanguageReverseConverter, LanguageEquivalenceConverter, CountryConverter,
     CountryReverseConverter)
-from .country import country_converters, COUNTRIES, COUNTRY_MATRIX, Country
+from .country import country_converters, COUNTRIES, Country
 from .exceptions import Error, LanguageConvertError, LanguageReverseError, CountryConvertError, CountryReverseError
-from .language import language_converters, LANGUAGES, LANGUAGE_MATRIX, Language
-from .script import SCRIPTS, SCRIPT_MATRIX, Script
+from .language import language_converters, LANGUAGES, Language
+from .script import SCRIPTS, Script

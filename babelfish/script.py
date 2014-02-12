@@ -5,29 +5,10 @@
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from collections import namedtuple
-from pkg_resources import resource_stream  # @UnresolvedImport
 
+from .iso import get_scripts_data
 
-#: Script code to script name mapping
-SCRIPTS = {}
-
-#: List of countries in the ISO-15924 as namedtuple of code, number, name, french_name, pva and date
-SCRIPT_MATRIX = []
-
-#: The namedtuple used in the :data:`SCRIPT_MATRIX`
-IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
-
-f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
-f.readline()
-for l in f:
-    l = l.decode('utf-8').strip()
-    if not l or l.startswith('#'):
-        continue
-    script = IsoScript._make(l.split(';'))
-    SCRIPT_MATRIX.append(script)
-    SCRIPTS[script.code] = script.name
-f.close()
+SCRIPTS = frozenset(get_scripts_data().keys())
 
 
 class Script(object):
