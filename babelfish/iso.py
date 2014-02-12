@@ -17,7 +17,7 @@ IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'p
 
 def get_countries_data(matrix=False):
     """Load countries ISO 3166-1 data"""
-    data = [] if matrix else {}
+    data = [] if matrix else set()
 
     f = resource_stream('babelfish', 'data/iso-3166-1.txt')
     f.readline()
@@ -26,7 +26,7 @@ def get_countries_data(matrix=False):
         if matrix:
             data.append(iso_country)
         else:
-            data[iso_country.alpha2] = iso_country.name
+            data.add(iso_country.alpha2)
     f.close()
 
     return data
@@ -34,7 +34,7 @@ def get_countries_data(matrix=False):
 
 def get_languages_data(matrix=False):
     """Load languages ISO 639-3 data"""
-    data = [] if matrix else {}
+    data = [] if matrix else set()
 
     f = resource_stream('babelfish', 'data/iso-639-3.tab')
     f.readline()
@@ -43,7 +43,7 @@ def get_languages_data(matrix=False):
         if matrix:
             data.append(iso_language)
         else:
-            data[iso_language.alpha3] = iso_language.name
+            data.add(iso_language.alpha3)
 
     f.close()
 
@@ -52,7 +52,7 @@ def get_languages_data(matrix=False):
 
 def get_scripts_data(matrix=False):
     """Load scripts ISO 15924 data"""
-    data = [] if matrix else {}
+    data = [] if matrix else set()
 
     f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
     f.readline()
@@ -64,7 +64,7 @@ def get_scripts_data(matrix=False):
         if matrix:
             data.append(script)
         else:
-            data[script.code] = script.name
+            data.add(script.code)
     f.close()
 
     return data
