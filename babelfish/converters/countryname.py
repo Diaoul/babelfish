@@ -12,13 +12,15 @@ from ..exceptions import CountryConvertError, CountryReverseError
 
 class CountryNameConverter(CountryReverseConverter):
     def __init__(self):
-        self.codes = set()
         self.to_name = {}
         self.from_name = CaseInsensitiveDict()
         for country in COUNTRY_MATRIX:
-            self.codes.add(country.name)
             self.to_name[country.alpha2] = country.name
             self.from_name[country.name] = country.alpha2
+
+    @property
+    def codes(self):
+        return frozenset(self.from_name.keys())
 
     def convert(self, alpha2):
         if alpha2 not in self.to_name:

@@ -15,7 +15,10 @@ class ScopeConverter(LanguageConverter):
     SYMBOLS = {}
     for iso_language in LANGUAGE_MATRIX:
         SYMBOLS[iso_language.alpha3] = iso_language.scope
-    codes = set(SYMBOLS.values())
+
+    @property
+    def codes(self):
+        return frozenset(self.SYMBOLS.values())
 
     def convert(self, alpha3, country=None, script=None):
         if self.SYMBOLS[alpha3] in self.FULLNAME:

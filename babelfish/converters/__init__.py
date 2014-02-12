@@ -140,7 +140,6 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
     CASE_SENSITIVE = False
 
     def __init__(self):
-        self.codes = set()
         self.to_symbol = {}
         if self.CASE_SENSITIVE:
             self.from_symbol = {}
@@ -150,7 +149,10 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
         for alpha3, symbol in self.SYMBOLS.items():
             self.to_symbol[alpha3] = symbol
             self.from_symbol[symbol] = (alpha3, None, None)
-            self.codes.add(symbol)
+
+    @property
+    def codes(self):
+        return frozenset(self.from_symbol.keys())
 
     def convert(self, alpha3, country=None, script=None):
         try:
