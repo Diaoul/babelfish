@@ -42,7 +42,7 @@ class ArrayDataTable(object):
         for i in range(start, end):
             value_array.append(self._data_array[i])
 
-        return value_array.tostring().decode(self.encoding)
+        return value_array.tostring().decode(self.encoding)  # tostring() = tobytes() before 3.2
 
     def __len__(self):
         return self.rows

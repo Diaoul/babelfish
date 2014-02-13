@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013 the BabelFish authors. All rights reserved.
+# Copyright (c) 2014 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
+
 import re
 import sys
 import mmap
+
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
-from babelfish import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
+
+from . import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
 from .utils import ArrayDataTable, MmapDataTable
 
@@ -449,6 +452,7 @@ class TestUtils(TestCase, _Py26FixTestCase):
 
         finally:
             mmap_object.close()
+            f.close()
 
 
 def suite():

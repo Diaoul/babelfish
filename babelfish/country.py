@@ -4,7 +4,7 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
+
 
 from functools import partial
 from .converters import ConverterManager
@@ -27,10 +27,10 @@ class CountryMeta(type):
     Dynamically redirect :meth:`Country.frommycode` to :meth:`Country.fromcode` with the ``mycode`` `converter`
 
     """
-    def __getattr__(cls, name):
+    def __getattr__(self, name):
         if name.startswith('from'):
-            return partial(cls.fromcode, converter=name[4:])
-        return getattr(cls, name)
+            return partial(self.fromcode, converter=name[4:])
+        return getattr(self, name)
 
 
 class Country(CountryMeta(str('CountryBase'), (object,), {})):

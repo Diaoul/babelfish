@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013 the BabelFish authors. All rights reserved.
+# Copyright (c) 2014 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from collections import namedtuple
 from functools import partial
-from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
@@ -37,10 +35,10 @@ class LanguageMeta(type):
     Dynamically redirect :meth:`Language.frommycode` to :meth:`Language.fromcode` with the ``mycode`` `converter`
 
     """
-    def __getattr__(cls, name):
+    def __getattr__(self, name):
         if name.startswith('from'):
-            return partial(cls.fromcode, converter=name[4:])
-        return getattr(cls, name)
+            return partial(self.fromcode, converter=name[4:])
+        return getattr(self, name)
 
 
 class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
