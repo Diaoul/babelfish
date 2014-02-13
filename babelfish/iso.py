@@ -8,6 +8,11 @@
 from collections import namedtuple
 from pkg_resources import resource_stream  # @UnresolvedImport
 
+from .compat import PY3
+if PY3:
+    from sys import intern
+
+
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
 IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
@@ -23,7 +28,10 @@ def get_countries_data():
     try:
         f.readline()
         for l in f:
-            iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
+            l = l.decode('utf-8').strip().split(';')
+            if PY3:
+                l = (intern(s) for s in l)
+            iso_country = IsoCountry(*l)
             yield iso_country
     finally:
         f.close()
@@ -39,7 +47,10 @@ def get_languages_data():
     try:
         f.readline()
         for l in f:
-            iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
+            l = l.decode('utf-8').split('\t')
+            if PY3:
+                l = (intern(s) for s in l)
+            iso_language = IsoLanguage(*l)
             yield iso_language
     finally:
         f.close()
@@ -58,7 +69,10 @@ def get_scripts_data():
             l = l.decode('utf-8').strip()
             if not l or l.startswith('#'):
                 continue
-            script = IsoScript._make(l.split(';'))
+            l = l.split(';')
+            if PY3:
+                l = (intern(s) for s in l)
+            script = IsoScript._make(l)
             yield script
     finally:
         f.close()
