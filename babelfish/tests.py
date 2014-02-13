@@ -7,11 +7,13 @@
 #
 from __future__ import unicode_literals
 
+import mmap
+import random
 import re
 import sys
-import mmap
-
+import timeit
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
+
 from pkg_resources import resource_stream  # @UnresolvedImport
 
 from . import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
@@ -344,6 +346,42 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertNotIn('test', language_converters)
         self.assertRaises(KeyError, lambda: Language.fromtest('test1'))
         self.assertRaises(AttributeError, lambda: Language('fra').test)
+
+    def test_performance(self):
+        languages = list(LANGUAGES)
+        count = 100000
+        load_count = 100
+
+        def test_name():
+            random_language = random.choice(languages)
+            l = Language(random_language)
+            name = l.name
+
+        def test_opensubtitle():
+            random_language = random.choice(languages)
+            l = Language(random_language)
+            try:
+                opensubtitles = l.opensubtitles
+            except LanguageConvertError:
+                pass
+
+        del language_converters['name']
+        from .converters import name
+
+        def test_load_converter():
+            language_converters['name'] = name.NameConverter()
+            del language_converters['name']
+
+        print()
+
+        timer = timeit.timeit(test_name, number=count)
+        print("%s name calls in %.3fs" % (count, timer))
+
+        timer = timeit.timeit(test_opensubtitle, number=count)
+        print("%s opensubtitle calls in %.3fs" % (count, timer))
+
+        timer = timeit.timeit(test_load_converter, number=load_count)
+        print("%s NameConverter loading in %.3fs" % (load_count, timer))
 
 
 class TestUtils(TestCase, _Py26FixTestCase):
