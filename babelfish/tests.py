@@ -8,12 +8,12 @@
 from __future__ import unicode_literals
 import re
 import sys
+import mmap
 from unittest import TestCase, TestSuite, TestLoader, TextTestRunner
 from pkg_resources import resource_stream  # @UnresolvedImport
 from babelfish import (LANGUAGES, Language, Country, Script, language_converters, country_converters,
     LanguageReverseConverter, LanguageConvertError, LanguageReverseError, CountryReverseError)
-from utils import ArrayDataTable, MmapDataTable
-import mmap
+from .utils import ArrayDataTable, MmapDataTable
 
 
 if sys.version_info[:2] <= (2, 6):

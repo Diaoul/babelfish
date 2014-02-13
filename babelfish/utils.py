@@ -5,8 +5,6 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
-
 from array import array
 
 
@@ -18,8 +16,8 @@ class ArrayDataTable(object):
         self.encoding = encoding
         self.delimiter = delimiter
         self.skip_columns = skip_columns
-        self._data_array = array(b'b')
-        self._pos_array = array(b'i')
+        self._data_array = array('b')
+        self._pos_array = array('i')
         for row in rows_iterable:
             self._init_row(row)
             self.rows = self.rows + 1
@@ -40,8 +38,8 @@ class ArrayDataTable(object):
         start = self._pos_array[row * self.columns + column]
         end = self._pos_array[row * self.columns + column + 1]
 
-        value_array = array(b'b')
-        for i in xrange(start, end):
+        value_array = array('b')
+        for i in range(start, end):
             value_array.append(self._data_array[i])
 
         return value_array.tostring().decode(self.encoding)
@@ -59,7 +57,7 @@ class MmapDataTable(object):
         self.rows = 0
         self.columns = 0
         self.skip_columns = skip_columns
-        self._pos_array = array(b'i')
+        self._pos_array = array('i')
         self._offset = self._data_mmap.tell()
         for row in iter(self._data_mmap.readline, b''):
             self._init_row(row)
