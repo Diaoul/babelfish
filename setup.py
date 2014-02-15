@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013 the BabelFish authors. All rights reserved.
+# Copyright (c) 2014 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='babelfish',
-    version='0.5.1',
+    version='0.5.1.memory0',
     license='BSD',
     description='A module to work with countries and languages',
     long_description=open('README.rst').read() + '\n\n' + open('HISTORY.rst').read(),

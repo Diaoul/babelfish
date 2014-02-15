@@ -4,26 +4,13 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
-from collections import namedtuple
+
+
 from functools import partial
-from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
+from .iso import get_countries_data
 
-
-COUNTRIES = {}
-COUNTRY_MATRIX = []
-
-#: The namedtuple used in the :data:`COUNTRY_MATRIX`
-IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
-
-f = resource_stream('babelfish', 'data/iso-3166-1.txt')
-f.readline()
-for l in f:
-    iso_country = IsoCountry(*l.decode('utf-8').strip().split(';'))
-    COUNTRIES[iso_country.alpha2] = iso_country.name
-    COUNTRY_MATRIX.append(iso_country)
-f.close()
+COUNTRIES = frozenset(country.alpha2 for country in get_countries_data())
 
 
 class CountryConverterManager(ConverterManager):
@@ -40,10 +27,10 @@ class CountryMeta(type):
     Dynamically redirect :meth:`Country.frommycode` to :meth:`Country.fromcode` with the ``mycode`` `converter`
 
     """
-    def __getattr__(cls, name):
+    def __getattr__(self, name):
         if name.startswith('from'):
-            return partial(cls.fromcode, converter=name[4:])
-        return getattr(cls, name)
+            return partial(self.fromcode, converter=name[4:])
+        return getattr(self, name)
 
 
 class Country(CountryMeta(str('CountryBase'), (object,), {})):

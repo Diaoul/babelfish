@@ -1,32 +1,18 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2013 the BabelFish authors. All rights reserved.
+# Copyright (c) 2014 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
 from __future__ import unicode_literals
-from collections import namedtuple
 from functools import partial
-from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
+from .iso import get_languages_data
 
-
-LANGUAGES = set()
-LANGUAGE_MATRIX = []
-
-#: The namedtuple used in the :data:`LANGUAGE_MATRIX`
-IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
-
-f = resource_stream('babelfish', 'data/iso-639-3.tab')
-f.readline()
-for l in f:
-    iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-    LANGUAGES.add(iso_language.alpha3)
-    LANGUAGE_MATRIX.append(iso_language)
-f.close()
+LANGUAGES = frozenset(lang.alpha3 for lang in get_languages_data())
 
 
 class LanguageConverterManager(ConverterManager):
@@ -49,10 +35,10 @@ class LanguageMeta(type):
     Dynamically redirect :meth:`Language.frommycode` to :meth:`Language.fromcode` with the ``mycode`` `converter`
 
     """
-    def __getattr__(cls, name):
+    def __getattr__(self, name):
         if name.startswith('from'):
-            return partial(cls.fromcode, converter=name[4:])
-        return getattr(cls, name)
+            return partial(self.fromcode, converter=name[4:])
+        return getattr(self, name)
 
 
 class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
