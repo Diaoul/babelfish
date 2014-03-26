@@ -72,7 +72,7 @@ def get_scripts_data():
             l = l.split(';')
             if PY3:
                 l = (intern(s) for s in l)
-            script = IsoScript._make(l)
+            script = IsoScript(*l)
             yield script
     finally:
         f.close()
