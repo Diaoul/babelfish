@@ -43,7 +43,7 @@ class CountryMeta(type):
     def __getattr__(cls, name):
         if name.startswith('from'):
             return partial(cls.fromcode, converter=name[4:])
-        return getattr(cls, name)
+        return type.__getattribute__(cls, name)
 
 
 class Country(CountryMeta(str('CountryBase'), (object,), {})):
