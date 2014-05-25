@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.5.2
+-----
+**release date:** 2014-05-25
+
+* Babelfish objects (Language, Country, Script) are now picklable
+* Added support for Python 3.4
+
+
 0.5.1
 -----
 **release date:** 2014-01-26
