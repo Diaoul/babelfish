@@ -50,6 +50,12 @@ class Script(object):
         """English name of the script"""
         return SCRIPTS[self.code]
 
+    def __getstate__(self):
+        return self.code
+
+    def __setstate__(self, state):
+        self.code = state
+
     def __hash__(self):
         return hash(self.code)
 
