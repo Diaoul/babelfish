@@ -12,6 +12,7 @@ from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
+from . import basestr
 
 
 LANGUAGES = set()
@@ -154,9 +155,13 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         return hash(str(self))
 
     def __eq__(self, other):
-        if other is None:
+        if isinstance(other, basestr):
+            return str(self) == other
+        if not isinstance(other, Language):
             return False
-        return self.alpha3 == other.alpha3 and self.country == other.country and self.script == other.script
+        return (self.alpha3 == other.alpha3 and
+                self.country == other.country and
+                self.script == other.script)
 
     def __ne__(self, other):
         return not self == other

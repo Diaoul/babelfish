@@ -9,6 +9,7 @@ from collections import namedtuple
 from functools import partial
 from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
+from . import basestr
 
 
 COUNTRIES = {}
@@ -87,7 +88,9 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
         return hash(self.alpha2)
 
     def __eq__(self, other):
-        if other is None:
+        if isinstance(other, basestr):
+            return str(self) == other
+        if not isinstance(other, Country):
             return False
         return self.alpha2 == other.alpha2
 

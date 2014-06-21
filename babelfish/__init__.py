@@ -10,6 +10,13 @@ __author__ = 'Antoine Bertin'
 __license__ = 'BSD'
 __copyright__ = 'Copyright 2013 the BabelFish authors'
 
+import sys
+
+if sys.version_info[0] >= 3:
+    basestr = str
+else:
+    basestr = basestring
+
 from .converters import (LanguageConverter, LanguageReverseConverter, LanguageEquivalenceConverter, CountryConverter,
     CountryReverseConverter)
 from .country import country_converters, COUNTRIES, COUNTRY_MATRIX, Country
