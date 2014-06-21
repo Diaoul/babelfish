@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.5.3
+-----
+**release date:** 2014-06-22
+
+* Better equality semantics for Language, Country, Script
+
 0.5.2
 -----
 **release date:** 2014-05-25
