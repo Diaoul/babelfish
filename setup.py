@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='babelfish',
-    version='0.5.4',
+    version='0.5.5-dev',
     license='BSD',
     description='A module to work with countries and languages',
     long_description=open('README.rst').read() + '\n\n' + open('HISTORY.rst').read(),
