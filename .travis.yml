@@ -10,13 +10,14 @@ python:
   - "pypy"
 
 install:
-  - pip install coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then pip install coveralls; fi
 
 script:
-  - coverage run --source=babelfish setup.py test
+  # coverage fails on python 3.2
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then coverage run --source=babelfish setup.py test; else python setup.py test; fi
 
 after_success:
-  - coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION != '3.2' ]]; then coveralls; fi
 
 notifications:
   email: false
