@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='babelfish',
-    version='0.5.5-dev',
+    version='0.5.5',
     license='BSD',
     description='A module to work with countries and languages',
     long_description=open('README.rst').read() + '\n\n' + open('HISTORY.rst').read(),
@@ -32,6 +32,7 @@ setup(name='babelfish',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Multimedia :: Video',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     test_suite='babelfish.tests.suite')

@@ -1,8 +1,11 @@
 Changelog
 =========
 
-0.5.5-dev
+0.5.5
 -----
+**release date:** 2015-10-31
+
+* Fix hasattr on Country object when called with an invalid attribute
 
 0.5.4
 -----
