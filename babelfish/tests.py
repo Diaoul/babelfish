@@ -203,8 +203,10 @@ class TestLanguage(TestCase, _Py26FixTestCase):
     def test_converter_opensubtitles(self):
         self.assertEqual(Language('fra').opensubtitles, Language('fra').alpha3b)
         self.assertEqual(Language('por', 'BR').opensubtitles, 'pob')
+        self.assertEqual(Language('zho', 'TW').opensubtitles, 'zht')
         self.assertEqual(Language.fromopensubtitles('fre'), Language('fra'))
         self.assertEqual(Language.fromopensubtitles('pob'), Language('por', 'BR'))
+        self.assertEqual(Language.fromopensubtitles('zht'), Language('zho', 'TW'))
         self.assertEqual(Language.fromopensubtitles('pb'), Language('por', 'BR'))
         # Montenegrin is not recognized as an ISO language (yet?) but for now it is
         # unofficially accepted as Serbian from Montenegro
@@ -212,7 +214,7 @@ class TestLanguage(TestCase, _Py26FixTestCase):
         self.assertEqual(Language.fromcode('pob', 'opensubtitles'), Language('por', 'BR'))
         self.assertRaises(LanguageReverseError, lambda: Language.fromopensubtitles('zzz'))
         self.assertRaises(LanguageConvertError, lambda: Language('aaa').opensubtitles)
-        self.assertEqual(len(language_converters['opensubtitles'].codes), 607)
+        self.assertEqual(len(language_converters['opensubtitles'].codes), 608)
 
         # test with all the LANGUAGES from the opensubtitles api
         # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
