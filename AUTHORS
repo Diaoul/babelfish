@@ -5,6 +5,7 @@ BabelFish is written and maintained by:
 
 Other contributors, listed alphabetically, are:
 
+ * Hugo van Kemenade -- Add support for Python 3.6-3.9, drop EOL 2.6 and 3.2-3.4
  * Your name here! -- what you did
 
 Many thanks for all contributions!
