@@ -1,5 +1,5 @@
 language: python
-
+aech: ppc64le
 python:
   - "2.7"
   - "3.5"
