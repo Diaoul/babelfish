@@ -16,14 +16,14 @@ before_install:
      sudo chown -Rv $USER:$GROUP ~/.cache/pip/wheels
     fi
    
-   jobs:
+install:
+  - pip install coveralls
+
+jobs:
   exclude:
     - arch: ppc64le
       python: pypy
  
-install:
-  - pip install coveralls
-
 script:
   - coverage run --source=babelfish setup.py test
 
