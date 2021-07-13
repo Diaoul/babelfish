@@ -8,6 +8,7 @@
 * Use poetry as build system
 * Use pytest as test runner
 * Move documentation to README
+* Use GitHub Actions CI
 
 ## 0.5.5
 **release date:** 2015-10-31
