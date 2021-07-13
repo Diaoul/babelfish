@@ -42,3 +42,10 @@ nosetests.xml
 
 # Sphinx
 docs/_build
+
+# direnv
+.direnv/
+.envrc
+
+# poetry
+poetry.lock
