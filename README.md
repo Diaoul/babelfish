@@ -70,5 +70,6 @@ Built-in language converters (alpha2, alpha3b, alpha3t, name, scope, type and op
 ```
 
 ## License
-BabelFish is licensed under the `3-clause BSD license <http://opensource.org/licenses/BSD-3-Clause>`_.
+BabelFish is licensed under the [3-clause BSD license](http://opensource.org/licenses/BSD-3-Clause>)
+
 Copyright (c) 2013, the BabelFish authors and contributors.
