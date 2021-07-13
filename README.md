@@ -1,6 +1,8 @@
 # BabelFish
 BabelFish is a Python library to work with countries and languages.
 
+[![tests](https://github.com/Diaoul/babelfish/actions/workflows/test.yml/badge.svg)](https://github.com/Diaoul/babelfish/actions/workflows/test.yml)
+
 ## Usage
 BabelFish provides scripts, countries and languages from their respective ISO
 standards and a handy way to manipulate them with converters.
