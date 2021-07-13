@@ -2,7 +2,11 @@
 name = "babelfish"
 version = "0.6.0-alpha"
 description = "A module to work with countries and languages"
-authors = ["Antoine Bertin <ant.bertin@gmail.com>"]
+authors = [
+    "Antoine Bertin <ant.bertin@gmail.com>",
+    "Nicolas Wack <wackou@gmail.com>",
+    "Rémi Alvergnat <toilal.dev@gmail.com>",
+]
 license = "BSD-3-Clause"
 readme = "README.md"
 repository = "https://github.com/Diaoul/babelfish"
