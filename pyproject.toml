@@ -30,7 +30,6 @@ classifiers = [
     "Topic :: Software Development :: Internationalization",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-include = ["data/"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
