@@ -1,9 +1,43 @@
 from babelfish.converters import LanguageReverseConverter
 import pytest
 from pkg_resources import resource_stream
-from babelfish import language_converters
-from babelfish.exceptions import LanguageConvertError, LanguageReverseError
+from babelfish import language_converters, Country
+from babelfish.exceptions import CountryReverseError, LanguageConvertError, LanguageReverseError
 from babelfish.language import Language
+from babelfish.country import DEMONYMS
+
+
+@pytest.mark.parametrize('demonym, expected', [
+    ('Brazilian', 'BR'),
+    ('American', 'US'),
+    ('french', 'FR'),
+    ('british', 'GB'),
+    ('Swiss', 'CH'),
+])
+def test_converter_country_demonym(demonym, expected):
+    assert Country.fromdemonym(demonym) == expected
+
+    with pytest.raises(CountryReverseError):
+        Country.fromdemonym('aaa')
+
+
+def test_converter_country_demonym_setup():
+    with pytest.raises(CountryReverseError):
+        Country.fromdemonym('aaa')
+    assert len(DEMONYMS) == 5
+
+
+@pytest.mark.parametrize('demonym, expected', [
+    ('Portuguese', ('por', )),
+    ('Brazilian Portuguese', ('por', 'BR')),
+    ('English', ('eng', )),
+    ('American English', ('eng', 'US')),
+    ('British English', ('eng', 'GB')),
+    ('Swiss German', ('deu', 'CH')),
+])
+def test_converter_demonym(demonym, expected):
+    assert Language.fromdemonym(demonym) == Language(*expected)
+    assert Language.fromdemonym(demonym).demonym == demonym
 
 
 def test_converter_alpha2():

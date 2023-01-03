@@ -39,6 +39,7 @@ class LanguageConverterManager(ConverterManager):
                            'name = babelfish.converters.name:NameConverter',
                            'scope = babelfish.converters.scope:ScopeConverter',
                            'type = babelfish.converters.type:LanguageTypeConverter',
+                           'demonym = babelfish.converters.demonym:DemonymConverter',
                            'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter']
 
 language_converters = LanguageConverterManager()
