@@ -26,7 +26,7 @@ Country representation from 2-letter code (ISO-3166):
 
 Built-in country converters (name):
 ```python
->>> country = babelfish.Country('GB')
+>>> country = babelfish.Country.fromname('United Kingdom')
 >>> country
 <Country [GB]>
 ```
@@ -59,6 +59,8 @@ Built-in language converters (alpha2, alpha3b, alpha3t, name, scope, type and op
 >>> language = babelfish.Language('por', 'BR')
 >>> language.alpha2
 'pt'
+>>> language.name
+'Portuguese'
 >>> language.scope
 'individual'
 >>> language.type
