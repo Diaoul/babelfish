@@ -27,6 +27,19 @@ def test_converter_country_demonym_setup():
     assert len(DEMONYMS) == 5
 
 
+@pytest.mark.parametrize('demonym, expected', [
+    ('Portuguese', ('por', )),
+    ('Brazilian Portuguese', ('por', 'BR')),
+    ('English', ('eng', )),
+    ('American English', ('eng', 'US')),
+    ('British English', ('eng', 'GB')),
+    ('Swiss German', ('deu', 'CH')),
+])
+def test_converter_demonym(demonym, expected):
+    assert Language.fromdemonym(demonym) == Language(*expected)
+    assert Language.fromdemonym(demonym).demonym == demonym
+
+
 def test_converter_alpha2():
     assert Language('eng').alpha2 == 'en'
     assert Language.fromalpha2('en') == Language('eng')
