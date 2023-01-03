@@ -1,0 +1,5 @@
+BR=Brazilian
+CH=Swiss
+FR=French
+US=American
+GB=British
