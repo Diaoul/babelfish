@@ -14,6 +14,7 @@ from . import basestr
 
 COUNTRIES = {}
 COUNTRY_MATRIX = []
+DEMONYMS = {}
 
 #: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
@@ -26,11 +27,22 @@ for l in f:
     COUNTRY_MATRIX.append(iso_country)
 f.close()
 
+with resource_stream('babelfish', 'data/country-demonyms.txt') as f:
+    for l in f:
+        l = l.decode('utf-8').strip()
+        if not l or l.startswith('#'):
+            continue
+        alpha2, demonym = l.split('=')
+        DEMONYMS[alpha2] = demonym
+
 
 class CountryConverterManager(ConverterManager):
     """:class:`~babelfish.converters.ConverterManager` for country converters"""
     entry_point = 'babelfish.country_converters'
-    internal_converters = ['name = babelfish.converters.countryname:CountryNameConverter']
+    internal_converters = [
+        'name = babelfish.converters.countryname:CountryNameConverter',
+        'demonym = babelfish.converters.countrydemonym:CountryDemonymConverter',
+    ]
 
 country_converters = CountryConverterManager()
 

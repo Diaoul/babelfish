@@ -1,9 +1,35 @@
 from babelfish.converters import LanguageReverseConverter
 import pytest
 from pkg_resources import resource_stream
-from babelfish import language_converters
-from babelfish.exceptions import LanguageConvertError, LanguageReverseError
+from babelfish import language_converters, Country
+from babelfish.exceptions import CountryReverseError, LanguageConvertError, LanguageReverseError
 from babelfish.language import Language
+from babelfish.country import DEMONYMS
+
+
+@pytest.mark.parametrize('demonym, alpha2', [
+    ('Brazilian', 'BR'),
+    ('American', 'US'),
+    ('French', 'FR'),
+    ('British', 'GB'),
+    ('Swiss', 'CH'),
+    ('Dutch', 'NL'),
+    ('Congolese', 'CD'),
+    ('Dominican', 'DO'),
+    ('Channel Islander', 'JE'),
+    ('Indian', 'IN'),
+    ('Norwegian', 'NO'),
+])
+def test_converter_country_demonym(demonym, alpha2):
+    assert Country.fromdemonym(demonym) == alpha2
+    assert Country(alpha2).demonym == demonym
+
+
+def test_converter_country_demonym_setup():
+    assert Country.fromdemonym('brAziLian') == 'BR'
+    with pytest.raises(CountryReverseError):
+        Country.fromdemonym('aaa')
+    assert len(DEMONYMS) == 240
 
 
 def test_converter_alpha2():
