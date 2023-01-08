@@ -66,19 +66,30 @@ def test_hash():
     Language('fra'),
     Language('eng', 'US'),
     Language('srp', script='Latn'),
-    Language('eng', 'US', 'Latn')
+    Language('eng', 'US', script='Latn')
 ])
 def test_pickle(language):
     assert pickle.loads(pickle.dumps(language)) == language
 
 def test_str_ietf_format():
-    assert str(Language("eng", "US", "Latn")) == "en-US-Latn"
+    assert str(Language("eng", "US", script="Latn")) == "en-US-Latn"
     assert str(Language("fra", "FR")) == "fr-FR"
     assert str(Language("srp", script="Cyrl")) == "sr-Cyrl"
     assert str(Language("bel")) == "be"
+    assert str(Language("spa", region="419")) == "es-419"
+    assert str(Language("por", region="076")) == "pt-BR"
 
 def test_fromietf_with_country_and_script():
-    assert Language.fromietf("fra-FR-Latn") == Language("fra", "FR", "Latn")
+    assert Language.fromietf("fra-FR-Latn") == Language("fra", "FR", script="Latn")
+
+
+def test_fromietf_with_region():
+    assert Language.fromietf("es-419") == Language("spa", region="419")
+    assert Language.fromietf("pt-076") == Language("por", "BR")
+    assert Language.fromietf("pt-076") == Language.fromietf("pt-BR")
+    assert Language.fromietf("pt-BR").region == "076"
+    assert Language.fromietf('zh-TW').region is None
+
 
 def test_fromietf_with_country_and_no_script():
     assert Language.fromietf("fr-FR") == Language("fra", "FR")

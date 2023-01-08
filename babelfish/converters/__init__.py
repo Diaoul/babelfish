@@ -92,13 +92,15 @@ class LanguageConverter(object):
         Set of possible custom codes
 
     """
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3, country=None, region=None, script=None):
         """Convert an alpha3 language code with an alpha2 country code and a script code
         into a custom code
 
         :param string alpha3: ISO-639-3 language code
         :param country: ISO-3166 country code, if any
         :type country: string or None
+        :param region: UN M.49 region code, if any
+        :type region: string or None
         :param script: ISO-15924 script code, if any
         :type script: string or None
         :return: the corresponding custom code
@@ -157,11 +159,11 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
             self.from_symbol[symbol] = (alpha3, None, None)
             self.codes.add(symbol)
 
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3, country=None, region=None, script=None):
         try:
             return self.to_symbol[alpha3]
         except KeyError:
-            raise LanguageConvertError(alpha3, country, script)
+            raise LanguageConvertError(alpha3, country, region, script)
 
     def reverse(self, code):
         try:
