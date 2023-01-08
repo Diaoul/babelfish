@@ -17,7 +17,7 @@ class ScopeConverter(LanguageConverter):
         SYMBOLS[iso_language.alpha3] = iso_language.scope
     codes = set(SYMBOLS.values())
 
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3, country=None, region=None, script=None):
         if self.SYMBOLS[alpha3] in self.FULLNAME:
             return self.FULLNAME[self.SYMBOLS[alpha3]]
-        raise LanguageConvertError(alpha3, country, script)
+        raise LanguageConvertError(alpha3, country, region, script)

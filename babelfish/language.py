@@ -11,9 +11,9 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
+from .region import Region
 from .script import Script
-from . import basestr
-
+from . import basestr, CountryReverseError
 
 LANGUAGES = set()
 LANGUAGE_MATRIX = []
@@ -75,7 +75,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     :raise: ValueError if the language could not be recognized and `unknown` is ``None``
 
     """
-    def __init__(self, language, country=None, script=None, unknown=None):
+    def __init__(self, language, country=None, region=None, script=None, unknown=None):
         if unknown is not None and language not in LANGUAGES:
             language = unknown
         if language not in LANGUAGES:
@@ -88,6 +88,23 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
             self.country = None
         else:
             self.country = Country(country)
+        self.region = None
+        if region is None:
+            if self.country is not None:
+                try:
+                    self.region = Region(self.country.unm49)
+                except AttributeError:
+                    pass
+        else:
+            self.region = region if isinstance(region, Region) else Region(region)
+            if self.country is None:
+                try:
+                    self.country = Country.fromunm49(self.region.code)
+                except CountryReverseError:
+                    pass
+            elif self.country.region != self.region:
+                raise ValueError(f'{country} is conflicting with region {region}')
+
         self.script = None
         if isinstance(script, Script):
             self.script = script
@@ -128,6 +145,16 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
             subtag = subtags.pop(0)
             if len(subtag) == 2:
                 language.country = Country(subtag.upper())
+                try:
+                    language.region = Region(language.country.unm49)
+                except AttributeError:
+                    pass
+            elif len(subtag) == 3:
+                language.region = Region(subtag)
+                try:
+                    language.country = Country.fromunm49(subtag)
+                except CountryReverseError:
+                    pass
             else:
                 language.script = Script(subtag.capitalize())
             if language.script is not None:
@@ -137,17 +164,18 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         return language
 
     def __getstate__(self):
-        return self.alpha3, self.country, self.script
+        return self.alpha3, self.country, self.region, self.script
 
     def __setstate__(self, state):
-        self.alpha3, self.country, self.script = state
+        self.alpha3, self.country, self.region, self.script = state
 
     def __getattr__(self, name):
         alpha3 = self.alpha3
         country = self.country.alpha2 if self.country is not None else None
+        region = self.region.code if self.region is not None else None
         script = self.script.code if self.script is not None else None
         try:
-            return language_converters[name].convert(alpha3, country, script)
+            return language_converters[name].convert(alpha3, country, region, script)
         except KeyError:
             raise AttributeError(name)
 
@@ -161,6 +189,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
             return False
         return (self.alpha3 == other.alpha3 and
                 self.country == other.country and
+                self.region == other.region and
                 self.script == other.script)
 
     def __ne__(self, other):
@@ -180,6 +209,8 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
             s = self.alpha3
         if self.country is not None:
             s += '-' + str(self.country)
+        elif self.region is not None:
+            s += '-' + str(self.region)
         if self.script is not None:
             s += '-' + str(self.script)
         return s

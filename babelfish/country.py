@@ -11,7 +11,6 @@ from pkg_resources import resource_stream  # @UnresolvedImport
 from .converters import ConverterManager
 from . import basestr
 
-
 COUNTRIES = {}
 COUNTRY_MATRIX = []
 
@@ -30,7 +29,10 @@ f.close()
 class CountryConverterManager(ConverterManager):
     """:class:`~babelfish.converters.ConverterManager` for country converters"""
     entry_point = 'babelfish.country_converters'
-    internal_converters = ['name = babelfish.converters.countryname:CountryNameConverter']
+    internal_converters = [
+        'name = babelfish.converters.countryname:CountryNameConverter',
+        'unm49 = babelfish.converters.countryunm49:CountryUnM49Converter'
+    ]
 
 country_converters = CountryConverterManager()
 

@@ -96,9 +96,9 @@ def test_register_converter():
             self.to_test = {'fra': 'test1', 'eng': 'test2'}
             self.from_test = {'test1': 'fra', 'test2': 'eng'}
 
-        def convert(self, alpha3, country=None, script=None):
+        def convert(self, alpha3, country=None, region=None, script=None):
             if alpha3 not in self.to_test:
-                raise LanguageConvertError(alpha3, country, script)
+                raise LanguageConvertError(alpha3, country, region, script)
             return self.to_test[alpha3]
 
         def reverse(self, test):

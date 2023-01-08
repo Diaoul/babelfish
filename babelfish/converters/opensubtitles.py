@@ -19,8 +19,8 @@ class OpenSubtitlesConverter(LanguageReverseConverter):
                                                        'scc': ('srp', None), 'mne': ('srp', 'ME'), 'zht': ('zho', 'TW')})
         self.codes = (self.alpha2_converter.codes | self.alpha3b_converter.codes | set(self.from_opensubtitles.keys()))
 
-    def convert(self, alpha3, country=None, script=None):
-        alpha3b = self.alpha3b_converter.convert(alpha3, country, script)
+    def convert(self, alpha3, country=None, region=None, script=None):
+        alpha3b = self.alpha3b_converter.convert(alpha3, country, region, script)
         if (alpha3b, country) in self.to_opensubtitles:
             return self.to_opensubtitles[(alpha3b, country)]
         return alpha3b
