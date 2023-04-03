@@ -472,4 +472,5 @@ zun		Zuni	0	0
 rum	ro	Romanian	1	1
 pob	pb	Brazilian	1	1
 mne		Montenegrin	1	0
-zht	zht	Chinese (traditional)	1	1
+zht	zt	Chinese (traditional)	1	1
+zhe	ze	Chinese bilingual	1	1
