@@ -76,7 +76,8 @@ cha	ch	Chamorro	0	0
 chb		Chibcha	0	0
 che	ce	Chechen	0	0
 chg		Chagatai	0	0
-chi	zh	Chinese	1	1
+zho	zh	Chinese (simplified)	1	1
+chi	zht	Chinese (traditional)	1	1
 chk		Chuukese	0	0
 chm		Mari	0	0
 chn		Chinook jargon	0	0
