@@ -1,7 +1,7 @@
 from babelfish.converters import LanguageReverseConverter
 import pytest
-from pkg_resources import resource_stream
 from babelfish import language_converters
+from babelfish.compat import resource_stream
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
 from babelfish.language import Language
 
