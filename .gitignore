@@ -48,5 +48,3 @@ docs/_build
 .direnv/
 .envrc
 
-# poetry
-poetry.lock
