@@ -1,7 +1,13 @@
 # Changelog
 
+## 0.6.1
+**release date:** 2024-05-09
+
+* Bump dependencies
+* Replace pkg_resources with importlib
+
 ## 0.6.0
-**release date:** TBA
+**release date:** 2021-08-09
 
 **WARNING:** Backward incompatible changes
 
