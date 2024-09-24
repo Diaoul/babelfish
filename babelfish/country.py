@@ -9,7 +9,7 @@ from functools import partial
 from typing import Any, ClassVar
 
 from .compat import resource_stream
-from .converters import ConverterManager, CountryConverter
+from .converters import ConverterManager, CountryReverseConverter
 
 #: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
@@ -23,13 +23,13 @@ COUNTRY_MATRIX: list[IsoCountry] = []
 
 with resource_stream('babelfish', 'data/iso-3166-1.txt') as f:
     f.readline()
-    for line in f:
-        iso_country = IsoCountry(*line.decode('utf-8').strip().split(';'))
+    for raw_line in f:
+        iso_country = IsoCountry(*raw_line.decode('utf-8').strip().split(';'))
         COUNTRIES[iso_country.alpha2] = iso_country.name
         COUNTRY_MATRIX.append(iso_country)
 
 
-class CountryConverterManager(ConverterManager[CountryConverter]):
+class CountryConverterManager(ConverterManager[CountryReverseConverter]):
     """:class:`~babelfish.converters.ConverterManager` for country converters."""
 
     entry_point: ClassVar[str] = 'babelfish.country_converters'

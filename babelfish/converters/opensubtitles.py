@@ -14,6 +14,8 @@ from . import CaseInsensitiveDict, LanguageReverseConverter
 
 class OpenSubtitlesConverter(LanguageReverseConverter):
 
+    codes: set[str]
+
     def __init__(self) -> None:
         self.alpha3b_converter = language_converters['alpha3b']
         self.alpha2_converter = language_converters['alpha2']

@@ -21,8 +21,8 @@ SCRIPT_MATRIX: list[IsoScript] = []
 
 with resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt') as f:
     f.readline()
-    for line in f:
-        line = line.decode('utf-8').strip()
+    for raw_line in f:
+        line = raw_line.decode('utf-8').strip()
         if not line or line.startswith('#'):
             continue
         script = IsoScript._make(line.split(';'))
