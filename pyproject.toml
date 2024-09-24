@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "babelfish"
 version = "0.6.1"
@@ -40,6 +44,57 @@ importlib-metadata = {version = "^4.6", python = "<3.10"}
 [tool.poetry.dev-dependencies]
 pytest = "^8.2.0"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+
+# https://docs.astral.sh/ruff/
+[tool.ruff]
+line-length = 120
+src = ["babelfish", "tests"]
+
+[tool.ruff.lint]
+pydocstyle = { convention = "pep257" }
+select = [
+    "E",      # style errors
+    "F",      # flakes
+    "W",      # warnings
+    "D",      # pydocstyle
+    "D417",   # Missing argument descriptions in Docstrings
+    "I",      # isort
+    "UP",     # pyupgrade
+    "S",      # bandit
+    "C4",     # flake8-comprehensions
+    "B",      # flake8-bugbear
+    "TCH",    # flake8-typecheck
+    "TID",    # flake8-tidy-imports
+    "RUF",    # ruff-specific rules
+    "ISC",    # flake8-implicit-str-concat
+    "PT",     # flake8-pytest-style
+    "FA",     # flake8-future-annotations
+    "BLE",    # flake8-blind-except
+    "RET",    # flake8-return
+    "SIM",    # flake8-simplify
+    "DTZ",    # flake8-datetimez
+    "A",      # flake8-builtins
+    "FBT",    # flake8-boolean-trap
+    "ANN0",   # flake8-annotations
+    "ANN2",
+    "ASYNC",  # flake8-async
+    "TRY",    # tryceratops
+]
+ignore = [
+    "D105",   # Missing docstring in magic method
+    "D107",   # Missing docstring in `__init__`
+    "D401",   # First line should be in imperative mood
+]
+
+[tool.ruff.lint.flake8-pytest-style]
+mark-parentheses = true
+
+[tool.ruff.lint.per-file-ignores]
+"docs/conf*.py" = ["ALL"]
+"babelfish/__init__.py" = ["E402"]
+"tests/*.py" = ["D", "S", "RUF012", "ANN", "FBT"]
+
+# https://docs.astral.sh/ruff/formatter/
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "single"
