@@ -6,12 +6,12 @@ from __future__ import annotations
 
 from collections import namedtuple
 from functools import partial
+
+from .compat import resource_stream
 from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
-from .compat import resource_stream
-
 
 LANGUAGES = set()
 LANGUAGE_MATRIX = []
@@ -28,7 +28,7 @@ with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
 
 
 class LanguageConverterManager(ConverterManager):
-    """:class:`~babelfish.converters.ConverterManager` for language converters"""
+    """:class:`~babelfish.converters.ConverterManager` for language converters."""
 
     entry_point = 'babelfish.language_converters'
     internal_converters = ['alpha2 = babelfish.converters.alpha2:Alpha2Converter',
@@ -43,7 +43,7 @@ language_converters = LanguageConverterManager()
 
 
 class LanguageMeta(type):
-    """The :class:`Language` metaclass
+    """The :class:`Language` metaclass.
 
     Dynamically redirect :meth:`Language.frommycode` to :meth:`Language.fromcode` with the ``mycode`` `converter`
 
@@ -55,8 +55,8 @@ class LanguageMeta(type):
         return type.__getattribute__(cls, name)
 
 
-class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
-    """A human language
+class Language(LanguageMeta('LanguageBase', (object,), {})):
+    """A human language.
 
     A human language is composed of a language part following the ISO-639
     standard and can be country-specific when a :class:`~babelfish.country.Country`
@@ -75,11 +75,12 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
 
     """
 
-    def __init__(self, language, country=None, script=None, unknown=None):
+    def __init__(self, language, country=None, script=None, unknown=None) -> None:
         if unknown is not None and language not in LANGUAGES:
             language = unknown
         if language not in LANGUAGES:
-            raise ValueError('%r is not a valid language' % language)
+            msg = f'{language!r} is not a valid language'
+            raise ValueError(msg)
         self.alpha3 = language
         self.country = None
         if isinstance(country, Country):
@@ -99,7 +100,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     @classmethod
     def fromcode(cls, code, converter):
         """Create a :class:`Language` by its `code` using `converter` to
-        :meth:`~babelfish.converters.LanguageReverseConverter.reverse` it
+        :meth:`~babelfish.converters.LanguageReverseConverter.reverse` it.
 
         :param string code: the code to reverse
         :param string converter: name of the :class:`~babelfish.converters.LanguageReverseConverter` to use
@@ -111,7 +112,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
 
     @classmethod
     def fromietf(cls, ietf):
-        """Create a :class:`Language` by from an IETF language code
+        """Create a :class:`Language` by from an IETF language code.
 
         :param string ietf: the ietf code
         :return: the corresponding :class:`Language` instance
@@ -120,10 +121,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         """
         subtags = ietf.split('-')
         language_subtag = subtags.pop(0).lower()
-        if len(language_subtag) == 2:
-            language = cls.fromalpha2(language_subtag)
-        else:
-            language = cls(language_subtag)
+        language = cls.fromalpha2(language_subtag) if len(language_subtag) == 2 else cls(language_subtag)
         while subtags:
             subtag = subtags.pop(0)
             if len(subtag) == 2:
@@ -132,7 +130,8 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
                 language.script = Script(subtag.capitalize())
             if language.script is not None:
                 if subtags:
-                    raise ValueError('Wrong IETF format. Unmatched subtags: %r' % subtags)
+                    msg = f'Wrong IETF format. Unmatched subtags: {subtags!r}'
+                    raise ValueError(msg)
                 break
         return language
 
@@ -148,8 +147,8 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         script = self.script.code if self.script is not None else None
         try:
             return language_converters[name].convert(alpha3, country, script)
-        except KeyError:
-            raise AttributeError(name)
+        except KeyError as err:
+            raise AttributeError(name) from err
 
     def __hash__(self):
         return hash(str(self))
@@ -166,14 +165,14 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     def __ne__(self, other):
         return not self == other
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self.alpha3 != 'und'
     __nonzero__ = __bool__
 
-    def __repr__(self):
-        return '<Language [%s]>' % self
+    def __repr__(self) -> str:
+        return f'<Language [{self}]>'
 
-    def __str__(self):
+    def __str__(self) -> str:
         try:
             s = self.alpha2
         except LanguageConvertError:

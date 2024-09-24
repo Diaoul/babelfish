@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from collections import namedtuple
+
 from .compat import resource_stream
 
 #: Script code to script name mapping
@@ -28,7 +29,7 @@ with resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt') as f:
 
 
 class Script:
-    """A human writing system
+    """A human writing system.
 
     A script is represented by a 4-letter code from the ISO-15924 standard
 
@@ -36,16 +37,17 @@ class Script:
 
     """
 
-    def __init__(self, script):
+    def __init__(self, script) -> None:
         if script not in SCRIPTS:
-            raise ValueError('%r is not a valid script' % script)
+            msg = f'{script!r} is not a valid script'
+            raise ValueError(msg)
 
         #: ISO-15924 4-letter script code
         self.code = script
 
     @property
     def name(self):
-        """English name of the script"""
+        """English name of the script."""
         return SCRIPTS[self.code]
 
     def __getstate__(self):
@@ -67,8 +69,8 @@ class Script:
     def __ne__(self, other):
         return not self == other
 
-    def __repr__(self):
-        return '<Script [%s]>' % self
+    def __repr__(self) -> str:
+        return f'<Script [{self}]>'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.code
