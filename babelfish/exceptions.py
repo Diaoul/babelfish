@@ -1,19 +1,19 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2013 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
+from __future__ import annotations
 
 
 class Error(Exception):
     """Base class for all exceptions in babelfish"""
+
     pass
 
 
 class LanguageError(Error, AttributeError):
     """Base class for all language exceptions in babelfish"""
+
     pass
 
 
@@ -27,6 +27,7 @@ class LanguageConvertError(LanguageError):
     :type script: string or None
 
     """
+
     def __init__(self, alpha3, country=None, script=None):
         self.alpha3 = alpha3
         self.country = country
@@ -47,6 +48,7 @@ class LanguageReverseError(LanguageError):
     :param string code: code that failed reverse conversion
 
     """
+
     def __init__(self, code):
         self.code = code
 
@@ -56,6 +58,7 @@ class LanguageReverseError(LanguageError):
 
 class CountryError(Error, AttributeError):
     """Base class for all country exceptions in babelfish"""
+
     pass
 
 
@@ -65,6 +68,7 @@ class CountryConvertError(CountryError):
     :param string alpha2: alpha2 code that failed conversion
 
     """
+
     def __init__(self, alpha2):
         self.alpha2 = alpha2
 
@@ -78,6 +82,7 @@ class CountryReverseError(CountryError):
     :param string code: code that failed reverse conversion
 
     """
+
     def __init__(self, code):
         self.code = code
 
