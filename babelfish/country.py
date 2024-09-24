@@ -6,15 +6,20 @@ from __future__ import annotations
 
 from collections import namedtuple
 from functools import partial
+from typing import Any, ClassVar
 
 from .compat import resource_stream
-from .converters import ConverterManager
-
-COUNTRIES = {}
-COUNTRY_MATRIX = []
+from .converters import ConverterManager, CountryConverter
 
 #: The namedtuple used in the :data:`COUNTRY_MATRIX`
 IsoCountry = namedtuple('IsoCountry', ['name', 'alpha2'])
+
+#: Country code to country name mapping
+COUNTRIES: dict[str, str] = {}
+
+#: List of countries in the ISO-3166-1 as namedtuple of name, code
+COUNTRY_MATRIX: list[IsoCountry] = []
+
 
 with resource_stream('babelfish', 'data/iso-3166-1.txt') as f:
     f.readline()
@@ -24,11 +29,11 @@ with resource_stream('babelfish', 'data/iso-3166-1.txt') as f:
         COUNTRY_MATRIX.append(iso_country)
 
 
-class CountryConverterManager(ConverterManager):
+class CountryConverterManager(ConverterManager[CountryConverter]):
     """:class:`~babelfish.converters.ConverterManager` for country converters."""
 
-    entry_point = 'babelfish.country_converters'
-    internal_converters = ['name = babelfish.converters.countryname:CountryNameConverter']
+    entry_point: ClassVar[str] = 'babelfish.country_converters'
+    internal_converters: ClassVar[list[str]] = ['name = babelfish.converters.countryname:CountryNameConverter']
 
 country_converters = CountryConverterManager()
 
@@ -40,13 +45,13 @@ class CountryMeta(type):
 
     """
 
-    def __getattr__(cls, name):
+    def __getattr__(cls, name: str) -> Any:
         if name.startswith('from'):
             return partial(cls.fromcode, converter=name[4:])
         return type.__getattribute__(cls, name)
 
 
-class Country(CountryMeta('CountryBase', (object,), {})):
+class Country(metaclass=CountryMeta):
     """A country on Earth.
 
     A country is represented by a 2-letter code from the ISO-3166 standard
@@ -55,7 +60,7 @@ class Country(CountryMeta('CountryBase', (object,), {})):
 
     """
 
-    def __init__(self, country) -> None:
+    def __init__(self, country: str) -> None:
         if country not in COUNTRIES:
             msg = f'{country!r} is not a valid country'
             raise ValueError(msg)
@@ -64,7 +69,7 @@ class Country(CountryMeta('CountryBase', (object,), {})):
         self.alpha2 = country
 
     @classmethod
-    def fromcode(cls, code, converter):
+    def fromcode(cls, code: str, converter: str) -> Country:
         """Create a :class:`Country` by its `code` using `converter` to
         :meth:`~babelfish.converters.CountryReverseConverter.reverse` it.
 
@@ -76,29 +81,29 @@ class Country(CountryMeta('CountryBase', (object,), {})):
         """
         return cls(country_converters[converter].reverse(code))
 
-    def __getstate__(self):
+    def __getstate__(self) -> str:
         return self.alpha2
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: str) -> None:
         self.alpha2 = state
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> str:
         try:
             return country_converters[name].convert(self.alpha2)
         except KeyError as err:
             raise AttributeError(name) from err
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.alpha2)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
             return str(self) == other
         if not isinstance(other, Country):
             return False
         return self.alpha2 == other.alpha2
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self == other
 
     def __repr__(self) -> str:

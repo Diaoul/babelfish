@@ -4,14 +4,18 @@
 #
 from __future__ import annotations
 
+from typing import ClassVar
+
 from babelfish.language import LANGUAGE_MATRIX
 
 from . import LanguageEquivalenceConverter
 
 
 class NameConverter(LanguageEquivalenceConverter):
-    CASE_SENSITIVE = False
-    SYMBOLS = {}
+
+    CASE_SENSITIVE: ClassVar[bool] = False
+    SYMBOLS: ClassVar[dict[str, str]] = {}
+
     for iso_language in LANGUAGE_MATRIX:
         if iso_language.name:
             SYMBOLS[iso_language.alpha3] = iso_language.name

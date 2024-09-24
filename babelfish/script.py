@@ -5,17 +5,19 @@
 from __future__ import annotations
 
 from collections import namedtuple
+from typing import Any
 
 from .compat import resource_stream
 
-#: Script code to script name mapping
-SCRIPTS = {}
-
-#: List of countries in the ISO-15924 as namedtuple of code, number, name, french_name, pva and date
-SCRIPT_MATRIX = []
-
 #: The namedtuple used in the :data:`SCRIPT_MATRIX`
 IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
+
+#: Script code to script name mapping
+SCRIPTS: dict[str, str] = {}
+
+#: List of scripts in the ISO-15924 as namedtuple of code, number, name, french_name, pva and date
+SCRIPT_MATRIX: list[IsoScript] = []
+
 
 with resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt') as f:
     f.readline()
@@ -37,7 +39,7 @@ class Script:
 
     """
 
-    def __init__(self, script) -> None:
+    def __init__(self, script: str) -> None:
         if script not in SCRIPTS:
             msg = f'{script!r} is not a valid script'
             raise ValueError(msg)
@@ -46,27 +48,27 @@ class Script:
         self.code = script
 
     @property
-    def name(self):
+    def name(self) -> str:
         """English name of the script."""
         return SCRIPTS[self.code]
 
-    def __getstate__(self):
+    def __getstate__(self) -> str:
         return self.code
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: str) -> None:
         self.code = state
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.code)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
             return self.code == other
         if not isinstance(other, Script):
             return False
         return self.code == other.code
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self == other
 
     def __repr__(self) -> str:

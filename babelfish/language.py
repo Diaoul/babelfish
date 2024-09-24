@@ -6,18 +6,23 @@ from __future__ import annotations
 
 from collections import namedtuple
 from functools import partial
+from typing import Any, ClassVar
 
 from .compat import resource_stream
-from .converters import ConverterManager
+from .converters import ConverterManager, LanguageConverter
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
 
-LANGUAGES = set()
-LANGUAGE_MATRIX = []
-
 #: The namedtuple used in the :data:`LANGUAGE_MATRIX`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
+
+#: Language code set
+LANGUAGES = set()
+
+#: List of languages in the ISO-639-3 as namedtuple of alpha3, alpha3b, alpha3t, alpha2, scope, type, name and comment
+LANGUAGE_MATRIX = []
+
 
 with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
     f.readline()
@@ -27,17 +32,19 @@ with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
         LANGUAGE_MATRIX.append(iso_language)
 
 
-class LanguageConverterManager(ConverterManager):
+class LanguageConverterManager(ConverterManager[LanguageConverter]):
     """:class:`~babelfish.converters.ConverterManager` for language converters."""
 
-    entry_point = 'babelfish.language_converters'
-    internal_converters = ['alpha2 = babelfish.converters.alpha2:Alpha2Converter',
-                           'alpha3b = babelfish.converters.alpha3b:Alpha3BConverter',
-                           'alpha3t = babelfish.converters.alpha3t:Alpha3TConverter',
-                           'name = babelfish.converters.name:NameConverter',
-                           'scope = babelfish.converters.scope:ScopeConverter',
-                           'type = babelfish.converters.type:LanguageTypeConverter',
-                           'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter']
+    entry_point: ClassVar[str] = 'babelfish.language_converters'
+    internal_converters: ClassVar[list[str]] = [
+        'alpha2 = babelfish.converters.alpha2:Alpha2Converter',
+        'alpha3b = babelfish.converters.alpha3b:Alpha3BConverter',
+        'alpha3t = babelfish.converters.alpha3t:Alpha3TConverter',
+        'name = babelfish.converters.name:NameConverter',
+        'scope = babelfish.converters.scope:ScopeConverter',
+        'type = babelfish.converters.type:LanguageTypeConverter',
+        'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter',
+    ]
 
 language_converters = LanguageConverterManager()
 
@@ -49,13 +56,13 @@ class LanguageMeta(type):
 
     """
 
-    def __getattr__(cls, name):
+    def __getattr__(cls, name: str) -> Any:
         if name.startswith('from'):
             return partial(cls.fromcode, converter=name[4:])
         return type.__getattribute__(cls, name)
 
 
-class Language(LanguageMeta('LanguageBase', (object,), {})):
+class Language(metaclass=LanguageMeta):
     """A human language.
 
     A human language is composed of a language part following the ISO-639
@@ -75,7 +82,17 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
 
     """
 
-    def __init__(self, language, country=None, script=None, unknown=None) -> None:
+    alpha3: str
+    country: Country | None
+    script: Script | None
+
+    def __init__(
+        self,
+        language: str,
+        country: str | Country | None = None,
+        script: str | Script | None = None,
+        unknown: str | None = None,
+    ) -> None:
         if unknown is not None and language not in LANGUAGES:
             language = unknown
         if language not in LANGUAGES:
@@ -98,7 +115,7 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
             self.script = Script(script)
 
     @classmethod
-    def fromcode(cls, code, converter):
+    def fromcode(cls, code: str, converter: str) -> Language:
         """Create a :class:`Language` by its `code` using `converter` to
         :meth:`~babelfish.converters.LanguageReverseConverter.reverse` it.
 
@@ -111,7 +128,7 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
         return cls(*language_converters[converter].reverse(code))
 
     @classmethod
-    def fromietf(cls, ietf):
+    def fromietf(cls, ietf: str) -> Language:
         """Create a :class:`Language` by from an IETF language code.
 
         :param string ietf: the ietf code
@@ -135,13 +152,13 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
                 break
         return language
 
-    def __getstate__(self):
+    def __getstate__(self) -> tuple[str, Country | None, Script | None]:
         return self.alpha3, self.country, self.script
 
-    def __setstate__(self, state):
+    def __setstate__(self, state: tuple[str, Country | None, Script | None]) -> None:
         self.alpha3, self.country, self.script = state
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str) -> str:
         alpha3 = self.alpha3
         country = self.country.alpha2 if self.country is not None else None
         script = self.script.code if self.script is not None else None
@@ -150,10 +167,10 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
         except KeyError as err:
             raise AttributeError(name) from err
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
             return str(self) == other
         if not isinstance(other, Language):
@@ -162,11 +179,12 @@ class Language(LanguageMeta('LanguageBase', (object,), {})):
                 self.country == other.country and
                 self.script == other.script)
 
-    def __ne__(self, other):
+    def __ne__(self, other: Any) -> bool:
         return not self == other
 
     def __bool__(self) -> bool:
         return self.alpha3 != 'und'
+
     __nonzero__ = __bool__
 
     def __repr__(self) -> str:

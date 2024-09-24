@@ -28,7 +28,7 @@ class LanguageConvertError(LanguageError):
 
     """
 
-    def __init__(self, alpha3, country=None, script=None) -> None:
+    def __init__(self, alpha3: str, country: str| None = None, script: str| None = None) -> None:
         self.alpha3 = alpha3
         self.country = country
         self.script = script
@@ -49,7 +49,7 @@ class LanguageReverseError(LanguageError):
 
     """
 
-    def __init__(self, code) -> None:
+    def __init__(self, code: str) -> None:
         self.code = code
 
     def __str__(self) -> str:
@@ -69,7 +69,7 @@ class CountryConvertError(CountryError):
 
     """
 
-    def __init__(self, alpha2) -> None:
+    def __init__(self, alpha2: str) -> None:
         self.alpha2 = alpha2
 
     def __str__(self) -> str:
@@ -83,7 +83,7 @@ class CountryReverseError(CountryError):
 
     """
 
-    def __init__(self, code) -> None:
+    def __init__(self, code: str) -> None:
         self.code = code
 
     def __str__(self) -> str:
