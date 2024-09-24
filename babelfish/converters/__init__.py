@@ -277,7 +277,7 @@ class ConverterManager(Generic[C]):
                 elif hasattr(ep, '_load'):
                     plugin = ep._load()
                 else:
-                    plugin = ep.load(require=False)
+                    plugin = ep.load(require=False)  # type: ignore[call-arg]
                 self.converters[ep.name] = plugin()
                 return self.converters[ep.name]
         raise KeyError(name)
