@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2013 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
-from . import LanguageReverseConverter, CaseInsensitiveDict
-from ..exceptions import LanguageReverseError
-from ..language import language_converters
+from __future__ import annotations
+
+from babelfish.exceptions import LanguageReverseError
+from babelfish.language import language_converters
+
+from . import CaseInsensitiveDict, LanguageReverseConverter
 
 
 class OpenSubtitlesConverter(LanguageReverseConverter):

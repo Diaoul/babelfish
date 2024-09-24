@@ -1,12 +1,10 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2013 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
+from __future__ import annotations
+
 from collections import namedtuple
-from . import basestr
 from .compat import resource_stream
 
 #: Script code to script name mapping
@@ -18,19 +16,18 @@ SCRIPT_MATRIX = []
 #: The namedtuple used in the :data:`SCRIPT_MATRIX`
 IsoScript = namedtuple('IsoScript', ['code', 'number', 'name', 'french_name', 'pva', 'date'])
 
-f = resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt')
-f.readline()
-for l in f:
-    l = l.decode('utf-8').strip()
-    if not l or l.startswith('#'):
-        continue
-    script = IsoScript._make(l.split(';'))
-    SCRIPT_MATRIX.append(script)
-    SCRIPTS[script.code] = script.name
-f.close()
+with resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt') as f:
+    f.readline()
+    for line in f:
+        line = line.decode('utf-8').strip()
+        if not line or line.startswith('#'):
+            continue
+        script = IsoScript._make(line.split(';'))
+        SCRIPT_MATRIX.append(script)
+        SCRIPTS[script.code] = script.name
 
 
-class Script(object):
+class Script:
     """A human writing system
 
     A script is represented by a 4-letter code from the ISO-15924 standard
@@ -38,6 +35,7 @@ class Script(object):
     :param string script: 4-letter ISO-15924 script code
 
     """
+
     def __init__(self, script):
         if script not in SCRIPTS:
             raise ValueError('%r is not a valid script' % script)
@@ -60,7 +58,7 @@ class Script(object):
         return hash(self.code)
 
     def __eq__(self, other):
-        if isinstance(other, basestr):
+        if isinstance(other, str):
             return self.code == other
         if not isinstance(other, Script):
             return False

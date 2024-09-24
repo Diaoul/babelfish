@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
-#
 # Copyright (c) 2013 the BabelFish authors. All rights reserved.
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from __future__ import unicode_literals
+from __future__ import annotations
+
 from collections import namedtuple
 from functools import partial
 from .converters import ConverterManager
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
-from . import basestr
 from .compat import resource_stream
 
 
@@ -21,17 +19,17 @@ LANGUAGE_MATRIX = []
 #: The namedtuple used in the :data:`LANGUAGE_MATRIX`
 IsoLanguage = namedtuple('IsoLanguage', ['alpha3', 'alpha3b', 'alpha3t', 'alpha2', 'scope', 'type', 'name', 'comment'])
 
-f = resource_stream('babelfish', 'data/iso-639-3.tab')
-f.readline()
-for l in f:
-    iso_language = IsoLanguage(*l.decode('utf-8').split('\t'))
-    LANGUAGES.add(iso_language.alpha3)
-    LANGUAGE_MATRIX.append(iso_language)
-f.close()
+with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
+    f.readline()
+    for line in f:
+        iso_language = IsoLanguage(*line.decode('utf-8').split('\t'))
+        LANGUAGES.add(iso_language.alpha3)
+        LANGUAGE_MATRIX.append(iso_language)
 
 
 class LanguageConverterManager(ConverterManager):
     """:class:`~babelfish.converters.ConverterManager` for language converters"""
+
     entry_point = 'babelfish.language_converters'
     internal_converters = ['alpha2 = babelfish.converters.alpha2:Alpha2Converter',
                            'alpha3b = babelfish.converters.alpha3b:Alpha3BConverter',
@@ -50,6 +48,7 @@ class LanguageMeta(type):
     Dynamically redirect :meth:`Language.frommycode` to :meth:`Language.fromcode` with the ``mycode`` `converter`
 
     """
+
     def __getattr__(cls, name):
         if name.startswith('from'):
             return partial(cls.fromcode, converter=name[4:])
@@ -75,6 +74,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
     :raise: ValueError if the language could not be recognized and `unknown` is ``None``
 
     """
+
     def __init__(self, language, country=None, script=None, unknown=None):
         if unknown is not None and language not in LANGUAGES:
             language = unknown
@@ -155,7 +155,7 @@ class Language(LanguageMeta(str('LanguageBase'), (object,), {})):
         return hash(str(self))
 
     def __eq__(self, other):
-        if isinstance(other, basestr):
+        if isinstance(other, str):
             return str(self) == other
         if not isinstance(other, Language):
             return False

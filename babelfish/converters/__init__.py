@@ -2,14 +2,12 @@
 # Use of this source code is governed by the 3-clause BSD license
 # that can be found in the LICENSE file.
 #
-from ..compat import iter_entry_points, EntryPoint
-from ..exceptions import LanguageConvertError, LanguageReverseError
+from __future__ import annotations
 
-try:
-    # Python 3.3+
-    from collections.abc import Mapping, MutableMapping
-except ImportError:
-    from collections import Mapping, MutableMapping
+from collections.abc import Mapping, MutableMapping
+
+from babelfish.compat import EntryPoint, iter_entry_points
+from babelfish.exceptions import LanguageConvertError, LanguageReverseError
 
 
 # from https://github.com/kennethreitz/requests/blob/master/requests/structures.py
@@ -36,6 +34,7 @@ class CaseInsensitiveDict(MutableMapping):
     behavior is undefined.
 
     """
+
     def __init__(self, data=None, **kwargs):
         self._store = dict()
         if data is None:
@@ -83,7 +82,7 @@ class CaseInsensitiveDict(MutableMapping):
         return '%s(%r)' % (self.__class__.__name__, dict(self.items()))
 
 
-class LanguageConverter(object):
+class LanguageConverter:
     """A :class:`LanguageConverter` supports converting an alpha3 language code with an
     alpha2 country code and a script code into a custom code
 
@@ -92,6 +91,7 @@ class LanguageConverter(object):
         Set of possible custom codes
 
     """
+
     def convert(self, alpha3, country=None, script=None):
         """Convert an alpha3 language code with an alpha2 country code and a script code
         into a custom code
@@ -114,6 +114,7 @@ class LanguageReverseConverter(LanguageConverter):
     ISO-639-3 language code, alpha2 ISO-3166-1 country code and ISO-15924 script code
 
     """
+
     def reverse(self, code):
         """Reverse a custom code into alpha3, country and script code
 
@@ -142,6 +143,7 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
             SYMBOLS = {'fra': 'mycode1', 'eng': 'mycode2'}
 
     """
+
     CASE_SENSITIVE = False
 
     def __init__(self):
@@ -170,7 +172,7 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
             raise LanguageReverseError(code)
 
 
-class CountryConverter(object):
+class CountryConverter:
     """A :class:`CountryConverter` supports converting an alpha2 country code
     into a custom code
 
@@ -179,6 +181,7 @@ class CountryConverter(object):
         Set of possible custom codes
 
     """
+
     def convert(self, alpha2):
         """Convert an alpha2 country code into a custom code
 
@@ -196,6 +199,7 @@ class CountryReverseConverter(CountryConverter):
     ISO-3166-1 country code
 
     """
+
     def reverse(self, code):
         """Reverse a custom code into alpha2 code
 
@@ -208,7 +212,7 @@ class CountryReverseConverter(CountryConverter):
         raise NotImplementedError
 
 
-class ConverterManager(object):
+class ConverterManager:
     """Manager for babelfish converters behaving like a dict with lazy loading
 
     Loading is done in this order:
@@ -226,6 +230,7 @@ class ConverterManager(object):
         Internal converters with entry point syntax
 
     """
+
     entry_point = ''
     internal_converters = []
 
@@ -237,7 +242,7 @@ class ConverterManager(object):
         self.converters = {}
 
     def __getitem__(self, name):
-        """Get a converter, lazy loading it if necessary"""
+        """Get a converter, lazy loading it if necessary."""
         if name in self.converters:
             return self.converters[name]
         for ep in iter_entry_points(self.entry_point):
@@ -258,19 +263,19 @@ class ConverterManager(object):
         raise KeyError(name)
 
     def __setitem__(self, name, converter):
-        """Load a converter"""
+        """Load a converter."""
         self.converters[name] = converter
 
     def __delitem__(self, name):
-        """Unload a converter"""
+        """Unload a converter."""
         del self.converters[name]
 
     def __iter__(self):
-        """Iterator over loaded converters"""
+        """Iterator over loaded converters."""
         return iter(self.converters)
 
     def register(self, entry_point):
-        """Register a converter
+        """Register a converter.
 
         :param string entry_point: converter to register (entry point syntax)
         :raise: ValueError if already registered
@@ -281,7 +286,7 @@ class ConverterManager(object):
         self.registered_converters.insert(0, entry_point)
 
     def unregister(self, entry_point):
-        """Unregister a converter
+        """Unregister a converter.
 
         :param string entry_point: converter to unregister (entry point syntax)
 
