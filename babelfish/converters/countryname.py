@@ -11,6 +11,7 @@ from . import CaseInsensitiveDict, CountryReverseConverter
 
 
 class CountryNameConverter(CountryReverseConverter):
+
     def __init__(self) -> None:
         self.codes = set()
         self.to_name = {}
@@ -20,12 +21,12 @@ class CountryNameConverter(CountryReverseConverter):
             self.to_name[country.alpha2] = country.name
             self.from_name[country.name] = country.alpha2
 
-    def convert(self, alpha2):
+    def convert(self, alpha2: str) -> str:
         if alpha2 not in self.to_name:
             raise CountryConvertError(alpha2)
         return self.to_name[alpha2]
 
-    def reverse(self, name):
+    def reverse(self, name: str) -> str:
         if name not in self.from_name:
             raise CountryReverseError(name)
         return self.from_name[name]

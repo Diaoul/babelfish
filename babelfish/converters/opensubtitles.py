@@ -4,6 +4,8 @@
 #
 from __future__ import annotations
 
+from typing import cast
+
 from babelfish.exceptions import LanguageReverseError
 from babelfish.language import language_converters
 
@@ -11,6 +13,7 @@ from . import CaseInsensitiveDict, LanguageReverseConverter
 
 
 class OpenSubtitlesConverter(LanguageReverseConverter):
+
     def __init__(self) -> None:
         self.alpha3b_converter = language_converters['alpha3b']
         self.alpha2_converter = language_converters['alpha2']
@@ -33,18 +36,19 @@ class OpenSubtitlesConverter(LanguageReverseConverter):
         )
         self.codes = (self.alpha2_converter.codes | self.alpha3b_converter.codes | set(self.from_opensubtitles.keys()))
 
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3: str, country: str | None = None, script: str | None = None) -> str:
         alpha3b = self.alpha3b_converter.convert(alpha3, country, script)
         if (alpha3b, country) in self.to_opensubtitles:
             return self.to_opensubtitles[(alpha3b, country)]
         return alpha3b
 
-    def reverse(self, opensubtitles):
-        if opensubtitles in self.from_opensubtitles:
-            return self.from_opensubtitles[opensubtitles]
+    def reverse(self, code: str) -> tuple[str, str, str]:
+        if code in self.from_opensubtitles:
+            return self.from_opensubtitles[code]
         for conv in [self.alpha3b_converter, self.alpha2_converter]:
+            conv = cast(LanguageReverseConverter, conv)
             try:
-                return conv.reverse(opensubtitles)
+                return conv.reverse(code)
             except LanguageReverseError:
                 pass
-        raise LanguageReverseError(opensubtitles)
+        raise LanguageReverseError(code)

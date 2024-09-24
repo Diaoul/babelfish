@@ -4,8 +4,8 @@
 #
 from __future__ import annotations
 
-from collections.abc import Mapping, MutableMapping
-from typing import NoReturn
+from collections.abc import Iterator, Mapping, MutableMapping
+from typing import Any, ClassVar, Generic, TypeVar, Union
 
 from babelfish.compat import EntryPoint, iter_entry_points
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
@@ -36,30 +36,30 @@ class CaseInsensitiveDict(MutableMapping):
 
     """
 
-    def __init__(self, data=None, **kwargs) -> None:
+    def __init__(self, data: Mapping[str, Any] | None = None, **kwargs: Any) -> None:
         self._store = {}
         if data is None:
             data = {}
         self.update(data, **kwargs)
 
-    def __setitem__(self, key, value) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         # Use the lowercased key for lookups, but store the actual
         # key alongside the value.
         self._store[key.lower()] = (key, value)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self._store[key.lower()][1]
 
-    def __delitem__(self, key) -> None:
+    def __delitem__(self, key: str) -> None:
         del self._store[key.lower()]
 
-    def __iter__(self):
-        return (casedkey for casedkey, mappedvalue in self._store.values())
+    def __iter__(self) -> Iterator[str]:
+        return (casedkey for casedkey, _ in self._store.values())
 
     def __len__(self) -> int:
         return len(self._store)
 
-    def lower_items(self):
+    def lower_items(self) -> Iterator[tuple[str, Any]]:
         """Like iteritems(), but with all lowercase keys."""
         return (
             (lowerkey, keyval[1])
@@ -67,7 +67,7 @@ class CaseInsensitiveDict(MutableMapping):
             in self._store.items()
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mapping):
             other = CaseInsensitiveDict(other)
         else:
@@ -76,7 +76,8 @@ class CaseInsensitiveDict(MutableMapping):
         return dict(self.lower_items()) == dict(other.lower_items())
 
     # Copy is required
-    def copy(self):
+    def copy(self) -> CaseInsensitiveDict:
+        """Make a shallow copy."""
         return CaseInsensitiveDict(self._store.values())
 
     def __repr__(self) -> str:
@@ -93,7 +94,7 @@ class LanguageConverter:
 
     """
 
-    def convert(self, alpha3, country=None, script=None) -> NoReturn:
+    def convert(self, alpha3: str, country: str | None = None, script: str | None = None) -> str:
         """Convert an alpha3 language code with an alpha2 country code and a script code
         into a custom code.
 
@@ -116,7 +117,7 @@ class LanguageReverseConverter(LanguageConverter):
 
     """
 
-    def reverse(self, code) -> NoReturn:
+    def reverse(self, code: str) -> tuple[str, str, str]:
         """Reverse a custom code into alpha3, country and script code.
 
         :param string code: custom code to reverse
@@ -130,13 +131,14 @@ class LanguageReverseConverter(LanguageConverter):
 
 
 class LanguageEquivalenceConverter(LanguageReverseConverter):
-    """A :class:`LanguageEquivalenceConverter` is a utility class that allows you to easily define a
-    :class:`LanguageReverseConverter` by only specifying the dict from alpha3 to their corresponding symbols.
+    """A :class:`LanguageEquivalenceConverter` is a utility class that allows you to
+    easily define a :class:`LanguageReverseConverter` by only specifying the dict from
+    alpha3 to their corresponding symbols.
 
     You must specify the dict of equivalence as a class variable named SYMBOLS.
 
-    If you also set the class variable CASE_SENSITIVE to ``True`` then the reverse conversion function will be
-    case-sensitive (it is case-insensitive by default).
+    If you also set the class variable CASE_SENSITIVE to ``True`` then the reverse
+    conversion function will be case-sensitive (it is case-insensitive by default).
 
     Example::
 
@@ -146,7 +148,8 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
 
     """
 
-    CASE_SENSITIVE = False
+    CASE_SENSITIVE: ClassVar[bool] = False
+    SYMBOLS: ClassVar[dict[str, str]] = {}
 
     def __init__(self) -> None:
         self.codes = set()
@@ -161,13 +164,13 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
             self.from_symbol[symbol] = (alpha3, None, None)
             self.codes.add(symbol)
 
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3: str, country: str | None = None, script: str | None = None) -> str:
         try:
             return self.to_symbol[alpha3]
         except KeyError as err:
             raise LanguageConvertError(alpha3, country, script) from err
 
-    def reverse(self, code):
+    def reverse(self, code: str) -> tuple[str, str, str]:
         try:
             return self.from_symbol[code]
         except KeyError as err:
@@ -184,7 +187,7 @@ class CountryConverter:
 
     """
 
-    def convert(self, alpha2) -> NoReturn:
+    def convert(self, alpha2: str) -> str:
         """Convert an alpha2 country code into a custom code.
 
         :param string alpha2: ISO-3166-1 language code
@@ -202,7 +205,7 @@ class CountryReverseConverter(CountryConverter):
 
     """
 
-    def reverse(self, code) -> NoReturn:
+    def reverse(self, code: str) -> str:
         """Reverse a custom code into alpha2 code.
 
         :param string code: custom code to reverse
@@ -214,7 +217,10 @@ class CountryReverseConverter(CountryConverter):
         raise NotImplementedError
 
 
-class ConverterManager:
+C = TypeVar('C', bound=Union[CountryConverter, LanguageConverter])
+
+
+class ConverterManager(Generic[C]):
     """Manager for babelfish converters behaving like a dict with lazy loading.
 
     Loading is done in this order:
@@ -233,8 +239,11 @@ class ConverterManager:
 
     """
 
-    entry_point = ''
-    internal_converters = []
+    entry_point: ClassVar[str] = ''
+    internal_converters: ClassVar[list[str]] = []
+
+    registered_converters: list[str]
+    converters: dict[str, C]
 
     def __init__(self) -> None:
         #: Registered converters with entry point syntax
@@ -243,7 +252,7 @@ class ConverterManager:
         #: Loaded converters
         self.converters = {}
 
-    def __getitem__(self, name):
+    def __getitem__(self, name: str) -> C:
         """Get a converter, lazy loading it if necessary."""
         if name in self.converters:
             return self.converters[name]
@@ -264,19 +273,19 @@ class ConverterManager:
                 return self.converters[ep.name]
         raise KeyError(name)
 
-    def __setitem__(self, name, converter) -> None:
+    def __setitem__(self, name: str, converter: C) -> None:
         """Load a converter."""
         self.converters[name] = converter
 
-    def __delitem__(self, name) -> None:
+    def __delitem__(self, name: str) -> None:
         """Unload a converter."""
         del self.converters[name]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         """Iterator over loaded converters."""
         return iter(self.converters)
 
-    def register(self, entry_point) -> None:
+    def register(self, entry_point: str) -> None:
         """Register a converter.
 
         :param string entry_point: converter to register (entry point syntax)
@@ -288,7 +297,7 @@ class ConverterManager:
             raise ValueError(msg)
         self.registered_converters.insert(0, entry_point)
 
-    def unregister(self, entry_point) -> None:
+    def unregister(self, entry_point: str) -> None:
         """Unregister a converter.
 
         :param string entry_point: converter to unregister (entry point syntax)
@@ -296,5 +305,5 @@ class ConverterManager:
         """
         self.registered_converters.remove(entry_point)
 
-    def __contains__(self, name) -> bool:
+    def __contains__(self, name: str) -> bool:
         return name in self.converters
