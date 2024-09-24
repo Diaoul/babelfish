@@ -15,6 +15,8 @@ from . import CaseInsensitiveDict, LanguageReverseConverter
 class OpenSubtitlesConverter(LanguageReverseConverter):
 
     codes: set[str]
+    to_opensubtitles: dict[tuple[str, str | None], str]
+    from_opensubtitles: CaseInsensitiveDict[tuple[str, str | None]]
 
     def __init__(self) -> None:
         self.alpha3b_converter = language_converters['alpha3b']
@@ -44,9 +46,9 @@ class OpenSubtitlesConverter(LanguageReverseConverter):
             return self.to_opensubtitles[(alpha3b, country)]
         return alpha3b
 
-    def reverse(self, code: str) -> tuple[str, str, str]:
+    def reverse(self, code: str) -> tuple[str, str | None, str | None]:
         if code in self.from_opensubtitles:
-            return self.from_opensubtitles[code]
+            return (*self.from_opensubtitles[code], None)
         for conv in [self.alpha3b_converter, self.alpha2_converter]:
             conv = cast(LanguageReverseConverter, conv)
             try:
