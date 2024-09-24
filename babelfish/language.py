@@ -9,7 +9,7 @@ from functools import partial
 from typing import Any, ClassVar
 
 from .compat import resource_stream
-from .converters import ConverterManager, LanguageConverter
+from .converters import ConverterManager, LanguageReverseConverter
 from .country import Country
 from .exceptions import LanguageConvertError
 from .script import Script
@@ -32,7 +32,7 @@ with resource_stream('babelfish', 'data/iso-639-3.tab') as f:
         LANGUAGE_MATRIX.append(iso_language)
 
 
-class LanguageConverterManager(ConverterManager[LanguageConverter]):
+class LanguageConverterManager(ConverterManager[LanguageReverseConverter]):
     """:class:`~babelfish.converters.ConverterManager` for language converters."""
 
     entry_point: ClassVar[str] = 'babelfish.language_converters'

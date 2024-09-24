@@ -4,15 +4,16 @@
 #
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping, MutableMapping
+from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from typing import Any, ClassVar, Generic, TypeVar, Union
 
 from babelfish.compat import EntryPoint, iter_entry_points
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
 
+V = TypeVar("V")
 
 # from https://github.com/kennethreitz/requests/blob/master/requests/structures.py
-class CaseInsensitiveDict(MutableMapping):
+class CaseInsensitiveDict(Generic[V], MutableMapping[str, V]):
     """A case-insensitive ``dict``-like object.
 
     Implements all methods and operations of
@@ -36,18 +37,20 @@ class CaseInsensitiveDict(MutableMapping):
 
     """
 
-    def __init__(self, data: Mapping[str, Any] | None = None, **kwargs: Any) -> None:
+    _store: dict[str, tuple[str, V]]
+
+    def __init__(self, data: Mapping[str, V] | Iterable[tuple[str, V]] | None = None, **kwargs: V) -> None:
         self._store = {}
         if data is None:
             data = {}
         self.update(data, **kwargs)
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: V) -> None:
         # Use the lowercased key for lookups, but store the actual
         # key alongside the value.
         self._store[key.lower()] = (key, value)
 
-    def __getitem__(self, key: str) -> Any:
+    def __getitem__(self, key: str) -> V:
         return self._store[key.lower()][1]
 
     def __delitem__(self, key: str) -> None:
@@ -59,7 +62,7 @@ class CaseInsensitiveDict(MutableMapping):
     def __len__(self) -> int:
         return len(self._store)
 
-    def lower_items(self) -> Iterator[tuple[str, Any]]:
+    def lower_items(self) -> Iterator[tuple[str, V]]:
         """Like iteritems(), but with all lowercase keys."""
         return (
             (lowerkey, keyval[1])
@@ -76,7 +79,7 @@ class CaseInsensitiveDict(MutableMapping):
         return dict(self.lower_items()) == dict(other.lower_items())
 
     # Copy is required
-    def copy(self) -> CaseInsensitiveDict:
+    def copy(self) -> CaseInsensitiveDict[V]:
         """Make a shallow copy."""
         return CaseInsensitiveDict(self._store.values())
 
@@ -117,7 +120,9 @@ class LanguageReverseConverter(LanguageConverter):
 
     """
 
-    def reverse(self, code: str) -> tuple[str, str, str]:
+    codes: set[str]
+
+    def reverse(self, code: str) -> tuple[str, str | None, str | None]:
         """Reverse a custom code into alpha3, country and script code.
 
         :param string code: custom code to reverse
@@ -151,6 +156,10 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
     CASE_SENSITIVE: ClassVar[bool] = False
     SYMBOLS: ClassVar[dict[str, str]] = {}
 
+    codes: set[str]
+    to_symbol: dict[str, str]
+    from_symbol: dict[str, tuple[str, str | None, str | None]] | CaseInsensitiveDict[tuple[str, str | None, str | None]]
+
     def __init__(self) -> None:
         self.codes = set()
         self.to_symbol = {}
@@ -170,7 +179,7 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
         except KeyError as err:
             raise LanguageConvertError(alpha3, country, script) from err
 
-    def reverse(self, code: str) -> tuple[str, str, str]:
+    def reverse(self, code: str) -> tuple[str, str | None, str | None]:
         try:
             return self.from_symbol[code]
         except KeyError as err:
@@ -217,7 +226,7 @@ class CountryReverseConverter(CountryConverter):
         raise NotImplementedError
 
 
-C = TypeVar('C', bound=Union[CountryConverter, LanguageConverter])
+C = TypeVar('C', bound=Union[CountryReverseConverter, LanguageReverseConverter])
 
 
 class ConverterManager(Generic[C]):
