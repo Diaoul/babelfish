@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, MutableMapping
+from typing import NoReturn
 
 from babelfish.compat import EntryPoint, iter_entry_points
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
@@ -35,13 +36,13 @@ class CaseInsensitiveDict(MutableMapping):
 
     """
 
-    def __init__(self, data=None, **kwargs):
-        self._store = dict()
+    def __init__(self, data=None, **kwargs) -> None:
+        self._store = {}
         if data is None:
             data = {}
         self.update(data, **kwargs)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value) -> None:
         # Use the lowercased key for lookups, but store the actual
         # key alongside the value.
         self._store[key.lower()] = (key, value)
@@ -49,13 +50,13 @@ class CaseInsensitiveDict(MutableMapping):
     def __getitem__(self, key):
         return self._store[key.lower()][1]
 
-    def __delitem__(self, key):
+    def __delitem__(self, key) -> None:
         del self._store[key.lower()]
 
     def __iter__(self):
         return (casedkey for casedkey, mappedvalue in self._store.values())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._store)
 
     def lower_items(self):
@@ -78,13 +79,13 @@ class CaseInsensitiveDict(MutableMapping):
     def copy(self):
         return CaseInsensitiveDict(self._store.values())
 
-    def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, dict(self.items()))
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}({dict(self.items())!r})'
 
 
 class LanguageConverter:
     """A :class:`LanguageConverter` supports converting an alpha3 language code with an
-    alpha2 country code and a script code into a custom code
+    alpha2 country code and a script code into a custom code.
 
     .. attribute:: codes
 
@@ -92,9 +93,9 @@ class LanguageConverter:
 
     """
 
-    def convert(self, alpha3, country=None, script=None):
+    def convert(self, alpha3, country=None, script=None) -> NoReturn:
         """Convert an alpha3 language code with an alpha2 country code and a script code
-        into a custom code
+        into a custom code.
 
         :param string alpha3: ISO-639-3 language code
         :param country: ISO-3166 country code, if any
@@ -111,15 +112,16 @@ class LanguageConverter:
 
 class LanguageReverseConverter(LanguageConverter):
     """A :class:`LanguageConverter` able to reverse a custom code into a alpha3
-    ISO-639-3 language code, alpha2 ISO-3166-1 country code and ISO-15924 script code
+    ISO-639-3 language code, alpha2 ISO-3166-1 country code and ISO-15924 script code.
 
     """
 
-    def reverse(self, code):
-        """Reverse a custom code into alpha3, country and script code
+    def reverse(self, code) -> NoReturn:
+        """Reverse a custom code into alpha3, country and script code.
 
         :param string code: custom code to reverse
-        :return: the corresponding alpha3 ISO-639-3 language code, alpha2 ISO-3166-1 country code and ISO-15924 script code
+        :return: the corresponding alpha3 ISO-639-3 language code,
+            alpha2 ISO-3166-1 country code and ISO-15924 script code
         :rtype: tuple
         :raise: :class:`~babelfish.exceptions.LanguageReverseError`
 
@@ -146,7 +148,7 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
 
     CASE_SENSITIVE = False
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.codes = set()
         self.to_symbol = {}
         if self.CASE_SENSITIVE:
@@ -162,19 +164,19 @@ class LanguageEquivalenceConverter(LanguageReverseConverter):
     def convert(self, alpha3, country=None, script=None):
         try:
             return self.to_symbol[alpha3]
-        except KeyError:
-            raise LanguageConvertError(alpha3, country, script)
+        except KeyError as err:
+            raise LanguageConvertError(alpha3, country, script) from err
 
     def reverse(self, code):
         try:
             return self.from_symbol[code]
-        except KeyError:
-            raise LanguageReverseError(code)
+        except KeyError as err:
+            raise LanguageReverseError(code) from err
 
 
 class CountryConverter:
     """A :class:`CountryConverter` supports converting an alpha2 country code
-    into a custom code
+    into a custom code.
 
     .. attribute:: codes
 
@@ -182,8 +184,8 @@ class CountryConverter:
 
     """
 
-    def convert(self, alpha2):
-        """Convert an alpha2 country code into a custom code
+    def convert(self, alpha2) -> NoReturn:
+        """Convert an alpha2 country code into a custom code.
 
         :param string alpha2: ISO-3166-1 language code
         :return: the corresponding custom code
@@ -196,12 +198,12 @@ class CountryConverter:
 
 class CountryReverseConverter(CountryConverter):
     """A :class:`CountryConverter` able to reverse a custom code into a alpha2
-    ISO-3166-1 country code
+    ISO-3166-1 country code.
 
     """
 
-    def reverse(self, code):
-        """Reverse a custom code into alpha2 code
+    def reverse(self, code) -> NoReturn:
+        """Reverse a custom code into alpha2 code.
 
         :param string code: custom code to reverse
         :return: the corresponding alpha2 ISO-3166-1 country code
@@ -213,7 +215,7 @@ class CountryReverseConverter(CountryConverter):
 
 
 class ConverterManager:
-    """Manager for babelfish converters behaving like a dict with lazy loading
+    """Manager for babelfish converters behaving like a dict with lazy loading.
 
     Loading is done in this order:
 
@@ -234,7 +236,7 @@ class ConverterManager:
     entry_point = ''
     internal_converters = []
 
-    def __init__(self):
+    def __init__(self) -> None:
         #: Registered converters with entry point syntax
         self.registered_converters = []
 
@@ -262,11 +264,11 @@ class ConverterManager:
                 return self.converters[ep.name]
         raise KeyError(name)
 
-    def __setitem__(self, name, converter):
+    def __setitem__(self, name, converter) -> None:
         """Load a converter."""
         self.converters[name] = converter
 
-    def __delitem__(self, name):
+    def __delitem__(self, name) -> None:
         """Unload a converter."""
         del self.converters[name]
 
@@ -274,7 +276,7 @@ class ConverterManager:
         """Iterator over loaded converters."""
         return iter(self.converters)
 
-    def register(self, entry_point):
+    def register(self, entry_point) -> None:
         """Register a converter.
 
         :param string entry_point: converter to register (entry point syntax)
@@ -282,10 +284,11 @@ class ConverterManager:
 
         """
         if entry_point in self.registered_converters:
-            raise ValueError('Already registered')
+            msg = 'Already registered'
+            raise ValueError(msg)
         self.registered_converters.insert(0, entry_point)
 
-    def unregister(self, entry_point):
+    def unregister(self, entry_point) -> None:
         """Unregister a converter.
 
         :param string entry_point: converter to unregister (entry point syntax)
@@ -293,5 +296,5 @@ class ConverterManager:
         """
         self.registered_converters.remove(entry_point)
 
-    def __contains__(self, name):
+    def __contains__(self, name) -> bool:
         return name in self.converters

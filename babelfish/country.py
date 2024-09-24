@@ -6,9 +6,9 @@ from __future__ import annotations
 
 from collections import namedtuple
 from functools import partial
-from .converters import ConverterManager
-from .compat import resource_stream
 
+from .compat import resource_stream
+from .converters import ConverterManager
 
 COUNTRIES = {}
 COUNTRY_MATRIX = []
@@ -25,7 +25,7 @@ with resource_stream('babelfish', 'data/iso-3166-1.txt') as f:
 
 
 class CountryConverterManager(ConverterManager):
-    """:class:`~babelfish.converters.ConverterManager` for country converters"""
+    """:class:`~babelfish.converters.ConverterManager` for country converters."""
 
     entry_point = 'babelfish.country_converters'
     internal_converters = ['name = babelfish.converters.countryname:CountryNameConverter']
@@ -34,7 +34,7 @@ country_converters = CountryConverterManager()
 
 
 class CountryMeta(type):
-    """The :class:`Country` metaclass
+    """The :class:`Country` metaclass.
 
     Dynamically redirect :meth:`Country.frommycode` to :meth:`Country.fromcode` with the ``mycode`` `converter`
 
@@ -46,8 +46,8 @@ class CountryMeta(type):
         return type.__getattribute__(cls, name)
 
 
-class Country(CountryMeta(str('CountryBase'), (object,), {})):
-    """A country on Earth
+class Country(CountryMeta('CountryBase', (object,), {})):
+    """A country on Earth.
 
     A country is represented by a 2-letter code from the ISO-3166 standard
 
@@ -55,9 +55,10 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
 
     """
 
-    def __init__(self, country):
+    def __init__(self, country) -> None:
         if country not in COUNTRIES:
-            raise ValueError('%r is not a valid country' % country)
+            msg = f'{country!r} is not a valid country'
+            raise ValueError(msg)
 
         #: ISO-3166 2-letter country code
         self.alpha2 = country
@@ -65,7 +66,7 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
     @classmethod
     def fromcode(cls, code, converter):
         """Create a :class:`Country` by its `code` using `converter` to
-        :meth:`~babelfish.converters.CountryReverseConverter.reverse` it
+        :meth:`~babelfish.converters.CountryReverseConverter.reverse` it.
 
         :param string code: the code to reverse
         :param string converter: name of the :class:`~babelfish.converters.CountryReverseConverter` to use
@@ -84,8 +85,8 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
     def __getattr__(self, name):
         try:
             return country_converters[name].convert(self.alpha2)
-        except KeyError:
-            raise AttributeError(name)
+        except KeyError as err:
+            raise AttributeError(name) from err
 
     def __hash__(self):
         return hash(self.alpha2)
@@ -100,8 +101,8 @@ class Country(CountryMeta(str('CountryBase'), (object,), {})):
     def __ne__(self, other):
         return not self == other
 
-    def __repr__(self):
-        return '<Country [%s]>' % self
+    def __repr__(self) -> str:
+        return f'<Country [{self}]>'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.alpha2

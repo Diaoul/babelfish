@@ -15,9 +15,11 @@ else:
 
 if _python >= (3, 10):
     # .select() was introduced in 3.10
-    from importlib.metadata import entry_points, EntryPoint as _EntryPoint
+    from importlib.metadata import EntryPoint as _EntryPoint
+    from importlib.metadata import entry_points
 else:
-    from importlib_metadata import entry_points, EntryPoint as _EntryPoint
+    from importlib_metadata import EntryPoint as _EntryPoint
+    from importlib_metadata import entry_points
 
 
 def resource_stream(pkg, path):
