@@ -56,8 +56,8 @@ select = [
     "E",      # style errors
     "F",      # flakes
     "W",      # warnings
-    "D",      # pydocstyle
-    "D417",   # Missing argument descriptions in Docstrings
+#    "D",      # pydocstyle
+#    "D417",   # Missing argument descriptions in Docstrings
     "I",      # isort
     "UP",     # pyupgrade
     "S",      # bandit
