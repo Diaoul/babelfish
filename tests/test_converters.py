@@ -17,6 +17,7 @@ def test_converter_alpha2():
         Language('aaa').alpha2
     assert len(language_converters['alpha2'].codes) == 184
 
+
 def test_converter_alpha3b():
     assert Language('fra').alpha3b == 'fre'
     assert Language.fromalpha3b('fre') == Language('fra')
@@ -26,6 +27,7 @@ def test_converter_alpha3b():
     with pytest.raises(LanguageConvertError):
         Language('aaa').alpha3b
     assert len(language_converters['alpha3b'].codes) == 418
+
 
 def test_converter_alpha3t():
     assert Language('fra').alpha3t == 'fra'
@@ -37,6 +39,7 @@ def test_converter_alpha3t():
         Language('aaa').alpha3t
     assert len(language_converters['alpha3t'].codes) == 418
 
+
 def test_converter_name():
     assert Language('eng').name == 'English'
     assert Language.fromname('English') == Language('eng')
@@ -45,15 +48,18 @@ def test_converter_name():
         Language.fromname('Zzzzzzzzz')
     assert len(language_converters['name'].codes) == 7874
 
+
 def test_converter_scope():
     assert language_converters['scope'].codes == {'I', 'S', 'M'}
     assert Language('eng').scope == 'individual'
     assert Language('und').scope == 'special'
 
+
 def test_converter_type():
     assert language_converters['type'].codes == {'A', 'C', 'E', 'H', 'L', 'S'}
     assert Language('eng').type == 'living'
     assert Language('und').type == 'special'
+
 
 def test_converter_opensubtitles():
     assert Language('fra').opensubtitles == Language('fra').alpha3b
@@ -86,9 +92,11 @@ def test_converter_opensubtitles():
             if alpha2:
                 assert Language.fromopensubtitles(idlang) == Language.fromopensubtitles(alpha2)
 
+
 def test_converter_opensubtitles_codes():
     for code in language_converters['opensubtitles'].from_opensubtitles:
         assert code in language_converters['opensubtitles'].codes
+
 
 def test_register_converter():
     class TestConverter(LanguageReverseConverter):
@@ -105,6 +113,7 @@ def test_register_converter():
             if test not in self.from_test:
                 raise LanguageReverseError(test)
             return (self.from_test[test], None)
+
     language = Language('fra')
     assert not hasattr(language, 'test')
     language_converters['test'] = TestConverter()
