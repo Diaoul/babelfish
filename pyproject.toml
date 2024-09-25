@@ -92,7 +92,7 @@ mark-parentheses = true
 [tool.ruff.lint.per-file-ignores]
 "docs/conf*.py" = ["ALL"]
 "babelfish/__init__.py" = ["E402"]
-"tests/*.py" = ["D", "S", "RUF012", "ANN", "FBT"]
+"tests/*.py" = ["D", "S", "RUF012", "ANN", "FBT", "PT011"]
 
 # https://docs.astral.sh/ruff/formatter/
 [tool.ruff.format]

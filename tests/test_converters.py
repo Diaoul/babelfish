@@ -1,7 +1,8 @@
-from babelfish.converters import LanguageReverseConverter
+# ruff: noqa: B018
 import pytest
 from babelfish import language_converters
 from babelfish.compat import resource_stream
+from babelfish.converters import LanguageReverseConverter
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
 from babelfish.language import Language
 
@@ -45,12 +46,12 @@ def test_converter_name():
     assert len(language_converters['name'].codes) == 7874
 
 def test_converter_scope():
-    assert language_converters['scope'].codes == set(['I', 'S', 'M'])
+    assert language_converters['scope'].codes == {'I', 'S', 'M'}
     assert Language('eng').scope == 'individual'
     assert Language('und').scope == 'special'
 
 def test_converter_type():
-    assert language_converters['type'].codes == set(['A', 'C', 'E', 'H', 'L', 'S'])
+    assert language_converters['type'].codes == {'A', 'C', 'E', 'H', 'L', 'S'}
     assert Language('eng').type == 'living'
     assert Language('und').type == 'special'
 
@@ -74,20 +75,19 @@ def test_converter_opensubtitles():
 
     # test with all the LANGUAGES from the opensubtitles api
     # downloaded from: http://www.opensubtitles.org/addons/export_languages.php
-    f = resource_stream('babelfish', 'data/opensubtitles_languages.txt')
-    f.readline()
-    for l in f:
-        idlang, alpha2, _, upload_enabled, web_enabled = l.decode('utf-8').strip().split('\t')
-        if not int(upload_enabled) and not int(web_enabled):
-            # do not test LANGUAGES that are too esoteric / not widely available
-            continue
-        assert Language.fromopensubtitles(idlang).opensubtitles == idlang
-        if alpha2:
-            assert Language.fromopensubtitles(idlang) == Language.fromopensubtitles(alpha2)
-    f.close()
+    with resource_stream('babelfish', 'data/opensubtitles_languages.txt') as f:
+        f.readline()
+        for raw_line in f:
+            idlang, alpha2, _, upload_enabled, web_enabled = raw_line.decode('utf-8').strip().split('\t')
+            if not int(upload_enabled) and not int(web_enabled):
+                # do not test LANGUAGES that are too esoteric / not widely available
+                continue
+            assert Language.fromopensubtitles(idlang).opensubtitles == idlang
+            if alpha2:
+                assert Language.fromopensubtitles(idlang) == Language.fromopensubtitles(alpha2)
 
 def test_converter_opensubtitles_codes():
-    for code in language_converters['opensubtitles'].from_opensubtitles.keys():
+    for code in language_converters['opensubtitles'].from_opensubtitles:
         assert code in language_converters['opensubtitles'].codes
 
 def test_register_converter():
@@ -118,4 +118,3 @@ def test_register_converter():
         Language.fromtest('test1')
     with pytest.raises(AttributeError):
         Language('fra').test
-
