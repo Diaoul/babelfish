@@ -98,3 +98,8 @@ mark-parentheses = true
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "single"
+
+
+# https://mypy.readthedocs.io/en/stable/config_file.html
+[tool.mypy]
+pretty = true
