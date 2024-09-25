@@ -1,4 +1,5 @@
 import pickle
+
 import pytest
 from babelfish.script import Script
 

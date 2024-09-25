@@ -1,6 +1,6 @@
-import pytest
 import pickle
 
+import pytest
 from babelfish.country import Country
 from babelfish.language import LANGUAGES, Language
 from babelfish.script import Script
