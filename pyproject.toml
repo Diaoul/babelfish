@@ -38,11 +38,13 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+attrs = "^23"
 importlib-resources = {version = "^5.0", python = "<3.9"}
 importlib-metadata = {version = "^4.6", python = "<3.10"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.2.0"
+cattrs = "^23"
 
 
 # https://docs.astral.sh/ruff/

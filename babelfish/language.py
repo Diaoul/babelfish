@@ -8,6 +8,8 @@ from collections import namedtuple
 from functools import partial
 from typing import Any, ClassVar
 
+from attrs import evolve, field, frozen
+
 from .compat import resource_stream
 from .converters import ConverterManager, LanguageReverseConverter
 from .country import Country
@@ -50,6 +52,24 @@ class LanguageConverterManager(ConverterManager[LanguageReverseConverter]):
 language_converters = LanguageConverterManager()
 
 
+def to_country(country: str | Country | None) -> Country | None:
+    """Convert to Country or None."""
+    if isinstance(country, Country):
+        return country
+    if country is None:
+        return None
+    return Country(country)
+
+
+def to_script(script: str | Script | None) -> Script | None:
+    """Convert to Script or None."""
+    if isinstance(script, Script):
+        return script
+    if script is None:
+        return None
+    return Script(script)
+
+
 class LanguageMeta(type):
     """The :class:`Language` metaclass.
 
@@ -63,6 +83,7 @@ class LanguageMeta(type):
         return type.__getattribute__(cls, name)
 
 
+@frozen
 class Language(metaclass=LanguageMeta):
     """A human language.
 
@@ -83,9 +104,9 @@ class Language(metaclass=LanguageMeta):
 
     """
 
-    alpha3: str
-    country: Country | None
-    script: Script | None
+    alpha3: str = field(alias='language')
+    country: Country | None = field(converter=to_country)
+    script: Script | None = field(converter=to_script)
 
     def __init__(
         self,
@@ -96,24 +117,13 @@ class Language(metaclass=LanguageMeta):
     ) -> None:
         if unknown is not None and language not in LANGUAGES:
             language = unknown
-        if language not in LANGUAGES:
-            msg = f'{language!r} is not a valid language'
+        self.__attrs_init__(language, country, script)  # type: ignore[operator]
+
+    @alpha3.validator
+    def check_alpha3(self, attribute: str, value: str) -> None:
+        if value not in LANGUAGES:
+            msg = f'{value!r} is not a valid language'
             raise ValueError(msg)
-        self.alpha3 = language
-        self.country = None
-        if isinstance(country, Country):
-            self.country = country
-        elif country is None:
-            self.country = None
-        else:
-            self.country = Country(country)
-        self.script = None
-        if isinstance(script, Script):
-            self.script = script
-        elif script is None:
-            self.script = None
-        else:
-            self.script = Script(script)
 
     @classmethod
     def fromcode(cls, code: str, converter: str) -> Language:
@@ -139,25 +149,19 @@ class Language(metaclass=LanguageMeta):
         """
         subtags = ietf.split('-')
         language_subtag = subtags.pop(0).lower()
-        language = cls.fromalpha2(language_subtag) if len(language_subtag) == 2 else cls(language_subtag)
+        language = cls.fromalpha2(language_subtag) if len(language_subtag) == 2 else cls(language_subtag)  # type: ignore[call-arg]
         while subtags:
             subtag = subtags.pop(0)
             if len(subtag) == 2:
-                language.country = Country(subtag.upper())
+                language = evolve(language, country=Country(subtag.upper()))
             else:
-                language.script = Script(subtag.capitalize())
+                language = evolve(language, script=Script(subtag.capitalize()))
             if language.script is not None:
                 if subtags:
                     msg = f'Wrong IETF format. Unmatched subtags: {subtags!r}'
                     raise ValueError(msg)
                 break
         return language
-
-    def __getstate__(self) -> tuple[str, Country | None, Script | None]:
-        return self.alpha3, self.country, self.script
-
-    def __setstate__(self, state: tuple[str, Country | None, Script | None]) -> None:
-        self.alpha3, self.country, self.script = state
 
     def __getattr__(self, name: str) -> str:
         alpha3 = self.alpha3
@@ -167,19 +171,6 @@ class Language(metaclass=LanguageMeta):
             return language_converters[name].convert(alpha3, country, script)
         except KeyError as err:
             raise AttributeError(name) from err
-
-    def __hash__(self) -> int:
-        return hash(str(self))
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, str):
-            return str(self) == other
-        if not isinstance(other, Language):
-            return False
-        return self.alpha3 == other.alpha3 and self.country == other.country and self.script == other.script
-
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
 
     def __bool__(self) -> bool:
         return self.alpha3 != 'und'
