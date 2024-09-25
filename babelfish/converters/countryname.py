@@ -11,7 +11,6 @@ from . import CaseInsensitiveDict, CountryReverseConverter
 
 
 class CountryNameConverter(CountryReverseConverter):
-
     codes: set[str]
     to_name: dict[str, str]
     from_name: CaseInsensitiveDict[str]

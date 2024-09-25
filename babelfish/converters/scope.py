@@ -13,7 +13,6 @@ from . import LanguageConverter
 
 
 class ScopeConverter(LanguageConverter):
-
     FULLNAME: ClassVar[dict[str, str]] = {'I': 'individual', 'M': 'macrolanguage', 'S': 'special'}
     SYMBOLS: ClassVar[dict[str, str]] = {}
 

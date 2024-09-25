@@ -35,6 +35,7 @@ class CountryConverterManager(ConverterManager[CountryReverseConverter]):
     entry_point: ClassVar[str] = 'babelfish.country_converters'
     internal_converters: ClassVar[list[str]] = ['name = babelfish.converters.countryname:CountryNameConverter']
 
+
 country_converters = CountryConverterManager()
 
 

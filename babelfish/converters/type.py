@@ -13,7 +13,6 @@ from . import LanguageConverter
 
 
 class LanguageTypeConverter(LanguageConverter):
-
     FULLNAME: ClassVar[dict[str, str]] = {
         'A': 'ancient',
         'C': 'constructed',

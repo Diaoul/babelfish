@@ -46,6 +46,7 @@ class LanguageConverterManager(ConverterManager[LanguageReverseConverter]):
         'opensubtitles = babelfish.converters.opensubtitles:OpenSubtitlesConverter',
     ]
 
+
 language_converters = LanguageConverterManager()
 
 
@@ -175,9 +176,7 @@ class Language(metaclass=LanguageMeta):
             return str(self) == other
         if not isinstance(other, Language):
             return False
-        return (self.alpha3 == other.alpha3 and
-                self.country == other.country and
-                self.script == other.script)
+        return self.alpha3 == other.alpha3 and self.country == other.country and self.script == other.script
 
     def __ne__(self, other: Any) -> bool:
         return not self == other

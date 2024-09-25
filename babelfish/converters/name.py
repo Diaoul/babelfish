@@ -12,7 +12,6 @@ from . import LanguageEquivalenceConverter
 
 
 class NameConverter(LanguageEquivalenceConverter):
-
     CASE_SENSITIVE: ClassVar[bool] = False
     SYMBOLS: ClassVar[dict[str, str]] = {}
 

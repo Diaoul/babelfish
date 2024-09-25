@@ -12,7 +12,6 @@ from . import LanguageEquivalenceConverter
 
 
 class Alpha3TConverter(LanguageEquivalenceConverter):
-
     CASE_SENSITIVE: ClassVar[bool] = True
     SYMBOLS: ClassVar[dict[str, str]] = {}
 
