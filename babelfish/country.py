@@ -8,6 +8,8 @@ from collections import namedtuple
 from functools import partial
 from typing import Any, ClassVar
 
+from attrs import field, frozen
+
 from .compat import resource_stream
 from .converters import ConverterManager, CountryReverseConverter
 
@@ -52,6 +54,7 @@ class CountryMeta(type):
         return type.__getattribute__(cls, name)
 
 
+@frozen
 class Country(metaclass=CountryMeta):
     """A country on Earth.
 
@@ -61,13 +64,14 @@ class Country(metaclass=CountryMeta):
 
     """
 
-    def __init__(self, country: str) -> None:
-        if country not in COUNTRIES:
-            msg = f'{country!r} is not a valid country'
-            raise ValueError(msg)
+    #: ISO-3166 2-letter country code
+    alpha2: str = field(alias='country')
 
-        #: ISO-3166 2-letter country code
-        self.alpha2 = country
+    @alpha2.validator
+    def check_alpha2(self, attribute: str, value: str) -> None:
+        if value not in COUNTRIES:
+            msg = f'{value!r} is not a valid country'
+            raise ValueError(msg)
 
     @classmethod
     def fromcode(cls, code: str, converter: str) -> Country:
@@ -82,30 +86,11 @@ class Country(metaclass=CountryMeta):
         """
         return cls(country_converters[converter].reverse(code))
 
-    def __getstate__(self) -> str:
-        return self.alpha2
-
-    def __setstate__(self, state: str) -> None:
-        self.alpha2 = state
-
     def __getattr__(self, name: str) -> str:
         try:
             return country_converters[name].convert(self.alpha2)
         except KeyError as err:
             raise AttributeError(name) from err
-
-    def __hash__(self) -> int:
-        return hash(self.alpha2)
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, str):
-            return str(self) == other
-        if not isinstance(other, Country):
-            return False
-        return self.alpha2 == other.alpha2
-
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
 
     def __repr__(self) -> str:
         return f'<Country [{self}]>'

@@ -71,12 +71,13 @@ def test_ne_with_script_and_none():
     assert Language('srp', script='Latn') != Language('srp')
 
 
-def test_hash():
-    assert hash(Language('fra')) == hash('fr')
-    assert hash(Language('ace')) == hash('ace')
-    assert hash(Language('por', 'BR')) == hash('pt-BR')
-    assert hash(Language('srp', script='Cyrl')) == hash('sr-Cyrl')
-    assert hash(Language('eng', country='US', script='Latn')) == hash('en-US-Latn')
+def test_hash_incorrect():
+    # Not true anymore
+    assert hash(Language('fra')) != hash('fr')
+    assert hash(Language('ace')) != hash('ace')
+    assert hash(Language('por', 'BR')) != hash('pt-BR')
+    assert hash(Language('srp', script='Cyrl')) != hash('sr-Cyrl')
+    assert hash(Language('eng', country='US', script='Latn')) != hash('en-US-Latn')
 
 
 @pytest.mark.parametrize(

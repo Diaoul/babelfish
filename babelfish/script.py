@@ -5,7 +5,8 @@
 from __future__ import annotations
 
 from collections import namedtuple
-from typing import Any
+
+from attrs import field, frozen
 
 from .compat import resource_stream
 
@@ -30,6 +31,7 @@ with resource_stream('babelfish', 'data/iso15924-utf8-20131012.txt') as f:
         SCRIPTS[script.code] = script.name
 
 
+@frozen
 class Script:
     """A human writing system.
 
@@ -39,37 +41,19 @@ class Script:
 
     """
 
-    def __init__(self, script: str) -> None:
-        if script not in SCRIPTS:
-            msg = f'{script!r} is not a valid script'
-            raise ValueError(msg)
+    #: ISO-15924 4-letter script code
+    code: str = field(alias='script')
 
-        #: ISO-15924 4-letter script code
-        self.code = script
+    @code.validator
+    def check_code(self, attribute: str, value: str) -> None:
+        if value not in SCRIPTS:
+            msg = f'{value!r} is not a valid script'
+            raise ValueError(msg)
 
     @property
     def name(self) -> str:
         """English name of the script."""
         return SCRIPTS[self.code]
-
-    def __getstate__(self) -> str:
-        return self.code
-
-    def __setstate__(self, state: str) -> None:
-        self.code = state
-
-    def __hash__(self) -> int:
-        return hash(self.code)
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, str):
-            return self.code == other
-        if not isinstance(other, Script):
-            return False
-        return self.code == other.code
-
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
 
     def __repr__(self) -> str:
         return f'<Script [{self}]>'
