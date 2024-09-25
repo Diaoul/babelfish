@@ -32,7 +32,6 @@ def iter_entry_points(group: str, **kwargs: Any) -> EntryPoints:
 
 
 class EntryPoint(_EntryPoint):
-
     @staticmethod
     def parse(eps: str) -> EntryPoint:
         return EntryPoint(*map(str.strip, eps.split('=')), None)  # type: ignore[call-arg]

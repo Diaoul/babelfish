@@ -13,7 +13,6 @@ from . import CaseInsensitiveDict, LanguageReverseConverter
 
 
 class OpenSubtitlesConverter(LanguageReverseConverter):
-
     codes: set[str]
     to_opensubtitles: dict[tuple[str, str | None], str]
     from_opensubtitles: CaseInsensitiveDict[tuple[str, str | None]]
@@ -38,7 +37,7 @@ class OpenSubtitlesConverter(LanguageReverseConverter):
                 'zht': ('zho', 'TW'),
             },
         )
-        self.codes = (self.alpha2_converter.codes | self.alpha3b_converter.codes | set(self.from_opensubtitles.keys()))
+        self.codes = self.alpha2_converter.codes | self.alpha3b_converter.codes | set(self.from_opensubtitles.keys())
 
     def convert(self, alpha3: str, country: str | None = None, script: str | None = None) -> str:
         alpha3b = self.alpha3b_converter.convert(alpha3, country, script)

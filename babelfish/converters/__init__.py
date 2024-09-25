@@ -10,7 +10,8 @@ from typing import Any, ClassVar, Generic, TypeVar, Union
 from babelfish.compat import EntryPoint, iter_entry_points
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
 
-V = TypeVar("V")
+V = TypeVar('V')
+
 
 # from https://github.com/kennethreitz/requests/blob/master/requests/structures.py
 class CaseInsensitiveDict(Generic[V], MutableMapping[str, V]):
@@ -64,11 +65,7 @@ class CaseInsensitiveDict(Generic[V], MutableMapping[str, V]):
 
     def lower_items(self) -> Iterator[tuple[str, V]]:
         """Like iteritems(), but with all lowercase keys."""
-        return (
-            (lowerkey, keyval[1])
-            for (lowerkey, keyval)
-            in self._store.items()
-        )
+        return ((lowerkey, keyval[1]) for (lowerkey, keyval) in self._store.items())
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mapping):

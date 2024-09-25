@@ -28,7 +28,7 @@ class LanguageConvertError(LanguageError):
 
     """
 
-    def __init__(self, alpha3: str, country: str| None = None, script: str| None = None) -> None:
+    def __init__(self, alpha3: str, country: str | None = None, script: str | None = None) -> None:
         self.alpha3 = alpha3
         self.country = country
         self.script = script
