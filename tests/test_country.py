@@ -16,6 +16,7 @@ def test_hash_eq_incorrect():
     # Not true anymore
     assert hash(Country('US')) != hash('US')
 
+
 def test_hasattr_name():
     assert hasattr(Country('US'), 'name')
 

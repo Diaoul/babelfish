@@ -5,10 +5,9 @@
 from __future__ import annotations
 
 from collections import namedtuple
+from dataclasses import dataclass
 from functools import partial
 from typing import Any, ClassVar
-
-from attrs import field, frozen
 
 from .compat import resource_stream
 from .converters import ConverterManager, CountryReverseConverter
@@ -54,7 +53,7 @@ class CountryMeta(type):
         return type.__getattribute__(cls, name)
 
 
-@frozen
+@dataclass(frozen=True)
 class Country(metaclass=CountryMeta):
     """A country on Earth.
 
@@ -65,12 +64,11 @@ class Country(metaclass=CountryMeta):
     """
 
     #: ISO-3166 2-letter country code
-    alpha2: str = field(alias='country')
+    country: str
 
-    @alpha2.validator
-    def check_alpha2(self, attribute: str, value: str) -> None:
-        if value not in COUNTRIES:
-            msg = f'{value!r} is not a valid country'
+    def __post_init__(self) -> None:
+        if self.country not in COUNTRIES:
+            msg = f'{self.country!r} is not a valid country'
             raise ValueError(msg)
 
     @classmethod
@@ -86,7 +84,16 @@ class Country(metaclass=CountryMeta):
         """
         return cls(country_converters[converter].reverse(code))
 
+    @property
+    def alpha2(self) -> str:
+        return self.country
+
     def __getattr__(self, name: str) -> str:
+        # Handle private attributes by raising AttributeError
+        # so the class is pickable, see: https://stackoverflow.com/a/50888571
+        if name.startswith('_'):
+            raise AttributeError
+
         try:
             return country_converters[name].convert(self.alpha2)
         except KeyError as err:
