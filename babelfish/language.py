@@ -5,10 +5,9 @@
 from __future__ import annotations
 
 from collections import namedtuple
+from dataclasses import InitVar, dataclass
 from functools import partial
 from typing import Any, ClassVar
-
-from attrs import evolve, field, frozen
 
 from .compat import resource_stream
 from .converters import ConverterManager, LanguageReverseConverter
@@ -83,7 +82,7 @@ class LanguageMeta(type):
         return type.__getattribute__(cls, name)
 
 
-@frozen
+@dataclass(frozen=True)
 class Language(metaclass=LanguageMeta):
     """A human language.
 
@@ -104,9 +103,10 @@ class Language(metaclass=LanguageMeta):
 
     """
 
-    alpha3: str = field(alias='language')
-    country: Country | None = field(converter=to_country)
-    script: Script | None = field(converter=to_script)
+    language: str
+    country: Country | None
+    script: Script | None
+    unknown: InitVar[str | None] = None
 
     def __init__(
         self,
@@ -117,13 +117,16 @@ class Language(metaclass=LanguageMeta):
     ) -> None:
         if unknown is not None and language not in LANGUAGES:
             language = unknown
-        self.__attrs_init__(language, country, script)  # type: ignore[operator]
 
-    @alpha3.validator
-    def check_alpha3(self, attribute: str, value: str) -> None:
-        if value not in LANGUAGES:
-            msg = f'{value!r} is not a valid language'
+        if language not in LANGUAGES:
+            msg = f'{language!r} is not a valid language'
             raise ValueError(msg)
+        country = to_country(country)
+        script = to_script(script)
+
+        object.__setattr__(self, 'language', language)
+        object.__setattr__(self, 'country', country)
+        object.__setattr__(self, 'script', script)
 
     @classmethod
     def fromcode(cls, code: str, converter: str) -> Language:
@@ -148,32 +151,49 @@ class Language(metaclass=LanguageMeta):
 
         """
         subtags = ietf.split('-')
+        # Parse language from the first subtags
         language_subtag = subtags.pop(0).lower()
-        language = cls.fromalpha2(language_subtag) if len(language_subtag) == 2 else cls(language_subtag)  # type: ignore[call-arg]
+        if len(language_subtag) == 2:
+            simple_language = cls.fromalpha2(language_subtag)
+            language_subtag = simple_language.alpha3
+
+        # Parse country and script from the rest of subtags
+        country_subtag: Country | None = None
+        script_subtag: Script | None = None
         while subtags:
             subtag = subtags.pop(0)
             if len(subtag) == 2:
-                language = evolve(language, country=Country(subtag.upper()))
+                country_subtag = Country(subtag.upper())
             else:
-                language = evolve(language, script=Script(subtag.capitalize()))
-            if language.script is not None:
+                script_subtag = Script(subtag.capitalize())
+            if script_subtag is not None:
                 if subtags:
                     msg = f'Wrong IETF format. Unmatched subtags: {subtags!r}'
                     raise ValueError(msg)
                 break
-        return language
+
+        return cls(language_subtag, country_subtag, script_subtag)
+
+    @property
+    def alpha3(self) -> str:
+        return self.language
 
     def __getattr__(self, name: str) -> str:
-        alpha3 = self.alpha3
-        country = self.country.alpha2 if self.country is not None else None
-        script = self.script.code if self.script is not None else None
+        # Handle private attributes by raising AttributeError
+        # so the class is pickable, see: https://stackoverflow.com/a/50888571
+        if name.startswith('_'):
+            raise AttributeError
+
         try:
+            alpha3 = self.alpha3
+            country = self.country.alpha2 if self.country is not None else None
+            script = self.script.code if self.script is not None else None
             return language_converters[name].convert(alpha3, country, script)
         except KeyError as err:
             raise AttributeError(name) from err
 
     def __bool__(self) -> bool:
-        return self.alpha3 != 'und'
+        return self.language != 'und'
 
     __nonzero__ = __bool__
 
