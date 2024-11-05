@@ -4,8 +4,8 @@
 #
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping, MutableMapping
-from typing import Any, ClassVar, Generic, TypeVar, Union
+from collections.abc import Iterable, Iterator, Mapping
+from typing import Any, ClassVar, Generic, MutableMapping, TypeVar, Union
 
 from babelfish.compat import EntryPoint, iter_entry_points
 from babelfish.exceptions import LanguageConvertError, LanguageReverseError
